@@ -756,6 +756,7 @@ static inline bool got_nohz_idle_kick(void)
 }
 
 #endif /* CONFIG_NO_HZ_COMMON */
+<<<<<<< HEAD
 
 #ifdef CONFIG_NO_HZ_FULL
 bool sched_can_stop_tick(void)
@@ -774,6 +775,8 @@ bool sched_can_stop_tick(void)
        return true;
 }
 #endif /* CONFIG_NO_HZ_FULL */
+=======
+>>>>>>> 8761bf0... nohz: Rename CONFIG_NO_HZ to CONFIG_NO_HZ_COMMON
 
 void sched_avg_update(struct rq *rq)
 {

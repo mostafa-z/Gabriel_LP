@@ -2284,7 +2284,11 @@ static inline void idle_task_exit(void) {}
 #endif
 
 #if defined(CONFIG_NO_HZ_COMMON) && defined(CONFIG_SMP)
+<<<<<<< HEAD
 extern void wake_up_nohz_cpu(int cpu);
+=======
+extern void wake_up_idle_cpu(int cpu);
+>>>>>>> 8761bf0... nohz: Rename CONFIG_NO_HZ to CONFIG_NO_HZ_COMMON
 #else
 static inline void wake_up_nohz_cpu(int cpu) { }
 #endif

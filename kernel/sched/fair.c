@@ -8788,10 +8788,14 @@ void trigger_load_balance(struct rq *rq)
 	if (time_after_eq(jiffies, rq->next_balance))
 		raise_softirq(SCHED_SOFTIRQ);
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef CONFIG_NO_HZ_COMMON
 =======
 #ifdef CONFIG_NO_HZ
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+#ifdef CONFIG_NO_HZ_COMMON
+>>>>>>> 8761bf0... nohz: Rename CONFIG_NO_HZ to CONFIG_NO_HZ_COMMON
 	if (nohz_kick_needed(rq, &type))
 		nohz_balancer_kick(cpu, type);
 #endif
