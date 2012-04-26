@@ -6109,6 +6109,10 @@ redo:
 		 * correctly treated as an imbalance.
 		 */
 		env.flags |= LBF_ALL_PINNED;
+<<<<<<< HEAD
+=======
+		env.load_move = imbalance;
+>>>>>>> d8c8c11... sched: Change rq->nr_running to unsigned int
 		env.src_cpu   = busiest->cpu;
 		env.src_rq    = busiest;
 		env.loop_max  = min(sysctl_sched_nr_migrate,
