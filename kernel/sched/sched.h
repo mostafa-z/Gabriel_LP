@@ -1470,6 +1470,23 @@ static inline u64 steal_ticks(u64 steal)
 {
 	if (unlikely(steal > NSEC_PER_SEC))
 		return div_u64(steal, TICK_NSEC);
+<<<<<<< HEAD
+=======
+
+	return __iter_div_u64_rem(steal, TICK_NSEC, &steal);
+}
+#endif
+
+/* 27 ~= 134217728ns = 134.2ms
+ * 26 ~=  67108864ns =  67.1ms
+ * 25 ~=  33554432ns =  33.5ms
+ * 24 ~=  16777216ns =  16.8ms
+ */
+#define NR_AVE_PERIOD_EXP      27
+#define NR_AVE_SCALE(x)                ((x) << FSHIFT)
+#define NR_AVE_PERIOD          (1 << NR_AVE_PERIOD_EXP)
+#define NR_AVE_DIV_PERIOD(x)   ((x) >> NR_AVE_PERIOD_EXP)
+>>>>>>> 0e85583... sched: Move cputime code to its own file
 
 	return __iter_div_u64_rem(steal, TICK_NSEC, &steal);
 }
@@ -1781,9 +1798,12 @@ enum rq_nohz_flag_bits {
 #define nohz_flags(cpu)	(&cpu_rq(cpu)->nohz_flags)
 #endif
 
+<<<<<<< HEAD
 #define NOHZ_KICK_ANY 0
 #define NOHZ_KICK_RESTRICT 1
 
+=======
+>>>>>>> 0e85583... sched: Move cputime code to its own file
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 
 DECLARE_PER_CPU(u64, cpu_hardirq_time);
