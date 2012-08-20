@@ -80,7 +80,7 @@ static void key_gc_timer_func(unsigned long data)
 	kenter("");
 	key_gc_next_run = LONG_MAX;
 	set_bit(KEY_GC_KEY_EXPIRED, &key_gc_flags);
-	queue_work(system_nrt_wq, &key_gc_work);
+	schedule_work(&key_gc_work);
 }
 
 /*
