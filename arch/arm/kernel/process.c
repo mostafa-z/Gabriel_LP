@@ -251,6 +251,7 @@ void machine_halt(void)
 
 void machine_power_off(void)
 {
+	preempt_disable();
 	machine_shutdown();
 	if (pm_power_off)
 		pm_power_off();
@@ -258,6 +259,7 @@ void machine_power_off(void)
 
 void machine_restart(char *cmd)
 {
+	preempt_disable();
 	machine_shutdown();
 
 	/* Flush the console to make sure all the relevant messages make it
