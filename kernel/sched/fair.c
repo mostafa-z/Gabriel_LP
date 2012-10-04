@@ -291,11 +291,16 @@ static inline struct cfs_rq *group_cfs_rq(struct sched_entity *grp)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq,
 				       int force_update);
 =======
 static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq,
+				       int force_update);
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 
 static inline void list_add_leaf_cfs_rq(struct cfs_rq *cfs_rq)
 {
@@ -318,10 +323,14 @@ static inline void list_add_leaf_cfs_rq(struct cfs_rq *cfs_rq)
 		cfs_rq->on_list = 1;
 		/* We should have no load, but we need to update last_decay. */
 <<<<<<< HEAD
+<<<<<<< HEAD
 		update_cfs_rq_blocked_load(cfs_rq, 0);
 =======
 		update_cfs_rq_blocked_load(cfs_rq);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+		update_cfs_rq_blocked_load(cfs_rq, 0);
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 	}
 }
 
@@ -2091,8 +2100,12 @@ static __always_inline int __update_entity_runnable_avg(int cpu, u64 now,
 static inline u64 __synchronize_entity_decay(struct sched_entity *se)
 =======
 /* Synchronize an entity's decay with its parenting cfs_rq.*/
+<<<<<<< HEAD
 static inline void __synchronize_entity_decay(struct sched_entity *se)
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+static inline u64 __synchronize_entity_decay(struct sched_entity *se)
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 {
 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
 	u64 decays = atomic64_read(&cfs_rq->decay_counter);
@@ -2210,10 +2223,12 @@ static inline void __update_task_entity_contrib(struct sched_entity *se)
 >>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 =======
 	if (!decays)
-		return;
+		return 0;
 
 	se->avg.load_avg_contrib = decay_load(se->avg.load_avg_contrib, decays);
 	se->avg.decay_count = 0;
+
+	return decays;
 }
 
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
@@ -2438,21 +2453,31 @@ static inline void update_entity_load_avg(struct sched_entity *se,
  * Decay the load contributed by all blocked children and account this so that
  * their contribution may appropriately discounted when they wake up.
  */
-static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq)
+static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq, int force_update)
 {
 	u64 now = rq_of(cfs_rq)->clock_task >> 20;
 	u64 decays;
 
 	decays = now - cfs_rq->last_decay;
-	if (!decays)
+	if (!decays && !force_update)
 		return;
 
-	cfs_rq->blocked_load_avg = decay_load(cfs_rq->blocked_load_avg,
-					      decays);
-	atomic64_add(decays, &cfs_rq->decay_counter);
+	if (atomic64_read(&cfs_rq->removed_load)) {
+		u64 removed_load = atomic64_xchg(&cfs_rq->removed_load, 0);
+		subtract_blocked_load_contrib(cfs_rq, removed_load);
+	}
 
+<<<<<<< HEAD
 	cfs_rq->last_decay = now;
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+	if (decays) {
+		cfs_rq->blocked_load_avg = decay_load(cfs_rq->blocked_load_avg,
+						      decays);
+		atomic64_add(decays, &cfs_rq->decay_counter);
+		cfs_rq->last_decay = now;
+	}
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 }
 
 static inline void update_rq_runnable_avg(struct rq *rq, int runnable)
@@ -2465,20 +2490,42 @@ static inline void enqueue_entity_load_avg(struct cfs_rq *cfs_rq,
 						  struct sched_entity *se,
 						  int wakeup)
 {
-	/* we track migrations using entity decay_count == 0 */
-	if (unlikely(!se->avg.decay_count)) {
+	/*
+	 * We track migrations using entity decay_count <= 0, on a wake-up
+	 * migration we use a negative decay count to track the remote decays
+	 * accumulated while sleeping.
+	 */
+	if (unlikely(se->avg.decay_count <= 0)) {
 		se->avg.last_runnable_update = rq_of(cfs_rq)->clock_task;
+		if (se->avg.decay_count) {
+			/*
+			 * In a wake-up migration we have to approximate the
+			 * time sleeping.  This is because we can't synchronize
+			 * clock_task between the two cpus, and it is not
+			 * guaranteed to be read-safe.  Instead, we can
+			 * approximate this using our carried decays, which are
+			 * explicitly atomically readable.
+			 */
+			se->avg.last_runnable_update -= (-se->avg.decay_count)
+							<< 20;
+			update_entity_load_avg(se, 0);
+			/* Indicate that we're now synchronized and on-rq */
+			se->avg.decay_count = 0;
+		}
 		wakeup = 0;
 	} else {
 		__synchronize_entity_decay(se);
 	}
 
-	if (wakeup)
+	/* migrated tasks did not contribute to our blocked load */
+	if (wakeup) {
 		subtract_blocked_load_contrib(cfs_rq, se->avg.load_avg_contrib);
+		update_entity_load_avg(se, 0);
+	}
 
-	update_entity_load_avg(se, 0);
 	cfs_rq->runnable_load_avg += se->avg.load_avg_contrib;
-	update_cfs_rq_blocked_load(cfs_rq);
+	/* we force update consideration on load-balancer moves */
+	update_cfs_rq_blocked_load(cfs_rq, !wakeup);
 }
 
 /*
@@ -2491,6 +2538,8 @@ static inline void dequeue_entity_load_avg(struct cfs_rq *cfs_rq,
 						  int sleep)
 {
 	update_entity_load_avg(se, 1);
+	/* we force update consideration on load-balancer moves */
+	update_cfs_rq_blocked_load(cfs_rq, !sleep);
 
 	cfs_rq->runnable_load_avg -= se->avg.load_avg_contrib;
 	if (sleep) {
@@ -2532,8 +2581,13 @@ static inline void dequeue_entity_load_avg(struct cfs_rq *cfs_rq,
 =======
 					   struct sched_entity *se,
 					   int sleep) {}
+<<<<<<< HEAD
 static inline void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq) {}
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+static inline void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq,
+					      int force_update) {}
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 #endif
 
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
@@ -3067,9 +3121,13 @@ entity_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr, int queued)
 	 */
 	update_entity_load_avg(curr, 1);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	update_cfs_rq_blocked_load(cfs_rq, 1);
 =======
 	update_cfs_rq_blocked_load(cfs_rq);
+=======
+	update_cfs_rq_blocked_load(cfs_rq, 1);
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 
 	/*
 	 * Update share accounting for long-running entities.
@@ -4656,6 +4714,9 @@ static void
 migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 	struct sched_entity *se = &p->se;
 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
 
@@ -4669,9 +4730,12 @@ migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 		se->avg.decay_count = -__synchronize_entity_decay(se);
 		atomic64_add(se->avg.load_avg_contrib, &cfs_rq->removed_load);
 	}
+<<<<<<< HEAD
 }
 #endif
 =======
+=======
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 }
 >>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
 #endif /* CONFIG_SMP */
@@ -5250,8 +5314,12 @@ static void __update_blocked_averages_cpu(struct task_group *tg, int cpu)
 
 	update_rq_clock(rq);
 	update_cfs_load(cfs_rq, 1);
+<<<<<<< HEAD
 	update_cfs_rq_blocked_load(cfs_rq);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+	update_cfs_rq_blocked_load(cfs_rq, 1);
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 
 	/* throttled entities do not contribute to load */
 	if (throttled_hierarchy(cfs_rq))
@@ -7495,9 +7563,13 @@ void init_cfs_rq(struct cfs_rq *cfs_rq)
 #if defined(CONFIG_FAIR_GROUP_SCHED) && defined(CONFIG_SMP)
 	atomic64_set(&cfs_rq->decay_counter, 1);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	atomic64_set(&cfs_rq->removed_load, 0);
 =======
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
+=======
+	atomic64_set(&cfs_rq->removed_load, 0);
+>>>>>>> e5693d0... sched: Account for blocked load waking back up
 #endif
 }
 
