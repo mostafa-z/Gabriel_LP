@@ -457,12 +457,27 @@ struct cfs_rq {
 	u64 runnable_load_avg, blocked_load_avg;
 	atomic64_t decay_counter, removed_load;
 	u64 last_decay;
+
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	u32 tg_runnable_contrib;
 	u64 tg_load_contrib;
+<<<<<<< HEAD
 #endif
 #endif
 >>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
+=======
+#endif /* CONFIG_FAIR_GROUP_SCHED */
+
+	/*
+	 *   h_load = weight * f(tg)
+	 *
+	 * Where f(tg) is the recursive weight fraction assigned to
+	 * this group.
+	 */
+	unsigned long h_load;
+#endif /* CONFIG_SMP */
+
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	/*
 	 * CFS Load tracking
@@ -480,6 +495,7 @@ struct cfs_rq {
 	u64 tg_load_contrib;
 #endif /* CONFIG_FAIR_GROUP_SCHED */
 
+<<<<<<< HEAD
 	/*
 	 *   h_load = weight * f(tg)
 	 *
@@ -504,6 +520,8 @@ struct cfs_rq {
 	struct list_head leaf_cfs_rq_list;
 	struct task_group *tg;	/* group that "owns" this runqueue */
 
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 #ifdef CONFIG_CFS_BANDWIDTH
 	int runtime_enabled;
 	u64 runtime_expires;

@@ -851,6 +851,7 @@ account_entity_dequeue(struct cfs_rq *cfs_rq, struct sched_entity *se)
 #ifdef CONFIG_FAIR_GROUP_SCHED
 # ifdef CONFIG_SMP
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 static void update_cfs_rq_load_contribution(struct cfs_rq *cfs_rq,
 					    int global_update)
@@ -916,6 +917,8 @@ static void update_cfs_load(struct cfs_rq *cfs_rq, int global_update)
 }
 
 >>>>>>> ab252a7... sched: Use an accessor to read the rq clock
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 static inline long calc_tg_weight(struct task_group *tg, struct cfs_rq *cfs_rq)
 {
 	long tg_weight;
@@ -994,6 +997,7 @@ static void update_cfs_shares(struct cfs_rq *cfs_rq)
 }
 #else /* CONFIG_FAIR_GROUP_SCHED */
 static inline void update_cfs_shares(struct cfs_rq *cfs_rq)
+<<<<<<< HEAD
 {
 }
 #endif /* CONFIG_FAIR_GROUP_SCHED */
@@ -1033,6 +1037,8 @@ static const u32 runnable_avg_yN_sum[] = {
  *   val * y^n,    where y^32 ~= 0.5 (~1 scheduling period)
  */
 static __always_inline u64 decay_load(u64 val, u64 n)
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 {
 	unsigned int local_n;
 
@@ -1060,6 +1066,7 @@ static __always_inline u64 decay_load(u64 val, u64 n)
 	/* We don't use SRR here since we always want to round down. */
 	return val >> 32;
 }
+<<<<<<< HEAD
 
 /*
  * For updates fully spanning n periods, the contribution to runnable
@@ -1098,6 +1105,9 @@ static inline void decay_scaled_stat(struct sched_avg *sa, u64 periods);
 unsigned int __read_mostly sched_init_task_load_pelt;
 unsigned int __read_mostly sched_init_task_load_windows;
 unsigned int __read_mostly sysctl_sched_init_task_load_pct = 15;
+=======
+#endif /* CONFIG_FAIR_GROUP_SCHED */
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 
 static inline unsigned int task_load(struct task_struct *p)
 {
@@ -2967,12 +2977,15 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
 	 */
 	update_curr(cfs_rq);
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	update_cfs_load(cfs_rq, 0);
 <<<<<<< HEAD
 	enqueue_entity_load_avg(cfs_rq, se);
 >>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 =======
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 	enqueue_entity_load_avg(cfs_rq, se, flags & ENQUEUE_WAKEUP);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
 	account_entity_enqueue(cfs_rq, se);
@@ -3076,6 +3089,10 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
 
 	if (se != cfs_rq->curr)
 		__dequeue_entity(cfs_rq, se);
+<<<<<<< HEAD
+=======
+	se->on_rq = 0;
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 	account_entity_dequeue(cfs_rq, se);
 	dequeue_entity_load_avg(cfs_rq, se, flags & DEQUEUE_SLEEP);
 
@@ -3271,12 +3288,15 @@ entity_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr, int queued)
 	update_cfs_rq_blocked_load(cfs_rq, 1);
 >>>>>>> e5693d0... sched: Account for blocked load waking back up
 
+<<<<<<< HEAD
 	/*
 	 * Update share accounting for long-running entities.
 	 */
 	update_entity_shares_tick(cfs_rq);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
 
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 #ifdef CONFIG_SCHED_HRTICK
 	/*
 	 * queued ticks are scheduled to match the slice, so don't bother
@@ -3525,6 +3545,7 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
 #ifdef CONFIG_SMP
 	if (!cfs_rq->throttle_count) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 		/* adjust cfs_rq_clock_task() */
 		cfs_rq->throttled_clock_task_time += rq->clock_task -
 					     cfs_rq->throttled_clock_task;
@@ -3542,6 +3563,11 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
 		/* update entity weight now that we are on_rq again */
 		update_cfs_shares(cfs_rq);
 >>>>>>> ab252a7... sched: Use an accessor to read the rq clock
+=======
+		/* adjust cfs_rq_clock_task() */
+		cfs_rq->throttled_clock_task_time += rq->clock_task -
+					     cfs_rq->throttled_clock_task;
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 	}
 #endif
 
@@ -3554,6 +3580,7 @@ static int tg_throttle_down(struct task_group *tg, void *data)
 	struct cfs_rq *cfs_rq = tg->cfs_rq[cpu_of(rq)];
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	/* group is entering throttled state, stop time */
 	if (!cfs_rq->throttle_count)
 		cfs_rq->throttled_clock_task = rq->clock_task;
@@ -3564,6 +3591,11 @@ static int tg_throttle_down(struct task_group *tg, void *data)
 		cfs_rq->throttled_clock_task = rq->clock_task;
 	}
 >>>>>>> c41b254... sched: Maintain runnable averages across throttled periods
+=======
+	/* group is entering throttled state, stop time */
+	if (!cfs_rq->throttle_count)
+		cfs_rq->throttled_clock_task = rq->clock_task;
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 	cfs_rq->throttle_count++;
 
 	return 0;
@@ -4183,10 +4215,13 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 			break;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		update_entity_load_avg(se, 1);
 		update_cfs_rq_blocked_load(cfs_rq, 0);
 =======
 		update_cfs_load(cfs_rq, 0);
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 		update_cfs_shares(cfs_rq);
 		update_entity_load_avg(se, 1);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
@@ -4254,10 +4289,13 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 			break;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		update_entity_load_avg(se, 1);
 		update_cfs_rq_blocked_load(cfs_rq, 0);
 =======
 		update_cfs_load(cfs_rq, 0);
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 		update_cfs_shares(cfs_rq);
 		update_entity_load_avg(se, 1);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
@@ -5459,33 +5497,57 @@ next:
 static void __update_blocked_averages_cpu(struct task_group *tg, int cpu)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	struct sched_entity *se = tg->se[cpu];
 	struct cfs_rq *cfs_rq = tg->cfs_rq[cpu];
 =======
+=======
+	struct sched_entity *se;
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 	struct cfs_rq *cfs_rq;
 	unsigned long flags;
 	struct rq *rq;
 
-	if (!tg->se[cpu])
-		return 0;
-
 	rq = cpu_rq(cpu);
+	se = tg->se[cpu];
 	cfs_rq = tg->cfs_rq[cpu];
 
 	raw_spin_lock_irqsave(&rq->lock, flags);
 
 	update_rq_clock(rq);
+<<<<<<< HEAD
 	update_cfs_load(cfs_rq, 1);
 <<<<<<< HEAD
 	update_cfs_rq_blocked_load(cfs_rq);
 >>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
 =======
+=======
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 	update_cfs_rq_blocked_load(cfs_rq, 1);
 >>>>>>> e5693d0... sched: Account for blocked load waking back up
 
+<<<<<<< HEAD
 	/* throttled entities do not contribute to load */
 	if (throttled_hierarchy(cfs_rq))
 		return;
+=======
+	if (se) {
+		update_entity_load_avg(se, 1);
+		/*
+		 * We pivot on our runnable average having decayed to zero for
+		 * list removal.  This generally implies that all our children
+		 * have also been removed (modulo rounding error or bandwidth
+		 * control); however, such cases are rare and we can fix these
+		 * at enqueue.
+		 *
+		 * TODO: fix up out-of-order children on enqueue.
+		 */
+		if (!se->avg.runnable_avg_sum && !cfs_rq->nr_running)
+			list_del_leaf_cfs_rq(cfs_rq);
+	} else {
+		update_rq_runnable_avg(rq, rq->nr_running);
+	}
+>>>>>>> 10328aa... sched: Replace update_shares weight distribution with per-entity computation
 
 	update_cfs_rq_blocked_load(cfs_rq, 1);
 
