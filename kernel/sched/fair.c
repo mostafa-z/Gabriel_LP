@@ -1002,6 +1002,42 @@ static inline void update_cfs_shares(struct cfs_rq *cfs_rq)
 }
 #endif /* CONFIG_FAIR_GROUP_SCHED */
 
+<<<<<<< HEAD
+=======
+static inline unsigned int task_load(struct task_struct *p)
+{
+	return p->ravg.demand;
+}
+
+static inline unsigned int max_task_load(void)
+{
+	return sched_ravg_window;
+}
+
+/* Return task demand in percentage scale */
+unsigned int pct_task_load(struct task_struct *p)
+{
+	unsigned int load;
+
+	load = div64_u64((u64)task_load(p) * 100, (u64)max_task_load());
+
+	return load;
+}
+
+void init_new_task_load(struct task_struct *p)
+{
+	int i;
+	u64 wallclock = sched_clock();
+
+	p->ravg.sum			= 0;
+	p->ravg.demand			= 0;
+	p->ravg.window_start		= wallclock;
+	p->ravg.mark_start		= wallclock;
+	for (i = 0; i < RAVG_HIST_SIZE; ++i)
+		p->ravg.sum_history[i] = 0;
+}
+
+>>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
 /* Only depends on SMP, FAIR_GROUP_SCHED may be removed when useful in lb */
 #if defined(CONFIG_SMP) && defined(CONFIG_FAIR_GROUP_SCHED)
 /*
@@ -4897,14 +4933,20 @@ unlock:
 
 /*
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
  * Load-tracking only depends on SMP, FAIR_GROUP_SCHED dependency below may be
  * removed when useful for applications beyond shares distribution (e.g.
  * load-balance).
  */
 #ifdef CONFIG_FAIR_GROUP_SCHED
 /*
+<<<<<<< HEAD
 =======
 >>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
+=======
+>>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
  * Called immediately before a task is migrated to a new cpu; task_cpu(p) and
  * cfs_rq_of(p) references at time of call are still valid and identify the
  * previous cpu.  However, the caller only guarantees p->pi_lock is held; no
@@ -4937,7 +4979,11 @@ migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 =======
 >>>>>>> e5693d0... sched: Account for blocked load waking back up
 }
+<<<<<<< HEAD
 >>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
+=======
+#endif
+>>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
 #endif /* CONFIG_SMP */
 
 static unsigned long
@@ -8038,6 +8084,7 @@ const struct sched_class fair_sched_class = {
 #ifdef CONFIG_SMP
 	.select_task_rq		= select_task_rq_fair,
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	.migrate_task_rq	= migrate_task_rq_fair,
 #endif
@@ -8045,6 +8092,11 @@ const struct sched_class fair_sched_class = {
 	.migrate_task_rq	= migrate_task_rq_fair,
 
 >>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
+=======
+#ifdef CONFIG_FAIR_GROUP_SCHED
+	.migrate_task_rq	= migrate_task_rq_fair,
+#endif
+>>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
 	.rq_online		= rq_online_fair,
 	.rq_offline		= rq_offline_fair,
 

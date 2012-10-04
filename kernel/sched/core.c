@@ -2809,7 +2809,12 @@ static void __sched_fork(struct task_struct *p)
  * load-balance).
  */
 #if defined(CONFIG_SMP) && defined(CONFIG_FAIR_GROUP_SCHED)
+<<<<<<< HEAD
 	init_new_task_load(p);
+=======
+	p->se.avg.runnable_avg_period = 0;
+	p->se.avg.runnable_avg_sum = 0;
+>>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
 #endif
 #ifdef CONFIG_SCHEDSTATS
 	memset(&p->se.statistics, 0, sizeof(p->se.statistics));
