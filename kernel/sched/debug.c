@@ -91,6 +91,14 @@ static void print_cfs_group_stats(struct seq_file *m, int cpu, struct task_group
 	P(se->statistics.wait_count);
 #endif
 	P(se->load.weight);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+	P(se->avg.runnable_avg_sum);
+	P(se->avg.runnable_avg_period);
+	P(se->avg.load_avg_contrib);
+#endif
+>>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 #undef PN
 #undef P
 }
@@ -220,6 +228,8 @@ void print_cfs_rq(struct seq_file *m, int cpu, struct cfs_rq *cfs_rq)
 			cfs_rq->load_contribution);
 	SEQ_printf(m, "  .%-30s: %d\n", "load_tg",
 			atomic_read(&cfs_rq->tg->load_weight));
+	SEQ_printf(m, "  .%-30s: %lld\n", "runnable_load_avg",
+			cfs_rq->runnable_load_avg);
 #endif
 #ifdef CONFIG_CFS_BANDWIDTH
 	SEQ_printf(m, "  .%-30s: %d\n", "tg->cfs_bandwidth.timer_active",

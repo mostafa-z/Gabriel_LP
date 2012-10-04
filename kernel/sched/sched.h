@@ -434,11 +434,22 @@ struct cfs_rq {
 #endif
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 /*
  * Load-tracking only depends on SMP, FAIR_GROUP_SCHED dependency below may be
  * removed when useful for applications beyond shares distribution (e.g.
  * load-balance).
  */
+=======
+	/*
+	 * CFS Load tracking
+	 * Under CFS, load is tracked on a per-entity basis and aggregated up.
+	 * This allows for the description of both thread and group usage (in
+	 * the FAIR_GROUP_SCHED case).
+	 */
+	u64 runnable_load_avg;
+#endif
+>>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	/*
 	 * CFS Load tracking

@@ -1186,12 +1186,16 @@ struct sched_avg {
 	u32 runnable_avg_sum_scaled;
 #endif
 	u64 last_runnable_update;
+<<<<<<< HEAD
 	s64 decay_count;
 	unsigned long load_avg_contrib;
 =======
 struct load_weight {
 	unsigned long weight, inv_weight;
 >>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
+=======
+	unsigned long load_avg_contrib;
+>>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 };
 
 #ifdef CONFIG_SCHEDSTATS
