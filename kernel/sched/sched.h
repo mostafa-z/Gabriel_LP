@@ -312,7 +312,10 @@ struct task_group {
 
 	atomic_t load_weight;
 	atomic64_t load_avg;
+<<<<<<< HEAD
 	atomic_t runnable_avg;
+=======
+>>>>>>> 4cbb713... sched: Aggregate total task_group load
 #endif
 
 #ifdef CONFIG_RT_GROUP_SCHED
@@ -450,6 +453,9 @@ struct cfs_rq {
 	u64 runnable_load_avg, blocked_load_avg;
 	atomic64_t decay_counter, removed_load;
 	u64 last_decay;
+#ifdef CONFIG_FAIR_GROUP_SCHED
+	u64 tg_load_contrib;
+#endif
 #endif
 >>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 #ifdef CONFIG_FAIR_GROUP_SCHED

@@ -1243,12 +1243,37 @@ void set_hmp_defaults(void)
 			  (u64)sched_ravg_window, 100);
 }
 
+<<<<<<< HEAD
 /*
  * 'load' is in reference to "best cpu" at its best frequency.
  * Scale that in reference to a given cpu, accounting for how bad it is
  * in reference to "best cpu".
  */
 u64 scale_load_to_cpu(u64 task_load, int cpu)
+=======
+#ifdef CONFIG_FAIR_GROUP_SCHED
+static inline void __update_cfs_rq_tg_load_contrib(struct cfs_rq *cfs_rq,
+						 int force_update)
+{
+	struct task_group *tg = cfs_rq->tg;
+	s64 tg_contrib;
+
+	tg_contrib = cfs_rq->runnable_load_avg + cfs_rq->blocked_load_avg;
+	tg_contrib -= cfs_rq->tg_load_contrib;
+
+	if (force_update || abs64(tg_contrib) > cfs_rq->tg_load_contrib / 8) {
+		atomic64_add(tg_contrib, &tg->load_avg);
+		cfs_rq->tg_load_contrib += tg_contrib;
+	}
+}
+#else
+static inline void __update_cfs_rq_tg_load_contrib(struct cfs_rq *cfs_rq,
+						 int force_update) {}
+#endif
+
+/* Compute the current contribution to load_avg by se, return any delta */
+static long __update_entity_load_avg_contrib(struct sched_entity *se)
+>>>>>>> 4cbb713... sched: Aggregate total task_group load
 {
 	struct rq *rq = cpu_rq(cpu);
 
@@ -1313,6 +1338,7 @@ static int boost_refcount;
 static DEFINE_SPINLOCK(boost_lock);
 static DEFINE_MUTEX(boost_mutex);
 
+<<<<<<< HEAD
 static inline int sched_boost(void)
 {
 	return boost_refcount > 0;
@@ -2333,6 +2359,8 @@ static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq, int force_update)
 		subtract_blocked_load_contrib(cfs_rq, removed_load);
 	}
 
+=======
+>>>>>>> 4cbb713... sched: Aggregate total task_group load
 	if (decays) {
 		cfs_rq->blocked_load_avg = decay_load(cfs_rq->blocked_load_avg,
 						      decays);
@@ -2341,6 +2369,7 @@ static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq, int force_update)
 	}
 
 	__update_cfs_rq_tg_load_contrib(cfs_rq, force_update);
+<<<<<<< HEAD
 	update_cfs_shares(cfs_rq);
 }
 
@@ -2478,6 +2507,8 @@ static void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq, int force_update)
 		cfs_rq->last_decay = now;
 	}
 >>>>>>> e5693d0... sched: Account for blocked load waking back up
+=======
+>>>>>>> 4cbb713... sched: Aggregate total task_group load
 }
 
 static inline void update_rq_runnable_avg(struct rq *rq, int runnable)
