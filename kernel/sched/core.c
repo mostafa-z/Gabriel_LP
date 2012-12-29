@@ -87,6 +87,7 @@
 
 #include "sched.h"
 #include "../workqueue_internal.h"
+#include "../workqueue_sched.h"
 #include "../smpboot.h"
 
 #ifdef TRACE_CRAP
@@ -8797,15 +8798,11 @@ void __init sched_init_smp(void)
 	alloc_cpumask_var(&non_isolated_cpus, GFP_KERNEL);
 	alloc_cpumask_var(&fallback_doms, GFP_KERNEL);
 
-<<<<<<< HEAD
-=======
-
 	/*
 	 * There's no userspace yet to cause hotplug operations; hence all the
 	 * cpu masks are stable and all blatant races in the below code cannot
 	 * happen.
 	 */
->>>>>>> 4a9d093... sched: Remove get_online_cpus() usage
 	mutex_lock(&sched_domains_mutex);
 	init_sched_domains(cpu_active_mask);
 	cpumask_andnot(non_isolated_cpus, cpu_possible_mask, cpu_isolated_map);
