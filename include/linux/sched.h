@@ -2290,6 +2290,7 @@ static inline void sched_autogroup_exit(struct signal_struct *sig) { }
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 #ifdef CONFIG_RT_MUTEXES
 extern int rt_mutex_getprio(struct task_struct *p);
@@ -2317,6 +2318,8 @@ static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
 #endif
 
 >>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
+=======
+>>>>>>> e9bafb9... sched/rt: Move rt specific bits into new header file
 extern bool yield_to(struct task_struct *p, bool preempt);
 extern void set_user_nice(struct task_struct *p, long nice);
 extern int task_prio(const struct task_struct *p);

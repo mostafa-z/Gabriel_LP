@@ -17,9 +17,13 @@
 #include <linux/ftrace.h>
 #include <linux/sched/deadline.h>
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
 =======
 >>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
+=======
+#include <linux/sched/rt.h>
+>>>>>>> e9bafb9... sched/rt: Move rt specific bits into new header file
 #include <trace/events/sched.h>
 #include "trace.h"
 

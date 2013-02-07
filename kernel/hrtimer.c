@@ -47,6 +47,9 @@
 #include <linux/sched/sysctl.h>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e9bafb9... sched/rt: Move rt specific bits into new header file
 #include <linux/sched/rt.h>
 #include <linux/sched/deadline.h>
 =======
