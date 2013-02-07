@@ -1,8 +1,11 @@
 
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
 #include <linux/sched/deadline.h>
+=======
+>>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/stop_machine.h>

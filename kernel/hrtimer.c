@@ -45,8 +45,11 @@
 #include <linux/debugobjects.h>
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
 #include <linux/sched/deadline.h>
+=======
+>>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 #include <linux/timer.h>
 
 #include <asm/uaccess.h>

@@ -1214,6 +1214,7 @@ struct sched_rt_entity {
 #endif
 };
 
+<<<<<<< HEAD
 struct sched_dl_entity {
 	struct rb_node	rb_node;
 	int nr_cpus_allowed;
@@ -1264,6 +1265,8 @@ struct sched_dl_entity {
 	struct hrtimer dl_timer;
 };
 
+=======
+>>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 struct rcu_node;
 
 enum perf_event_task_context {
@@ -2122,6 +2125,7 @@ extern void wake_up_nohz_cpu(int cpu);
 static inline void wake_up_nohz_cpu(int cpu) { }
 #endif
 
+<<<<<<< HEAD
 extern unsigned int sysctl_sched_wakeup_load_threshold;
 
 #ifdef CONFIG_NO_HZ_FULL
@@ -2130,6 +2134,11 @@ extern bool sched_can_stop_tick(void);
 static inline bool sched_can_stop_tick(void) { return false; }
 #endif
 
+=======
+extern unsigned int sysctl_sched_ravg_window;
+extern unsigned int sysctl_sched_wakeup_load_threshold;
+
+>>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 #ifdef CONFIG_SCHED_AUTOGROUP
 extern void sched_autogroup_create_attach(struct task_struct *p);
 extern void sched_autogroup_detach(struct task_struct *p);
@@ -2146,6 +2155,29 @@ static inline void sched_autogroup_fork(struct signal_struct *sig) { }
 static inline void sched_autogroup_exit(struct signal_struct *sig) { }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RT_MUTEXES
+extern int rt_mutex_getprio(struct task_struct *p);
+extern void rt_mutex_setprio(struct task_struct *p, int prio);
+extern void rt_mutex_adjust_pi(struct task_struct *p);
+static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+{
+	return tsk->pi_blocked_on != NULL;
+}
+#else
+static inline int rt_mutex_getprio(struct task_struct *p)
+{
+	return p->normal_prio;
+}
+# define rt_mutex_adjust_pi(p)		do { } while (0)
+static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+{
+	return false;
+}
+#endif
+
+>>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 extern bool yield_to(struct task_struct *p, bool preempt);
 extern void set_user_nice(struct task_struct *p, long nice);
 extern int task_prio(const struct task_struct *p);
