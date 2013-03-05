@@ -928,6 +928,23 @@ enum cpu_idle_type {
 
 extern int __weak arch_sd_sibiling_asym_packing(void);
 
+<<<<<<< HEAD
+=======
+/*
+ * Optimise SD flags for power savings:
+ * SD_BALANCE_NEWIDLE helps aggressive task consolidation and power savings.
+ * Keep default SD flags if sched_{smt,mc}_power_saving=0
+ */
+
+static inline int sd_power_saving_flags(void)
+{
+	if (sched_mc_power_savings | sched_smt_power_savings)
+		return SD_BALANCE_NEWIDLE;
+
+	return 0;
+}
+
+>>>>>>> 28ae5a0... sched: Move struct sched_group to kernel/sched/sched.h
 struct sched_domain_attr {
 	int relax_domain_level;
 };
