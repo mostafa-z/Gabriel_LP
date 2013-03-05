@@ -1096,6 +1096,7 @@ struct pipe_inode_info;
 struct uts_namespace;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 struct load_weight {
 	unsigned long weight;
 	u32 inv_weight;
@@ -1172,6 +1173,10 @@ struct sched_avg {
 	u64 last_runnable_update;
 	s64 decay_count;
 	unsigned long load_avg_contrib;
+=======
+struct load_weight {
+	unsigned long weight, inv_weight;
+>>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
 };
 
 #ifdef CONFIG_SCHEDSTATS

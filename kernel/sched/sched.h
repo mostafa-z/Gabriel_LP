@@ -1312,7 +1312,10 @@ enum cpuacct_stat_index {
 #else
 #define ENQUEUE_WAKING		0
 #endif
+<<<<<<< HEAD
 #define ENQUEUE_REPLENISH	8
+=======
+>>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
 
 #define DEQUEUE_SLEEP		1
 
@@ -1331,7 +1334,10 @@ struct sched_class {
 
 #ifdef CONFIG_SMP
 	int  (*select_task_rq)(struct task_struct *p, int sd_flag, int flags);
+<<<<<<< HEAD
 	void (*migrate_task_rq)(struct task_struct *p, int next_cpu);
+=======
+>>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
 
 	void (*pre_schedule) (struct rq *this_rq, struct task_struct *task);
 	void (*post_schedule) (struct rq *this_rq);
@@ -1348,7 +1354,10 @@ struct sched_class {
 	void (*set_curr_task) (struct rq *rq);
 	void (*task_tick) (struct rq *rq, struct task_struct *p, int queued);
 	void (*task_fork) (struct task_struct *p);
+<<<<<<< HEAD
 	void (*task_dead) (struct task_struct *p);
+=======
+>>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
 
 	void (*switched_from) (struct rq *this_rq, struct task_struct *task);
 	void (*switched_to) (struct rq *this_rq, struct task_struct *task);
