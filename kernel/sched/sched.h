@@ -1211,13 +1211,20 @@ static inline void finish_lock_switch(struct rq *rq, struct task_struct *prev)
 #endif /* __ARCH_WANT_UNLOCKED_CTXSW */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f749f49... sched: Move wake flags to kernel/sched/sched.h
 /*
  * wake flags
  */
 #define WF_SYNC		0x01		/* waker goes to sleep after wakeup */
 #define WF_FORK		0x02		/* child wakeup after fork */
 #define WF_MIGRATED	0x4		/* internal use, task got migrated */
+<<<<<<< HEAD
 =======
+=======
+
+>>>>>>> f749f49... sched: Move wake flags to kernel/sched/sched.h
 static inline void update_load_add(struct load_weight *lw, unsigned long inc)
 {
 	lw->weight += inc;
