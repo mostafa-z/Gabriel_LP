@@ -525,10 +525,6 @@ static inline void init_hrtick(void)
  */
 #ifdef CONFIG_SMP
 
-#ifndef tsk_is_polling
-#define tsk_is_polling(t) 0
-#endif
-
 void resched_task(struct task_struct *p)
 {
 	int cpu;
