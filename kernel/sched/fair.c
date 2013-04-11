@@ -833,6 +833,72 @@ account_entity_dequeue(struct cfs_rq *cfs_rq, struct sched_entity *se)
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
 # ifdef CONFIG_SMP
+<<<<<<< HEAD
+=======
+static void update_cfs_rq_load_contribution(struct cfs_rq *cfs_rq,
+					    int global_update)
+{
+	struct task_group *tg = cfs_rq->tg;
+	long load_avg;
+
+	load_avg = div64_u64(cfs_rq->load_avg, cfs_rq->load_period+1);
+	load_avg -= cfs_rq->load_contribution;
+
+	if (global_update || abs(load_avg) > cfs_rq->load_contribution / 8) {
+		atomic_add(load_avg, &tg->load_weight);
+		cfs_rq->load_contribution += load_avg;
+	}
+}
+
+static void update_cfs_load(struct cfs_rq *cfs_rq, int global_update)
+{
+	u64 period = sysctl_sched_shares_window;
+	u64 now, delta;
+	unsigned long load = cfs_rq->load.weight;
+
+	if (cfs_rq->tg == &root_task_group || throttled_hierarchy(cfs_rq))
+		return;
+
+	now = rq_clock_task(rq_of(cfs_rq));
+	delta = now - cfs_rq->load_stamp;
+
+	/* truncate load history at 4 idle periods */
+	if (cfs_rq->load_stamp > cfs_rq->load_last &&
+	    now - cfs_rq->load_last > 4 * period) {
+		cfs_rq->load_period = 0;
+		cfs_rq->load_avg = 0;
+		delta = period - 1;
+	}
+
+	cfs_rq->load_stamp = now;
+	cfs_rq->load_unacc_exec_time = 0;
+	cfs_rq->load_period += delta;
+	if (load) {
+		cfs_rq->load_last = now;
+		cfs_rq->load_avg += delta * load;
+	}
+
+	/* consider updating load contribution on each fold or truncate */
+	if (global_update || cfs_rq->load_period > period
+	    || !cfs_rq->load_period)
+		update_cfs_rq_load_contribution(cfs_rq, global_update);
+
+	while (cfs_rq->load_period > period) {
+		/*
+		 * Inline assembly required to prevent the compiler
+		 * optimising this loop into a divmod call.
+		 * See __iter_div_u64_rem() for another example of this.
+		 */
+		asm("" : "+rm" (cfs_rq->load_period));
+		cfs_rq->load_period /= 2;
+		cfs_rq->load_avg /= 2;
+	}
+
+	if (!cfs_rq->curr && !cfs_rq->nr_running && !cfs_rq->load_avg)
+		list_del_leaf_cfs_rq(cfs_rq);
+}
+
+>>>>>>> ab252a7... sched: Use an accessor to read the rq clock
 static inline long calc_tg_weight(struct task_group *tg, struct cfs_rq *cfs_rq)
 {
 	long tg_weight;
@@ -3035,9 +3101,20 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
 	cfs_rq->throttle_count--;
 #ifdef CONFIG_SMP
 	if (!cfs_rq->throttle_count) {
+<<<<<<< HEAD
 		/* adjust cfs_rq_clock_task() */
 		cfs_rq->throttled_clock_task_time += rq->clock_task -
 					     cfs_rq->throttled_clock_task;
+=======
+		u64 delta = rq_clock_task(rq) - cfs_rq->load_stamp;
+
+		/* leaving throttled state, advance shares averaging windows */
+		cfs_rq->load_stamp += delta;
+		cfs_rq->load_last += delta;
+
+		/* update entity weight now that we are on_rq again */
+		update_cfs_shares(cfs_rq);
+>>>>>>> ab252a7... sched: Use an accessor to read the rq clock
 	}
 #endif
 
@@ -3090,7 +3167,11 @@ static void throttle_cfs_rq(struct cfs_rq *cfs_rq)
 		rq->nr_running -= task_delta;
 
 	cfs_rq->throttled = 1;
+<<<<<<< HEAD
 	cfs_rq->throttled_clock = rq_clock(rq);
+=======
+	cfs_rq->throttled_timestamp = rq_clock(rq);
+>>>>>>> ab252a7... sched: Use an accessor to read the rq clock
 	raw_spin_lock(&cfs_b->lock);
 	/*
 	 * Add to the _head_ of the list, so that an already-started
@@ -3117,7 +3198,11 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
 	update_rq_clock(rq);
 
 	raw_spin_lock(&cfs_b->lock);
+<<<<<<< HEAD
 	cfs_b->throttled_time += rq_clock(rq) - cfs_rq->throttled_clock;
+=======
+	cfs_b->throttled_time += rq_clock(rq) - cfs_rq->throttled_timestamp;
+>>>>>>> ab252a7... sched: Use an accessor to read the rq clock
 	list_del_rcu(&cfs_rq->throttled_list);
 	raw_spin_unlock(&cfs_b->lock);
 

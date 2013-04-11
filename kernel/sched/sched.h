@@ -821,6 +821,7 @@ static inline u64 rq_clock_task(struct rq *rq)
 	return rq->clock_task;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 struct nr_stats_s {
 	/* time-based average load */
@@ -837,6 +838,8 @@ struct nr_stats_s {
 DECLARE_PER_CPU(struct nr_stats_s, runqueue_stats);
 #endif
 
+=======
+>>>>>>> ab252a7... sched: Use an accessor to read the rq clock
 #ifdef CONFIG_SMP
 
 #define rcu_dereference_check_sched_domain(p) \
