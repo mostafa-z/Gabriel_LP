@@ -1224,6 +1224,7 @@ static inline void finish_lock_switch(struct rq *rq, struct task_struct *prev)
 =======
 =======
 
+<<<<<<< HEAD
 >>>>>>> f749f49... sched: Move wake flags to kernel/sched/sched.h
 static inline void update_load_add(struct load_weight *lw, unsigned long inc)
 {
@@ -1244,6 +1245,8 @@ static inline void update_load_set(struct load_weight *lw, unsigned long w)
 }
 >>>>>>> 88324f4... sched: Move SCHED_LOAD_SHIFT macros to kernel/sched/sched.h
 
+=======
+>>>>>>> 4bdea04... sched: Move update_load_*() methods from sched.h to fair.c
 /*
  * To aid in avoiding the subversion of "niceness" due to uneven distribution
  * of tasks with abnormal "nice" values across CPUs the contribution that
