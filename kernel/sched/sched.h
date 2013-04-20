@@ -2062,6 +2062,7 @@ static inline void inc_nr_running(struct rq *rq)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	if (rq->nr_running == 2) {
 #ifdef CONFIG_SMP
@@ -2070,13 +2071,23 @@ static inline void inc_nr_running(struct rq *rq)
 #endif
 
 #ifdef CONFIG_NO_HZ_FULL
+=======
+
+#ifdef CONFIG_NO_HZ_FULL
+	if (rq->nr_running == 2) {
+>>>>>>> 4802cc2... sched: Kick full dynticks CPU that have more than one task enqueued.
 		if (tick_nohz_full_cpu(rq->cpu)) {
 			/* Order rq->nr_running write against the IPI */
 			smp_wmb();
 			smp_send_reschedule(rq->cpu);
 		}
+<<<<<<< HEAD
 #endif
 	}
+=======
+       }
+#endif
+>>>>>>> 4802cc2... sched: Kick full dynticks CPU that have more than one task enqueued.
 
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 	write_seqcount_end(&nr_stats->ave_seqcnt);
