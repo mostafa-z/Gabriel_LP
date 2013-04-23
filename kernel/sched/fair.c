@@ -6484,13 +6484,22 @@ static inline void set_cpu_sd_state_busy(void)
 	int cpu = smp_processor_id();
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	sd = rcu_dereference(per_cpu(sd_busy, cpu));
+=======
+	sd = rcu_dereference_check_sched_domain(cpu_rq(cpu)->sd);
+>>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
 
 	if (!sd || !sd->nohz_idle)
 		goto unlock;
 	sd->nohz_idle = 0;
 
+<<<<<<< HEAD
 	atomic_inc(&sd->groups->sgp->nr_busy_cpus);
+=======
+	for (; sd; sd = sd->parent)
+		atomic_inc(&sd->groups->sgp->nr_busy_cpus);
+>>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
 unlock:
 	rcu_read_unlock();
 }
@@ -6501,13 +6510,22 @@ void set_cpu_sd_state_idle(void)
 	int cpu = smp_processor_id();
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	sd = rcu_dereference(per_cpu(sd_busy, cpu));
+=======
+	sd = rcu_dereference_check_sched_domain(cpu_rq(cpu)->sd);
+>>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
 
 	if (!sd || sd->nohz_idle)
 		goto unlock;
 	sd->nohz_idle = 1;
 
+<<<<<<< HEAD
 	atomic_dec(&sd->groups->sgp->nr_busy_cpus);
+=======
+	for (; sd; sd = sd->parent)
+		atomic_dec(&sd->groups->sgp->nr_busy_cpus);
+>>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
 unlock:
 	rcu_read_unlock();
 }
