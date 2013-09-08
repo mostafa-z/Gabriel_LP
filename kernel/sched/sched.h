@@ -611,6 +611,7 @@ struct rq {
 
 	/* Set to max idle balance cost for any one sched domain */
 	u64 max_idle_balance_cost;
+<<<<<<< HEAD
 	int cstate, wakeup_latency, wakeup_energy;
 #endif
 
@@ -635,6 +636,8 @@ struct rq {
 
 #ifdef CONFIG_SCHED_HMP
 	int nr_small_tasks, nr_big_tasks;
+=======
+>>>>>>> 1cfba1d... sched: Consider max cost of idle balance per sched domain
 #endif
 
 	int cur_freq, max_freq, min_freq;
