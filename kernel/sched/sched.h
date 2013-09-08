@@ -324,7 +324,11 @@ struct cfs_rq {
 	 *               the cpu power of that cfs_rq
 	 * h_nr_running: present how many tasks in current cfs runqueue
 	 */
+<<<<<<< HEAD
 	unsigned int nr_running, h_nr_running;
+=======
+	unsigned long nr_running, h_nr_running;
+>>>>>>> c8ac09c... sched: document the difference between nr_running and h_nr_running
 
 	u64 exec_clock;
 	u64 min_vruntime;
