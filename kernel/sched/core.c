@@ -7329,7 +7329,10 @@ static void update_top_cache_domain(int cpu)
 	if (sd) {
 		id = cpumask_first(sched_domain_span(sd));
 		size = cpumask_weight(sched_domain_span(sd));
+<<<<<<< HEAD
 		rcu_assign_pointer(per_cpu(sd_busy, cpu), sd->parent);
+=======
+>>>>>>> a52c9bc... sched: Micro-optimize the smart wake-affine logic
 	}
 
 	rcu_assign_pointer(per_cpu(sd_llc, cpu), sd);
