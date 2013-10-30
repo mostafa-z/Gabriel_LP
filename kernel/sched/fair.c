@@ -6485,21 +6485,29 @@ static inline void set_cpu_sd_state_busy(void)
 
 	rcu_read_lock();
 <<<<<<< HEAD
+<<<<<<< HEAD
 	sd = rcu_dereference(per_cpu(sd_busy, cpu));
 =======
 	sd = rcu_dereference_check_sched_domain(cpu_rq(cpu)->sd);
 >>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
+=======
+	sd = rcu_dereference(per_cpu(sd_busy, cpu));
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 
 	if (!sd || !sd->nohz_idle)
 		goto unlock;
 	sd->nohz_idle = 0;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	atomic_inc(&sd->groups->sgp->nr_busy_cpus);
 =======
 	for (; sd; sd = sd->parent)
 		atomic_inc(&sd->groups->sgp->nr_busy_cpus);
 >>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
+=======
+	atomic_inc(&sd->groups->sgp->nr_busy_cpus);
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 unlock:
 	rcu_read_unlock();
 }
@@ -6511,21 +6519,29 @@ void set_cpu_sd_state_idle(void)
 
 	rcu_read_lock();
 <<<<<<< HEAD
+<<<<<<< HEAD
 	sd = rcu_dereference(per_cpu(sd_busy, cpu));
 =======
 	sd = rcu_dereference_check_sched_domain(cpu_rq(cpu)->sd);
 >>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
+=======
+	sd = rcu_dereference(per_cpu(sd_busy, cpu));
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 
 	if (!sd || sd->nohz_idle)
 		goto unlock;
 	sd->nohz_idle = 1;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	atomic_dec(&sd->groups->sgp->nr_busy_cpus);
 =======
 	for (; sd; sd = sd->parent)
 		atomic_dec(&sd->groups->sgp->nr_busy_cpus);
 >>>>>>> d33d383... sched: Fix init NOHZ_IDLE flag
+=======
+	atomic_dec(&sd->groups->sgp->nr_busy_cpus);
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 unlock:
 	rcu_read_unlock();
 }
@@ -6826,7 +6842,11 @@ static inline int nohz_kick_needed(struct rq *rq, int *type)
 {
 	struct sched_domain *sd;
 	struct sched_group_power *sgp;
+<<<<<<< HEAD
 	int nr_busy, cpu = rq->cpu;
+=======
+	int nr_busy;
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 
 	if (unlikely(rq->idle_balance))
 		return 0;
@@ -6848,10 +6868,15 @@ static inline int nohz_kick_needed(struct rq *rq, int *type)
 		sgp = sd->groups->sgp;
 		nr_busy = atomic_read(&sgp->nr_busy_cpus);
 
+<<<<<<< HEAD
 #ifndef CONFIG_SCHED_HMP
 		if (nr_busy > 1)
 			goto need_kick_unlock;
 #endif
+=======
+		if (nr_busy > 1)
+			goto need_kick_unlock;
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 	}
 
 	sd = rcu_dereference(per_cpu(sd_asym, cpu));

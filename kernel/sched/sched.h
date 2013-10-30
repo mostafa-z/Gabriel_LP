@@ -772,6 +772,7 @@ DECLARE_PER_CPU(int, sd_llc_size);
 DECLARE_PER_CPU(int, sd_llc_id);
 DECLARE_PER_CPU(struct sched_domain *, sd_busy);
 DECLARE_PER_CPU(struct sched_domain *, sd_asym);
+<<<<<<< HEAD
 
 struct sched_group_power {
 	atomic_t ref;
@@ -818,6 +819,8 @@ static inline unsigned int group_first_cpu(struct sched_group *group)
 {
 	return cpumask_first(sched_group_cpus(group));
 }
+=======
+>>>>>>> 00d4baf... sched: Remove unnecessary iteration over sched domains to update nr_busy_cpus
 
 struct sched_group_power {
 	atomic_t ref;
