@@ -5006,6 +5006,7 @@ static struct task_struct *find_process_by_pid(pid_t pid)
 	return pid ? find_task_by_vpid(pid) : current;
 }
 
+<<<<<<< HEAD
 /*
  * This function initializes the sched_dl_entity of a newly becoming
  * SCHED_DEADLINE task.
@@ -5030,12 +5031,15 @@ __setparam_dl(struct task_struct *p, const struct sched_attr *attr)
 	dl_se->dl_yielded = 0;
 }
 
+=======
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 /* Actually do priority change: must hold pi & rq lock. */
 static void __setscheduler(struct rq *rq, struct task_struct *p,
 			   const struct sched_attr *attr)
 {
 	int policy = attr->sched_policy;
 
+<<<<<<< HEAD
 	if (policy == -1) /* setparam */
 		policy = p->policy;
 
@@ -5059,12 +5063,26 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 	if (dl_prio(p->prio))
 		p->sched_class = &dl_sched_class;
 	else if (rt_prio(p->prio))
+=======
+	p->policy = policy;
+
+	if (rt_policy(policy))
+		p->rt_priority = attr->sched_priority;
+	else
+		p->static_prio = NICE_TO_PRIO(attr->sched_nice);
+
+	p->normal_prio = normal_prio(p);
+	p->prio = rt_mutex_getprio(p);
+
+	if (rt_prio(p->prio))
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
 
 	set_load_weight(p);
 }
+<<<<<<< HEAD
 
 static void
 __getparam_dl(struct task_struct *p, struct sched_attr *attr)
@@ -5119,6 +5137,8 @@ __checkparam_dl(const struct sched_attr *attr)
 	return true;
 }
 
+=======
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 /*
  * check the target process has a UID that matches the current process's
  */
@@ -5174,11 +5194,19 @@ recheck:
 	 * 1..MAX_USER_RT_PRIO-1, valid priority for SCHED_NORMAL,
 	 * SCHED_BATCH and SCHED_IDLE is 0.
 	 */
+<<<<<<< HEAD
 	if ((p->mm && attr->sched_priority > MAX_USER_RT_PRIO-1) ||
 	    (!p->mm && attr->sched_priority > MAX_RT_PRIO-1))
 		return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
 	    (rt_policy(policy) != (attr->sched_priority != 0)))
+=======
+	if (attr->sched_priority < 0 ||
+	    (p->mm && attr->sched_priority > MAX_USER_RT_PRIO-1) ||
+	    (!p->mm && attr->sched_priority > MAX_RT_PRIO-1))
+		return -EINVAL;
+	if (rt_policy(policy) != (attr->sched_priority != 0))
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		return -EINVAL;
 
 	/*
@@ -5186,8 +5214,12 @@ recheck:
 	 */
 	if (user && !capable(CAP_SYS_NICE)) {
 		if (fair_policy(policy)) {
+<<<<<<< HEAD
 			if (attr->sched_nice < TASK_NICE(p) &&
 			    !can_nice(p, attr->sched_nice))
+=======
+			if (!can_nice(p, attr->sched_nice))
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 				return -EPERM;
 		}
 
@@ -5263,8 +5295,11 @@ recheck:
 			goto change;
 		if (rt_policy(policy) && attr->sched_priority != p->rt_priority)
 			goto change;
+<<<<<<< HEAD
 		if (dl_policy(policy))
 			goto change;
+=======
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 
 		__task_rq_unlock(rq);
 		raw_spin_unlock_irqrestore(&p->pi_lock, flags);
@@ -5378,7 +5413,15 @@ static int _sched_setscheduler(struct task_struct *p, int policy,
 int sched_setscheduler(struct task_struct *p, int policy,
 		       const struct sched_param *param)
 {
+<<<<<<< HEAD
 	return _sched_setscheduler(p, policy, param, true);
+=======
+	struct sched_attr attr = {
+		.sched_policy   = policy,
+		.sched_priority = param->sched_priority
+	};
+	return __sched_setscheduler(p, &attr, true);
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 EXPORT_SYMBOL_GPL(sched_setscheduler);
 
@@ -5404,7 +5447,15 @@ EXPORT_SYMBOL_GPL(sched_setattr);
 int sched_setscheduler_nocheck(struct task_struct *p, int policy,
 			       const struct sched_param *param)
 {
+<<<<<<< HEAD
 	return _sched_setscheduler(p, policy, param, false);
+=======
+	struct sched_attr attr = {
+		.sched_policy   = policy,
+		.sched_priority = param->sched_priority
+	};
+	return __sched_setscheduler(p, &attr, false);
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 
 static int
@@ -5493,11 +5544,21 @@ static int sched_copy_attr(struct sched_attr __user *uattr,
 	 */
 	attr->sched_nice = clamp(attr->sched_nice, -20, 19);
 
+<<<<<<< HEAD
 	return 0;
 
 err_size:
 	put_user(sizeof(*attr), &uattr->size);
 	return -E2BIG;
+=======
+out:
+	return ret;
+
+err_size:
+	put_user(sizeof(*attr), &uattr->size);
+	ret = -E2BIG;
+	goto out;
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 
 /**
@@ -5533,15 +5594,22 @@ SYSCALL_DEFINE2(sched_setparam, pid_t, pid, struct sched_param __user *, param)
 /**
  * sys_sched_setattr - same as above, but with extended sched_attr
  * @pid: the pid in question.
+<<<<<<< HEAD
  * @uattr: structure containing the extended parameters.
  */
 SYSCALL_DEFINE3(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr,
 			       unsigned int, flags)
+=======
+ * @attr: structure containing the extended parameters.
+ */
+SYSCALL_DEFINE2(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr)
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 {
 	struct sched_attr attr;
 	struct task_struct *p;
 	int retval;
 
+<<<<<<< HEAD
 	if (!uattr || pid < 0 || flags)
 		return -EINVAL;
 
@@ -5551,6 +5619,13 @@ SYSCALL_DEFINE3(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr,
 
 	if ((int)attr.sched_policy < 0)
 		return -EINVAL;
+=======
+	if (!uattr || pid < 0)
+		return -EINVAL;
+
+	if (sched_copy_attr(uattr, &attr))
+		return -EFAULT;
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 
 	rcu_read_lock();
 	retval = -ESRCH;
@@ -5659,12 +5734,17 @@ static int sched_read_attr(struct sched_attr __user *uattr,
 
 		for (; addr < end; addr++) {
 			if (*addr)
+<<<<<<< HEAD
 				return -EFBIG;
+=======
+				goto err_size;
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		}
 
 		attr->size = usize;
 	}
 
+<<<<<<< HEAD
 	ret = copy_to_user(uattr, attr, attr->size);
 	if (ret)
 		return -EFAULT;
@@ -5680,6 +5760,28 @@ static int sched_read_attr(struct sched_attr __user *uattr,
  */
 SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 		unsigned int, size, unsigned int, flags)
+=======
+	ret = copy_to_user(uattr, attr, usize);
+	if (ret)
+		return -EFAULT;
+
+out:
+	return ret;
+
+err_size:
+	ret = -E2BIG;
+	goto out;
+}
+
+/**
+ * sys_sched_getattr - same as above, but with extended "sched_param"
+ * @pid: the pid in question.
+ * @attr: structure containing the extended parameters.
+ * @size: sizeof(attr) for fwd/bwd comp.
+ */
+SYSCALL_DEFINE3(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
+		unsigned int, size)
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 {
 	struct sched_attr attr = {
 		.size = sizeof(struct sched_attr),
@@ -5688,7 +5790,11 @@ SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 	int retval;
 
 	if (!uattr || pid < 0 || size > PAGE_SIZE ||
+<<<<<<< HEAD
 	    size < SCHED_ATTR_SIZE_VER0 || flags)
+=======
+	    size < SCHED_ATTR_SIZE_VER0)
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		return -EINVAL;
 
 	rcu_read_lock();
@@ -5702,11 +5808,15 @@ SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 		goto out_unlock;
 
 	attr.sched_policy = p->policy;
+<<<<<<< HEAD
 	if (p->sched_reset_on_fork)
 		attr.sched_flags |= SCHED_FLAG_RESET_ON_FORK;
 	if (task_has_dl_policy(p))
 		__getparam_dl(p, &attr);
 	else if (task_has_rt_policy(p))
+=======
+	if (task_has_rt_policy(p))
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		attr.sched_priority = p->rt_priority;
 	else
 		attr.sched_nice = TASK_NICE(p);

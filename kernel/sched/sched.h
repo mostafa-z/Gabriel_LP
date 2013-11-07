@@ -91,11 +91,14 @@ static inline int fair_policy(int policy)
 static inline int rt_policy(int policy)
 {
 	return policy == SCHED_FIFO || policy == SCHED_RR;
+<<<<<<< HEAD
 }
 
 static inline int dl_policy(int policy)
 {
 	return policy == SCHED_DEADLINE;
+=======
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 
 static inline int task_has_rt_policy(struct task_struct *p)

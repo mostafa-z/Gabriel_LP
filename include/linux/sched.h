@@ -142,10 +142,13 @@ struct sched_param {
  * Given this task model, there are a multiplicity of scheduling algorithms
  * and policies, that can be used to ensure all the tasks will make their
  * timing constraints.
+<<<<<<< HEAD
  *
  * As of now, the SCHED_DEADLINE policy (sched_dl scheduling class) is the
  * only user of this new interface. More information about the algorithm
  * available in the scheduling class file or in Documentation/.
+=======
+>>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
  */
 struct sched_attr {
 	u32 size;
