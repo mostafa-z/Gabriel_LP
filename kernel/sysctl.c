@@ -374,6 +374,30 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= sched_rt_handler,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.procname	= "sched_rr_timeslice_ms",
+		.data		= &sched_rr_timeslice,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= sched_rr_handler,
+	},
+	{
+		.procname	= "sched_dl_period_us",
+		.data		= &sysctl_sched_dl_period,
+		.maxlen		= sizeof(unsigned int),
+		.mode		= 0644,
+		.proc_handler	= sched_dl_handler,
+	},
+	{
+		.procname	= "sched_dl_runtime_us",
+		.data		= &sysctl_sched_dl_runtime,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= sched_dl_handler,
+	},
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 #ifdef CONFIG_SCHED_AUTOGROUP
 	{
 		.procname	= "sched_autogroup_enabled",

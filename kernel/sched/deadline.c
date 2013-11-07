@@ -17,6 +17,7 @@
 #include "sched.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 static inline int dl_time_before(u64 a, u64 b)
 {
 	return (s64)(a - b) < 0;
@@ -39,6 +40,10 @@ int dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
 
 =======
 >>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
+=======
+struct dl_bandwidth def_dl_bandwidth;
+
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 static inline struct task_struct *dl_task_of(struct sched_dl_entity *dl_se)
 {
 	return container_of(dl_se, struct task_struct, dl);
@@ -69,6 +74,27 @@ static inline int is_leftmost(struct task_struct *p, struct dl_rq *dl_rq)
 	return dl_rq->rb_leftmost == &dl_se->rb_node;
 }
 
+void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime)
+{
+	raw_spin_lock_init(&dl_b->dl_runtime_lock);
+	dl_b->dl_period = period;
+	dl_b->dl_runtime = runtime;
+}
+
+extern unsigned long to_ratio(u64 period, u64 runtime);
+
+void init_dl_bw(struct dl_bw *dl_b)
+{
+	raw_spin_lock_init(&dl_b->lock);
+	raw_spin_lock(&def_dl_bandwidth.dl_runtime_lock);
+	if (global_dl_runtime() == RUNTIME_INF)
+		dl_b->bw = -1;
+	else
+		dl_b->bw = to_ratio(global_dl_period(), global_dl_runtime());
+	raw_spin_unlock(&def_dl_bandwidth.dl_runtime_lock);
+	dl_b->total_bw = 0;
+}
+
 void init_dl_rq(struct dl_rq *dl_rq, struct rq *rq)
 {
 	dl_rq->rb_root = RB_ROOT;
@@ -80,6 +106,8 @@ void init_dl_rq(struct dl_rq *dl_rq, struct rq *rq)
 	dl_rq->dl_nr_migratory = 0;
 	dl_rq->overloaded = 0;
 	dl_rq->pushable_dl_tasks_root = RB_ROOT;
+#else
+	init_dl_bw(&dl_rq->dl_bw);
 #endif
 }
 
@@ -384,12 +412,18 @@ static bool dl_entity_overflow(struct sched_dl_entity *dl_se,
 	 * (but still we want to give the user that illusion >;).
 	 */
 <<<<<<< HEAD
+<<<<<<< HEAD
 	left = (dl_se->dl_deadline >> 10) * (dl_se->runtime >> 10);
 	right = ((dl_se->deadline - t) >> 10) * (dl_se->dl_runtime >> 10);
 =======
 	left = (pi_se->dl_period >> 10) * (dl_se->runtime >> 10);
 	right = ((dl_se->deadline - t) >> 10) * (pi_se->dl_runtime >> 10);
 >>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
+=======
+	left = (pi_se->dl_period >> DL_SCALE) * (dl_se->runtime >> DL_SCALE);
+	right = ((dl_se->deadline - t) >> DL_SCALE) *
+		(pi_se->dl_runtime >> DL_SCALE);
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 
 	return dl_time_before(right, left);
 }
@@ -982,8 +1016,8 @@ static void check_preempt_curr_dl(struct rq *rq, struct task_struct *p,
 	 * In the unlikely case current and p have the same deadline
 	 * let us try to decide what's the best thing to do...
 	 */
-	if ((s64)(p->dl.deadline - rq->curr->dl.deadline) == 0 &&
-	    !need_resched())
+	if ((p->dl.deadline == rq->curr->dl.deadline) &&
+	    !test_tsk_need_resched(rq->curr))
 		check_preempt_equal_dl(rq, p);
 #endif /* CONFIG_SMP */
 }
@@ -1071,6 +1105,14 @@ static void task_fork_dl(struct task_struct *p)
 static void task_dead_dl(struct task_struct *p)
 {
 	struct hrtimer *timer = &p->dl.dl_timer;
+	struct dl_bw *dl_b = dl_bw_of(task_cpu(p));
+
+	/*
+	 * Since we are TASK_DEAD we won't slip out of the domain!
+	 */
+	raw_spin_lock_irq(&dl_b->lock);
+	dl_b->total_bw -= p->dl.dl_bw;
+	raw_spin_unlock_irq(&dl_b->lock);
 
 	hrtimer_cancel(timer);
 }
@@ -1314,10 +1356,14 @@ static struct task_struct *pick_next_pushable_dl_task(struct rq *rq)
 	BUG_ON(p->nr_cpus_allowed <= 1);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	BUG_ON(!p->on_rq);
 =======
 	BUG_ON(!p->se.on_rq);
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+	BUG_ON(!p->on_rq);
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 	BUG_ON(!dl_task(p));
 
 	return p;
@@ -1654,7 +1700,7 @@ static int pull_dl_task(struct rq *this_rq)
 		     dl_time_before(p->dl.deadline,
 				    this_rq->dl.earliest_dl.curr))) {
 			WARN_ON(p == src_rq->curr);
-			WARN_ON(!p->se.on_rq);
+			WARN_ON(!p->on_rq);
 
 			/*
 			 * Then we pull iff p has actually an earlier

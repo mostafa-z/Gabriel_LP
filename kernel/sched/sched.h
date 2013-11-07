@@ -122,10 +122,14 @@ static inline int task_has_dl_policy(struct task_struct *p)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 static inline bool dl_time_before(u64 a, u64 b)
 =======
 static inline int dl_time_before(u64 a, u64 b)
 >>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
+=======
+static inline bool dl_time_before(u64 a, u64 b)
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 {
 	return (s64)(a - b) < 0;
 }
@@ -134,12 +138,17 @@ static inline int dl_time_before(u64 a, u64 b)
  * Tells if entity @a should preempt entity @b.
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 static inline bool
 dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
 =======
 static inline
 int dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
 >>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
+=======
+static inline bool
+dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 {
 	return dl_time_before(a->deadline, b->deadline);
 }
@@ -164,6 +173,50 @@ struct rt_bandwidth {
 	u64			rt_runtime;
 	struct hrtimer		rt_period_timer;
 };
+/*
+ * To keep the bandwidth of -deadline tasks and groups under control
+ * we need some place where:
+ *  - store the maximum -deadline bandwidth of the system (the group);
+ *  - cache the fraction of that bandwidth that is currently allocated.
+ *
+ * This is all done in the data structure below. It is similar to the
+ * one used for RT-throttling (rt_bandwidth), with the main difference
+ * that, since here we are only interested in admission control, we
+ * do not decrease any runtime while the group "executes", neither we
+ * need a timer to replenish it.
+ *
+ * With respect to SMP, the bandwidth is given on a per-CPU basis,
+ * meaning that:
+ *  - dl_bw (< 100%) is the bandwidth of the system (group) on each CPU;
+ *  - dl_total_bw array contains, in the i-eth element, the currently
+ *    allocated bandwidth on the i-eth CPU.
+ * Moreover, groups consume bandwidth on each CPU, while tasks only
+ * consume bandwidth on the CPU they're running on.
+ * Finally, dl_total_bw_cpu is used to cache the index of dl_total_bw
+ * that will be shown the next time the proc or cgroup controls will
+ * be red. It on its turn can be changed by writing on its own
+ * control.
+ */
+struct dl_bandwidth {
+	raw_spinlock_t dl_runtime_lock;
+	u64 dl_runtime;
+	u64 dl_period;
+};
+
+static inline int dl_bandwidth_enabled(void)
+{
+	return sysctl_sched_dl_runtime >= 0;
+}
+
+extern struct dl_bw *dl_bw_of(int i);
+
+struct dl_bw {
+	raw_spinlock_t lock;
+	u64 bw, total_bw;
+};
+
+static inline u64 global_dl_period(void);
+static inline u64 global_dl_runtime(void);
 
 void __dl_clear_params(struct task_struct *p);
 
@@ -510,12 +563,17 @@ struct dl_rq {
 	struct rb_root pushable_dl_tasks_root;
 	struct rb_node *pushable_dl_tasks_leftmost;
 <<<<<<< HEAD
+<<<<<<< HEAD
 #else
 	struct dl_bw dl_bw;
 #endif
 =======
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 =======
+=======
+#else
+	struct dl_bw dl_bw;
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 #endif
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 };
@@ -555,6 +613,7 @@ struct root_domain {
 	 */
 	cpumask_var_t dlo_mask;
 	atomic_t dlo_count;
+	struct dl_bw dl_bw;
 
 	/*
 	 * The "RT overload" flag: it gets set if a CPU has more than
@@ -1163,6 +1222,22 @@ static inline u64 global_rt_runtime(void)
 	return (u64)sysctl_sched_rt_runtime * NSEC_PER_USEC;
 }
 
+<<<<<<< HEAD
+=======
+static inline u64 global_dl_period(void)
+{
+	return (u64)sysctl_sched_dl_period * NSEC_PER_USEC;
+}
+
+static inline u64 global_dl_runtime(void)
+{
+	if (sysctl_sched_dl_runtime < 0)
+		return RUNTIME_INF;
+
+	return (u64)sysctl_sched_dl_runtime * NSEC_PER_USEC;
+}
+
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 static inline int task_current(struct rq *rq, struct task_struct *p)
 {
 	return rq->curr == p;
@@ -1478,6 +1553,7 @@ extern struct rt_bandwidth def_rt_bandwidth;
 extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern struct dl_bandwidth def_dl_bandwidth;
 extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime);
 extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
@@ -1488,6 +1564,14 @@ unsigned long to_ratio(u64 period, u64 runtime);
 extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
 
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+extern struct dl_bandwidth def_dl_bandwidth;
+extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime);
+extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
+
+unsigned long to_ratio(u64 period, u64 runtime);
+
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 extern void update_idle_cpu_load(struct rq *this_rq);
 
 #ifdef CONFIG_CGROUP_CPUACCT

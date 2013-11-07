@@ -1333,7 +1333,12 @@ struct sched_dl_entity {
 	 */
 	u64 dl_runtime;		/* maximum runtime for each instance	*/
 	u64 dl_deadline;	/* relative deadline of each instance	*/
+<<<<<<< HEAD
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+	u64 dl_period;		/* separation of two instances (period) */
+	u64 dl_bw;		/* dl_runtime / dl_deadline		*/
+>>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 
 	/*
 	 * Actual scheduling parameters. Initialized with the values above,
