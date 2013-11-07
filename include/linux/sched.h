@@ -1355,6 +1355,7 @@ struct sched_dl_entity {
 	 * start executing it with full runtime and reset its absolute
 	 * deadline;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	 *
 	 * @dl_boosted tells if we are boosted due to DI. If so we are
 	 * outside bandwidth enforcement mechanism (but only until we
@@ -1368,6 +1369,14 @@ struct sched_dl_entity {
 	 */
 	int dl_throttled, dl_new;
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+	 *
+	 * @dl_boosted tells if we are boosted due to DI. If so we are
+	 * outside bandwidth enforcement mechanism (but only until we
+	 * exit the critical section).
+	 */
+	int dl_throttled, dl_new, dl_boosted;
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 
 	/*
 	 * Bandwidth enforcement timer. Each -deadline task has its
@@ -1616,6 +1625,8 @@ struct task_struct {
 	struct rb_node *pi_waiters_leftmost;
 	/* Deadlock detection and priority inheritance handling */
 	struct rt_mutex_waiter *pi_blocked_on;
+	/* Top pi_waiters task */
+	struct task_struct *pi_top_task;
 #endif
 
 #ifdef CONFIG_DEBUG_MUTEXES
@@ -2274,6 +2285,7 @@ static inline void sched_autogroup_exit(struct signal_struct *sig) { }
 #ifdef CONFIG_RT_MUTEXES
 extern int rt_mutex_getprio(struct task_struct *p);
 extern void rt_mutex_setprio(struct task_struct *p, int prio);
+extern struct task_struct *rt_mutex_get_top_task(struct task_struct *task);
 extern void rt_mutex_adjust_pi(struct task_struct *p);
 static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
 {
@@ -2283,6 +2295,10 @@ static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
 static inline int rt_mutex_getprio(struct task_struct *p)
 {
 	return p->normal_prio;
+}
+static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
+{
+	return NULL;
 }
 # define rt_mutex_adjust_pi(p)		do { } while (0)
 static inline bool tsk_is_pi_blocked(struct task_struct *tsk)

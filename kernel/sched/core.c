@@ -4804,7 +4804,11 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 
 #ifdef TRACE_CRAP
 	trace_sched_pi_setprio(p, prio);
+<<<<<<< HEAD
 #endif
+=======
+	p->pi_top_task = rt_mutex_get_top_task(p);
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 	oldprio = p->prio;
 	prev_class = p->sched_class;
 	on_rq = p->on_rq;
@@ -4815,6 +4819,9 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 		p->sched_class->put_prev_task(rq, p);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 	/*
 	 * Boosting condition are:
 	 * 1. -rt task is running and holds mutex A
@@ -4825,14 +4832,20 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 	 *          running task
 	 */
 	if (dl_prio(prio)) {
+<<<<<<< HEAD
 		struct task_struct *pi_task = rt_mutex_get_top_task(p);
 		if (!dl_prio(p->normal_prio) ||
 		    (pi_task && dl_entity_preempt(&pi_task->dl, &p->dl))) {
+=======
+		if (!dl_prio(p->normal_prio) || (p->pi_top_task &&
+			dl_entity_preempt(&p->pi_top_task->dl, &p->dl))) {
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 			p->dl.dl_boosted = 1;
 			p->dl.dl_throttled = 0;
 			enqueue_flag = ENQUEUE_REPLENISH;
 		} else
 			p->dl.dl_boosted = 0;
+<<<<<<< HEAD
 		p->sched_class = &dl_sched_class;
 	} else if (rt_prio(prio)) {
 		if (dl_prio(oldprio))
@@ -4844,6 +4857,14 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 		p->sched_class = &dl_sched_class;
 	else if (rt_prio(prio))
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+		p->sched_class = &dl_sched_class;
+	} else if (rt_prio(prio)) {
+		if (dl_prio(oldprio))
+			p->dl.dl_boosted = 0;
+		if (oldprio < prio)
+			enqueue_flag = ENQUEUE_HEAD;
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 		p->sched_class = &rt_sched_class;
 	} else {
 		if (dl_prio(oldprio))

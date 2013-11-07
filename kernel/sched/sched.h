@@ -121,7 +121,11 @@ static inline int task_has_dl_policy(struct task_struct *p)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 static inline bool dl_time_before(u64 a, u64 b)
+=======
+static inline int dl_time_before(u64 a, u64 b)
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 {
 	return (s64)(a - b) < 0;
 }
@@ -129,14 +133,22 @@ static inline bool dl_time_before(u64 a, u64 b)
 /*
  * Tells if entity @a should preempt entity @b.
  */
+<<<<<<< HEAD
 static inline bool
 dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
+=======
+static inline
+int dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 {
 	return dl_time_before(a->deadline, b->deadline);
 }
 
+<<<<<<< HEAD
 =======
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 /*
  * This is the priority-queue data structure of the RT scheduling class:
  */

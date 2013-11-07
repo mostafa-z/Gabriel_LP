@@ -16,7 +16,10 @@
 #include <linux/uaccess.h>
 #include <linux/ftrace.h>
 #include <linux/sched/deadline.h>
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
+=======
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 #include <trace/events/sched.h>
 #include "trace.h"
 

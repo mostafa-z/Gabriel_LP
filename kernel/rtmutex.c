@@ -92,6 +92,106 @@ static inline void mark_rt_mutex_waiters(struct rt_mutex *lock)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+static inline int
+rt_mutex_waiter_less(struct rt_mutex_waiter *left,
+		     struct rt_mutex_waiter *right)
+{
+	if (left->prio < right->prio)
+		return 1;
+
+	/*
+	 * If both waiters have dl_prio(), we check the deadlines of the
+	 * associated tasks.
+	 * If left waiter has a dl_prio(), and we didn't return 1 above,
+	 * then right waiter has a dl_prio() too.
+	 */
+	if (dl_prio(left->prio))
+		return (left->task->dl.deadline < right->task->dl.deadline);
+
+	return 0;
+}
+
+static void
+rt_mutex_enqueue(struct rt_mutex *lock, struct rt_mutex_waiter *waiter)
+{
+	struct rb_node **link = &lock->waiters.rb_node;
+	struct rb_node *parent = NULL;
+	struct rt_mutex_waiter *entry;
+	int leftmost = 1;
+
+	while (*link) {
+		parent = *link;
+		entry = rb_entry(parent, struct rt_mutex_waiter, tree_entry);
+		if (rt_mutex_waiter_less(waiter, entry)) {
+			link = &parent->rb_left;
+		} else {
+			link = &parent->rb_right;
+			leftmost = 0;
+		}
+	}
+
+	if (leftmost)
+		lock->waiters_leftmost = &waiter->tree_entry;
+
+	rb_link_node(&waiter->tree_entry, parent, link);
+	rb_insert_color(&waiter->tree_entry, &lock->waiters);
+}
+
+static void
+rt_mutex_dequeue(struct rt_mutex *lock, struct rt_mutex_waiter *waiter)
+{
+	if (RB_EMPTY_NODE(&waiter->tree_entry))
+		return;
+
+	if (lock->waiters_leftmost == &waiter->tree_entry)
+		lock->waiters_leftmost = rb_next(&waiter->tree_entry);
+
+	rb_erase(&waiter->tree_entry, &lock->waiters);
+	RB_CLEAR_NODE(&waiter->tree_entry);
+}
+
+static void
+rt_mutex_enqueue_pi(struct task_struct *task, struct rt_mutex_waiter *waiter)
+{
+	struct rb_node **link = &task->pi_waiters.rb_node;
+	struct rb_node *parent = NULL;
+	struct rt_mutex_waiter *entry;
+	int leftmost = 1;
+
+	while (*link) {
+		parent = *link;
+		entry = rb_entry(parent, struct rt_mutex_waiter, pi_tree_entry);
+		if (rt_mutex_waiter_less(waiter, entry)) {
+			link = &parent->rb_left;
+		} else {
+			link = &parent->rb_right;
+			leftmost = 0;
+		}
+	}
+
+	if (leftmost)
+		task->pi_waiters_leftmost = &waiter->pi_tree_entry;
+
+	rb_link_node(&waiter->pi_tree_entry, parent, link);
+	rb_insert_color(&waiter->pi_tree_entry, &task->pi_waiters);
+}
+
+static void
+rt_mutex_dequeue_pi(struct task_struct *task, struct rt_mutex_waiter *waiter)
+{
+	if (RB_EMPTY_NODE(&waiter->pi_tree_entry))
+		return;
+
+	if (task->pi_waiters_leftmost == &waiter->pi_tree_entry)
+		task->pi_waiters_leftmost = rb_next(&waiter->pi_tree_entry);
+
+	rb_erase(&waiter->pi_tree_entry, &task->pi_waiters);
+	RB_CLEAR_NODE(&waiter->pi_tree_entry);
+}
+
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 /*
  * Calculate task priority from the waiter list priority
  *
@@ -103,8 +203,20 @@ int rt_mutex_getprio(struct task_struct *task)
 	if (likely(!task_has_pi_waiters(task)))
 		return task->normal_prio;
 
+<<<<<<< HEAD
 	return min(task_top_pi_waiter(task)->pi_list_entry.prio,
+=======
+	return min(task_top_pi_waiter(task)->prio,
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 		   task->normal_prio);
+}
+
+struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
+{
+	if (likely(!task_has_pi_waiters(task)))
+		return NULL;
+
+	return task_top_pi_waiter(task)->task;
 }
 
 /*
@@ -116,7 +228,7 @@ static void __rt_mutex_adjust_prio(struct task_struct *task)
 {
 	int prio = rt_mutex_getprio(task);
 
-	if (task->prio != prio)
+	if (task->prio != prio || dl_prio(prio))
 		rt_mutex_setprio(task, prio);
 }
 
@@ -221,7 +333,11 @@ static int rt_mutex_adjust_prio_chain(struct task_struct *task,
 	 * When deadlock detection is off then we check, if further
 	 * priority adjustment is necessary.
 	 */
+<<<<<<< HEAD
 	if (!detect_deadlock && waiter->list_entry.prio == task->prio)
+=======
+	if (!detect_deadlock && waiter->prio == task->prio)
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 		goto out_unlock_pi;
 
 	lock = waiter->lock;
@@ -242,9 +358,15 @@ static int rt_mutex_adjust_prio_chain(struct task_struct *task,
 	top_waiter = rt_mutex_top_waiter(lock);
 
 	/* Requeue the waiter */
+<<<<<<< HEAD
 	plist_del(&waiter->list_entry, &lock->wait_list);
 	waiter->list_entry.prio = task->prio;
 	plist_add(&waiter->list_entry, &lock->wait_list);
+=======
+	rt_mutex_dequeue(lock, waiter);
+	waiter->prio = task->prio;
+	rt_mutex_enqueue(lock, waiter);
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 
 	/* Release the task */
 	raw_spin_unlock_irqrestore(&task->pi_lock, flags);
@@ -343,7 +465,11 @@ static int try_to_take_rt_mutex(struct rt_mutex *lock, struct task_struct *task,
 	 * 3) it is top waiter
 	 */
 	if (rt_mutex_has_waiters(lock)) {
+<<<<<<< HEAD
 		if (task->prio >= rt_mutex_top_waiter(lock)->list_entry.prio) {
+=======
+		if (task->prio >= rt_mutex_top_waiter(lock)->prio) {
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 			if (!waiter || waiter != rt_mutex_top_waiter(lock))
 				return 0;
 		}
@@ -404,8 +530,12 @@ static int task_blocks_on_rt_mutex(struct rt_mutex *lock,
 	__rt_mutex_adjust_prio(task);
 	waiter->task = task;
 	waiter->lock = lock;
+<<<<<<< HEAD
 	plist_node_init(&waiter->list_entry, task->prio);
 	plist_node_init(&waiter->pi_list_entry, task->prio);
+=======
+	waiter->prio = task->prio;
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 
 	/* Get the top priority waiter on the lock */
 	if (rt_mutex_has_waiters(lock))
@@ -553,7 +683,12 @@ void rt_mutex_adjust_pi(struct task_struct *task)
 	raw_spin_lock_irqsave(&task->pi_lock, flags);
 
 	waiter = task->pi_blocked_on;
+<<<<<<< HEAD
 	if (!waiter || waiter->list_entry.prio == task->prio) {
+=======
+	if (!waiter || (waiter->prio == task->prio &&
+			!dl_prio(task->prio))) {
+>>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 		raw_spin_unlock_irqrestore(&task->pi_lock, flags);
 		return;
 	}
