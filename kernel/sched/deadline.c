@@ -18,11 +18,14 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 static inline int dl_time_before(u64 a, u64 b)
 {
 	return (s64)(a - b) < 0;
 }
 <<<<<<< HEAD
+=======
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 #include <linux/slab.h>
 
 struct dl_bandwidth def_dl_bandwidth;
@@ -682,9 +685,13 @@ static void inc_dl_deadline(struct dl_rq *dl_rq, u64 deadline)
 		dl_rq->earliest_dl.next = dl_rq->earliest_dl.curr;
 		dl_rq->earliest_dl.curr = deadline;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		cpudl_set(&rq->rd->cpudl, rq->cpu, deadline, 1);
 =======
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+		cpudl_set(&rq->rd->cpudl, rq->cpu, deadline, 1);
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 	} else if (dl_rq->earliest_dl.next == 0 ||
 		   dl_time_before(deadline, dl_rq->earliest_dl.next)) {
 		/*
@@ -709,9 +716,13 @@ static void dec_dl_deadline(struct dl_rq *dl_rq, u64 deadline)
 		dl_rq->earliest_dl.curr = 0;
 		dl_rq->earliest_dl.next = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		cpudl_set(&rq->rd->cpudl, rq->cpu, 0, 0);
 =======
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+		cpudl_set(&rq->rd->cpudl, rq->cpu, 0, 0);
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 	} else {
 		struct rb_node *leftmost = dl_rq->rb_leftmost;
 		struct sched_dl_entity *entry;
@@ -720,9 +731,13 @@ static void dec_dl_deadline(struct dl_rq *dl_rq, u64 deadline)
 		dl_rq->earliest_dl.curr = entry->deadline;
 		dl_rq->earliest_dl.next = next_deadline(rq);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		cpudl_set(&rq->rd->cpudl, rq->cpu, entry->deadline, 1);
 =======
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+		cpudl_set(&rq->rd->cpudl, rq->cpu, entry->deadline, 1);
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 	}
 }
 
@@ -919,10 +934,13 @@ static int find_later_rq(struct task_struct *task);
 #ifdef CONFIG_SMP
 
 static int find_later_rq(struct task_struct *task);
+<<<<<<< HEAD
 static int latest_cpu_find(struct cpumask *span,
 			   struct task_struct *task,
 			   struct cpumask *later_mask);
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 
 static int
 select_task_rq_dl(struct task_struct *p, int cpu, int sd_flag, int flags)
@@ -970,10 +988,14 @@ static void check_preempt_equal_dl(struct rq *rq, struct task_struct *p)
 	 */
 	if (rq->curr->nr_cpus_allowed == 1 ||
 <<<<<<< HEAD
+<<<<<<< HEAD
 	    cpudl_find(&rq->rd->cpudl, rq->curr, NULL) == -1)
 =======
 	    latest_cpu_find(rq->rd->span, rq->curr, NULL) == -1)
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+	    cpudl_find(&rq->rd->cpudl, rq->curr, NULL) == -1)
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 		return;
 
 	/*
@@ -982,10 +1004,14 @@ static void check_preempt_equal_dl(struct rq *rq, struct task_struct *p)
 	 */
 	if (p->nr_cpus_allowed != 1 &&
 <<<<<<< HEAD
+<<<<<<< HEAD
 	    cpudl_find(&rq->rd->cpudl, p, NULL) != -1)
 =======
 	    latest_cpu_find(rq->rd->span, p, NULL) != -1)
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+	    cpudl_find(&rq->rd->cpudl, p, NULL) != -1)
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 		return;
 
 	resched_task(rq->curr);
@@ -1173,6 +1199,7 @@ next_node:
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 static int latest_cpu_find(struct cpumask *span,
 			   struct task_struct *task,
@@ -1208,6 +1235,8 @@ static int latest_cpu_find(struct cpumask *span,
 }
 
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 static DEFINE_PER_CPU(cpumask_var_t, local_cpu_mask_dl);
 
 static int find_later_rq(struct task_struct *task)
@@ -1225,11 +1254,16 @@ static int find_later_rq(struct task_struct *task)
 		return -1;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	best_cpu = cpudl_find(&task_rq(task)->rd->cpudl,
 			task, later_mask);
 =======
 	best_cpu = latest_cpu_find(task_rq(task)->rd->span, task, later_mask);
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+	best_cpu = cpudl_find(&task_rq(task)->rd->cpudl,
+			task, later_mask);
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 	if (best_cpu == -1)
 		return -1;
 
@@ -1803,6 +1837,9 @@ static void rq_online_dl(struct rq *rq)
 {
 	if (rq->dl.overloaded)
 		dl_set_overload(rq);
+
+	if (rq->dl.dl_nr_running > 0)
+		cpudl_set(&rq->rd->cpudl, rq->cpu, rq->dl.earliest_dl.curr, 1);
 }
 
 /* Assumes rq->lock is held */
@@ -1810,6 +1847,8 @@ static void rq_offline_dl(struct rq *rq)
 {
 	if (rq->dl.overloaded)
 		dl_clear_overload(rq);
+
+	cpudl_set(&rq->rd->cpudl, rq->cpu, 0, 0);
 }
 
 void init_sched_dl_class(void)

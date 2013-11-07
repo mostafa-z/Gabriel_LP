@@ -7599,9 +7599,13 @@ static void free_rootdomain(struct rcu_head *rcu)
 
 	cpupri_cleanup(&rd->cpupri);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cpudl_cleanup(&rd->cpudl);
 =======
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+	cpudl_cleanup(&rd->cpudl);
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 	free_cpumask_var(rd->dlo_mask);
 	free_cpumask_var(rd->rto_mask);
 	free_cpumask_var(rd->online);
@@ -7667,6 +7671,8 @@ static int init_rootdomain(struct root_domain *rd)
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 
 	init_dl_bw(&rd->dl_bw);
+	if (cpudl_init(&rd->cpudl) != 0)
+		goto free_dlo_mask;
 
 	if (cpupri_init(&rd->cpupri) != 0)
 		goto free_rto_mask;

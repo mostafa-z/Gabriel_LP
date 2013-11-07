@@ -16,6 +16,7 @@ endif
 obj-y += core.o clock.o cputime.o idle_task.o
 obj-y += fair.o rt.o deadline.o stop_task.o sched_avg.o
 obj-$(CONFIG_SMP) += cpupri.o cpudeadline.o
+<<<<<<< HEAD
 =======
 obj-y += core.o clock.o cputime.o idle_task.o fair.o rt.o stop_task.o sched_avg.o
 =======
@@ -24,6 +25,8 @@ obj-y += fair.o rt.o deadline.o stop_task.o sched_avg.o
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 obj-$(CONFIG_SMP) += cpupri.o
 >>>>>>> 0e85583... sched: Move cputime code to its own file
+=======
+>>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 obj-$(CONFIG_SCHED_AUTOGROUP) += auto_group.o
 obj-$(CONFIG_SCHEDSTATS) += stats.o
 obj-$(CONFIG_SCHED_DEBUG) += debug.o
