@@ -2857,6 +2857,7 @@ static int dl_overflow(struct task_struct *p, int policy,
 	 * its parameters, we may need to update accordingly the total
 	 * allocated bandwidth of the container.
 	 */
+<<<<<<< HEAD
 	raw_spin_lock(&dl_b->lock);
 	cpus = dl_bw_cpus(task_cpu(p));
 	if (dl_policy(policy) && !task_has_dl_policy(p) &&
@@ -2877,6 +2878,28 @@ static int dl_overflow(struct task_struct *p, int policy,
 <<<<<<< HEAD
 	return err;
 =======
+=======
+	raw_spin_lock_irqsave(&p->pi_lock, flags);
+	set_task_cpu(p, cpu);
+	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
+
+#if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
+	if (likely(sched_info_on()))
+		memset(&p->sched_info, 0, sizeof(p->sched_info));
+#endif
+#if defined(CONFIG_SMP)
+	p->on_cpu = 0;
+#endif
+#ifdef CONFIG_PREEMPT_COUNT
+	/* Want to start with kernel preemption disabled. */
+	task_thread_info(p)->preempt_count = 1;
+#endif
+#ifdef CONFIG_SMP
+	plist_node_init(&p->pushable_tasks, MAX_PRIO);
+	RB_CLEAR_NODE(&p->pushable_dl_tasks);
+#endif
+
+>>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 	put_cpu();
 	return 0;
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
@@ -7340,7 +7363,10 @@ static void free_rootdomain(struct rcu_head *rcu)
 	struct root_domain *rd = container_of(rcu, struct root_domain, rcu);
 
 	cpupri_cleanup(&rd->cpupri);
+<<<<<<< HEAD
 	cpudl_cleanup(&rd->cpudl);
+=======
+>>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 	free_cpumask_var(rd->dlo_mask);
 	free_cpumask_var(rd->rto_mask);
 	free_cpumask_var(rd->online);
@@ -7397,10 +7423,13 @@ static int init_rootdomain(struct root_domain *rd)
 		goto free_online;
 	if (!alloc_cpumask_var(&rd->rto_mask, GFP_KERNEL))
 		goto free_dlo_mask;
+<<<<<<< HEAD
 
 	init_dl_bw(&rd->dl_bw);
 	if (cpudl_init(&rd->cpudl) != 0)
 		goto free_dlo_mask;
+=======
+>>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 
 	if (cpupri_init(&rd->cpupri) != 0)
 		goto free_rto_mask;

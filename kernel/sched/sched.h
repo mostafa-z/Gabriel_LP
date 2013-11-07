@@ -467,6 +467,9 @@ struct dl_rq {
 
 	unsigned long dl_nr_running;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 
 #ifdef CONFIG_SMP
 	/*
@@ -481,6 +484,10 @@ struct dl_rq {
 	} earliest_dl;
 
 	unsigned long dl_nr_migratory;
+<<<<<<< HEAD
+=======
+	unsigned long dl_nr_total;
+>>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 	int overloaded;
 
 	/*
@@ -490,11 +497,15 @@ struct dl_rq {
 	 */
 	struct rb_root pushable_dl_tasks_root;
 	struct rb_node *pushable_dl_tasks_leftmost;
+<<<<<<< HEAD
 #else
 	struct dl_bw dl_bw;
 #endif
 =======
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+#endif
+>>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 };
 
 #ifdef CONFIG_SMP
@@ -525,6 +536,13 @@ struct root_domain {
 	atomic_t dlo_count;
 	struct dl_bw dl_bw;
 	struct cpudl cpudl;
+
+	/*
+	 * The bit corresponding to a CPU gets set here if such CPU has more
+	 * than one runnable -deadline task (as it is below for RT tasks).
+	 */
+	cpumask_var_t dlo_mask;
+	atomic_t dlo_count;
 
 	/*
 	 * The "RT overload" flag: it gets set if a CPU has more than
