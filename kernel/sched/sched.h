@@ -1361,9 +1361,13 @@ struct sched_class {
 	void (*task_tick) (struct rq *rq, struct task_struct *p, int queued);
 	void (*task_fork) (struct task_struct *p);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	void (*task_dead) (struct task_struct *p);
 =======
 >>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
+=======
+	void (*task_dead) (struct task_struct *p);
+>>>>>>> f0c50ed... sched: Add sched_class->task_dead() method
 
 	void (*switched_from) (struct rq *this_rq, struct task_struct *task);
 	void (*switched_to) (struct rq *this_rq, struct task_struct *task);
