@@ -2653,7 +2653,13 @@ static void __sched_fork(struct task_struct *p)
 
 	RB_CLEAR_NODE(&p->dl.rb_node);
 	hrtimer_init(&p->dl.dl_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+<<<<<<< HEAD
 	__dl_clear_params(p);
+=======
+	p->dl.dl_runtime = p->dl.runtime = 0;
+	p->dl.dl_deadline = p->dl.deadline = 0;
+	p->dl.flags = 0;
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 	INIT_LIST_HEAD(&p->rt.run_list);
 
@@ -2814,6 +2820,7 @@ bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
 	       dl_b->bw * cpus < dl_b->total_bw - old_bw + new_bw;
 }
 
+<<<<<<< HEAD
 /*
  * We must be sure that accepting a new task (or allowing changing the
  * parameters of an existing one) is consistent with the bandwidth
@@ -2825,6 +2832,16 @@ bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
 static int dl_overflow(struct task_struct *p, int policy,
 		       const struct sched_attr *attr)
 {
+=======
+	if (dl_prio(p->prio)) {
+		put_cpu();
+		return -EAGAIN;
+	} else if (rt_prio(p->prio)) {
+		p->sched_class = &rt_sched_class;
+	} else {
+		p->sched_class = &fair_sched_class;
+	}
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 	struct dl_bw *dl_b = dl_bw_of(task_cpu(p));
 	u64 period = attr->sched_period ?: attr->sched_deadline;
@@ -2857,7 +2874,12 @@ static int dl_overflow(struct task_struct *p, int policy,
 	}
 	raw_spin_unlock(&dl_b->lock);
 
+<<<<<<< HEAD
 	return err;
+=======
+	put_cpu();
+	return 0;
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 }
 
 extern void init_dl_bw(struct dl_bw *dl_b);
@@ -4769,6 +4791,7 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 	if (running)
 		p->sched_class->put_prev_task(rq, p);
 
+<<<<<<< HEAD
 	/*
 	 * Boosting condition are:
 	 * 1. -rt task is running and holds mutex A
@@ -4793,6 +4816,11 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 			p->dl.dl_boosted = 0;
 		if (oldprio < prio)
 			enqueue_flag = ENQUEUE_HEAD;
+=======
+	if (dl_prio(prio))
+		p->sched_class = &dl_sched_class;
+	else if (rt_prio(prio))
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		p->sched_class = &rt_sched_class;
 	} else {
 		if (dl_prio(oldprio))
@@ -5007,6 +5035,9 @@ static struct task_struct *find_process_by_pid(pid_t pid)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * This function initializes the sched_dl_entity of a newly becoming
  * SCHED_DEADLINE task.
@@ -5023,6 +5054,7 @@ __setparam_dl(struct task_struct *p, const struct sched_attr *attr)
 	init_dl_task_timer(dl_se);
 	dl_se->dl_runtime = attr->sched_runtime;
 	dl_se->dl_deadline = attr->sched_deadline;
+<<<<<<< HEAD
 	dl_se->dl_period = attr->sched_period ?: dl_se->dl_deadline;
 	dl_se->flags = attr->sched_flags;
 	dl_se->dl_bw = to_ratio(dl_se->dl_period, dl_se->dl_runtime);
@@ -5033,6 +5065,13 @@ __setparam_dl(struct task_struct *p, const struct sched_attr *attr)
 
 =======
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+	dl_se->flags = attr->sched_flags;
+	dl_se->dl_throttled = 0;
+	dl_se->dl_new = 1;
+}
+
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /* Actually do priority change: must hold pi & rq lock. */
 static void __setscheduler(struct rq *rq, struct task_struct *p,
 			   const struct sched_attr *attr)
@@ -5066,7 +5105,9 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 =======
 	p->policy = policy;
 
-	if (rt_policy(policy))
+	if (dl_policy(policy))
+		__setparam_dl(p, attr);
+	else if (rt_policy(policy))
 		p->rt_priority = attr->sched_priority;
 	else
 		p->static_prio = NICE_TO_PRIO(attr->sched_nice);
@@ -5074,8 +5115,14 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 	p->normal_prio = normal_prio(p);
 	p->prio = rt_mutex_getprio(p);
 
+<<<<<<< HEAD
 	if (rt_prio(p->prio))
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+	if (dl_prio(p->prio))
+		p->sched_class = &dl_sched_class;
+	else if (rt_prio(p->prio))
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
@@ -5083,6 +5130,9 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 	set_load_weight(p);
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 static void
 __getparam_dl(struct task_struct *p, struct sched_attr *attr)
@@ -5092,23 +5142,31 @@ __getparam_dl(struct task_struct *p, struct sched_attr *attr)
 	attr->sched_priority = p->rt_priority;
 	attr->sched_runtime = dl_se->dl_runtime;
 	attr->sched_deadline = dl_se->dl_deadline;
+<<<<<<< HEAD
 	attr->sched_period = dl_se->dl_period;
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 	attr->sched_flags = dl_se->flags;
 }
 
 /*
  * This function validates the new parameters of a -deadline task.
  * We ask for the deadline not being zero, and greater or equal
+<<<<<<< HEAD
  * than the runtime, as well as the period of being zero or
  * greater than deadline. Furthermore, we have to be sure that
  * user parameters are above the internal resolution of 1us (we
  * check sched_runtime only since it is always the smaller one) and
  * below 2^63 ns (we have to check both sched_deadline and
  * sched_period, as the latter can be zero).
+=======
+ * than the runtime.
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
  */
 static bool
 __checkparam_dl(const struct sched_attr *attr)
 {
+<<<<<<< HEAD
 	/* deadline != 0 */
 	if (attr->sched_deadline == 0)
 		return false;
@@ -5139,6 +5197,12 @@ __checkparam_dl(const struct sched_attr *attr)
 
 =======
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+	return attr && attr->sched_deadline != 0 &&
+	       (s64)(attr->sched_deadline - attr->sched_runtime) >= 0;
+}
+
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * check the target process has a UID that matches the current process's
  */
@@ -5205,8 +5269,13 @@ recheck:
 	    (p->mm && attr->sched_priority > MAX_USER_RT_PRIO-1) ||
 	    (!p->mm && attr->sched_priority > MAX_RT_PRIO-1))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (rt_policy(policy) != (attr->sched_priority != 0))
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
+	    (rt_policy(policy) != (attr->sched_priority != 0)))
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		return -EINVAL;
 
 	/*
@@ -5296,10 +5365,15 @@ recheck:
 		if (rt_policy(policy) && attr->sched_priority != p->rt_priority)
 			goto change;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (dl_policy(policy))
 			goto change;
 =======
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+		if (dl_policy(policy))
+			goto change;
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 		__task_rq_unlock(rq);
 		raw_spin_unlock_irqrestore(&p->pi_lock, flags);
@@ -5774,7 +5848,7 @@ err_size:
 }
 
 /**
- * sys_sched_getattr - same as above, but with extended "sched_param"
+ * sys_sched_getattr - similar to sched_getparam, but with sched_attr
  * @pid: the pid in question.
  * @attr: structure containing the extended parameters.
  * @size: sizeof(attr) for fwd/bwd comp.
@@ -5809,6 +5883,7 @@ SYSCALL_DEFINE3(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 
 	attr.sched_policy = p->policy;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (p->sched_reset_on_fork)
 		attr.sched_flags |= SCHED_FLAG_RESET_ON_FORK;
 	if (task_has_dl_policy(p))
@@ -5817,6 +5892,11 @@ SYSCALL_DEFINE3(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 =======
 	if (task_has_rt_policy(p))
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+	if (task_has_dl_policy(p))
+		__getparam_dl(p, &attr);
+	else if (task_has_rt_policy(p))
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		attr.sched_priority = p->rt_priority;
 	else
 		attr.sched_nice = TASK_NICE(p);

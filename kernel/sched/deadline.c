@@ -19,9 +19,12 @@ static inline int dl_time_before(u64 a, u64 b)
 {
 	return (s64)(a - b) < 0;
 }
+<<<<<<< HEAD
 #include <linux/slab.h>
 
 struct dl_bandwidth def_dl_bandwidth;
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 static inline struct task_struct *dl_task_of(struct sched_dl_entity *dl_se)
 {
@@ -403,6 +406,7 @@ static void update_curr_dl(struct rq *rq)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 #ifdef CONFIG_SMP
 
@@ -501,6 +505,8 @@ void dec_dl_tasks(struct sched_dl_entity *dl_se, struct dl_rq *dl_rq)
 	dec_dl_migration(dl_se, dl_rq);
 }
 
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 static void __enqueue_dl_entity(struct sched_dl_entity *dl_se)
 {
 	struct dl_rq *dl_rq = dl_rq_of_se(dl_se);
@@ -629,6 +635,7 @@ static void yield_task_dl(struct rq *rq)
 	update_curr_dl(rq);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 
 static int find_later_rq(struct task_struct *task);
@@ -695,6 +702,8 @@ static void check_preempt_equal_dl(struct rq *rq, struct task_struct *p)
 #endif /* CONFIG_SMP */
 
 >>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * Only called when both the current and waking task are -deadline
  * tasks.
@@ -786,6 +795,7 @@ static void set_curr_task_dl(struct rq *rq)
 	struct task_struct *p = rq->curr;
 
 	p->se.exec_start = rq_clock_task(rq);
+<<<<<<< HEAD
 <<<<<<< HEAD
 }
 
@@ -1251,6 +1261,10 @@ void init_sched_dl_class(void)
 #endif /* CONFIG_SMP */
 
 >>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
+=======
+}
+
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 static void switched_from_dl(struct rq *rq, struct task_struct *p)
 {
 	if (hrtimer_active(&p->dl.dl_timer))

@@ -40,7 +40,10 @@
 /* SCHED_ISO: reserved but not implemented yet */
 #define SCHED_IDLE		5
 #define SCHED_DEADLINE		6
+<<<<<<< HEAD
 
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /* Can be ORed in to make sure the process is reverted back to SCHED_NORMAL on fork */
 #define SCHED_RESET_ON_FORK     0x40000000
 
@@ -143,12 +146,18 @@ struct sched_param {
  * and policies, that can be used to ensure all the tasks will make their
  * timing constraints.
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
  *
  * As of now, the SCHED_DEADLINE policy (sched_dl scheduling class) is the
  * only user of this new interface. More information about the algorithm
  * available in the scheduling class file or in Documentation/.
+<<<<<<< HEAD
 =======
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
  */
 struct sched_attr {
 	u32 size;
@@ -1299,6 +1308,7 @@ struct sched_rt_entity {
 };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 struct sched_dl_entity {
 	struct rb_node	rb_node;
 	int nr_cpus_allowed;
@@ -1312,6 +1322,18 @@ struct sched_dl_entity {
 	u64 dl_deadline;	/* relative deadline of each instance	*/
 	u64 dl_period;		/* separation of two instances (period) */
 	u64 dl_bw;		/* dl_runtime / dl_deadline		*/
+=======
+struct sched_dl_entity {
+	struct rb_node	rb_node;
+
+	/*
+	 * Original scheduling parameters. Copied here from sched_attr
+	 * during sched_setscheduler2(), they will remain the same until
+	 * the next sched_setscheduler2().
+	 */
+	u64 dl_runtime;		/* maximum runtime for each instance	*/
+	u64 dl_deadline;	/* relative deadline of each instance	*/
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 	/*
 	 * Actual scheduling parameters. Initialized with the values above,
@@ -1332,6 +1354,7 @@ struct sched_dl_entity {
 	 * @dl_new tells if a new instance arrived. If so we must
 	 * start executing it with full runtime and reset its absolute
 	 * deadline;
+<<<<<<< HEAD
 	 *
 	 * @dl_boosted tells if we are boosted due to DI. If so we are
 	 * outside bandwidth enforcement mechanism (but only until we
@@ -1341,6 +1364,10 @@ struct sched_dl_entity {
 	 * all its available runtime during the last job.
 	 */
 	int dl_throttled, dl_new, dl_boosted, dl_yielded;
+=======
+	 */
+	int dl_throttled, dl_new;
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 	/*
 	 * Bandwidth enforcement timer. Each -deadline task has its
@@ -1349,8 +1376,11 @@ struct sched_dl_entity {
 	struct hrtimer dl_timer;
 };
 
+<<<<<<< HEAD
 =======
 >>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 struct rcu_node;
 
 enum perf_event_task_context {

@@ -2,10 +2,14 @@
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
 #include <linux/sched/deadline.h>
 =======
 >>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
+=======
+#include <linux/sched/deadline.h>
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/stop_machine.h>
@@ -101,6 +105,11 @@ static inline int dl_policy(int policy)
 >>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 
+static inline int dl_policy(int policy)
+{
+	return policy == SCHED_DEADLINE;
+}
+
 static inline int task_has_rt_policy(struct task_struct *p)
 {
 	return rt_policy(p->policy);
@@ -111,6 +120,7 @@ static inline int task_has_dl_policy(struct task_struct *p)
 	return dl_policy(p->policy);
 }
 
+<<<<<<< HEAD
 static inline bool dl_time_before(u64 a, u64 b)
 {
 	return (s64)(a - b) < 0;
@@ -125,6 +135,8 @@ dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
 	return dl_time_before(a->deadline, b->deadline);
 }
 
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * This is the priority-queue data structure of the RT scheduling class:
  */
@@ -454,6 +466,7 @@ struct dl_rq {
 	struct rb_node *rb_leftmost;
 
 	unsigned long dl_nr_running;
+<<<<<<< HEAD
 
 #ifdef CONFIG_SMP
 	/*
@@ -480,6 +493,8 @@ struct dl_rq {
 #else
 	struct dl_bw dl_bw;
 #endif
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 };
 
 #ifdef CONFIG_SMP
@@ -1322,9 +1337,13 @@ enum cpuacct_stat_index {
 #define ENQUEUE_WAKING		0
 #endif
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define ENQUEUE_REPLENISH	8
 =======
 >>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
+=======
+#define ENQUEUE_REPLENISH	8
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 #define DEQUEUE_SLEEP		1
 
@@ -1428,12 +1447,17 @@ extern void resched_cpu(int cpu);
 extern struct rt_bandwidth def_rt_bandwidth;
 extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
 
+<<<<<<< HEAD
 extern struct dl_bandwidth def_dl_bandwidth;
 extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime);
 extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
 
 unsigned long to_ratio(u64 period, u64 runtime);
 
+=======
+extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
+
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 extern void update_idle_cpu_load(struct rq *this_rq);
 
 #ifdef CONFIG_CGROUP_CPUACCT

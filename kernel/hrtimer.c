@@ -46,10 +46,14 @@
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include <linux/sched/rt.h>
 #include <linux/sched/deadline.h>
 =======
 >>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
+=======
+#include <linux/sched/deadline.h>
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 #include <linux/timer.h>
 
 #include <asm/uaccess.h>
