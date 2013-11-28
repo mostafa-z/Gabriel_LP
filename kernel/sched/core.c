@@ -2667,7 +2667,9 @@ static void __sched_fork(struct task_struct *p)
 
 	RB_CLEAR_NODE(&p->dl.rb_node);
 	hrtimer_init(&p->dl.dl_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	__dl_clear_params(p);
+	p->dl.dl_runtime = p->dl.runtime = 0;
+	p->dl.dl_deadline = p->dl.deadline = 0;
+	p->dl.flags = 0;
 
 	INIT_LIST_HEAD(&p->rt.run_list);
 
@@ -2759,6 +2761,7 @@ int sched_fork(struct task_struct *p)
 
 	put_cpu();
 	return 0;
+<<<<<<< HEAD
 }
 
 unsigned long to_ratio(u64 period, u64 runtime)
@@ -3943,8 +3946,6 @@ unsigned long long task_sched_runtime(struct task_struct *p)
 	return ns;
 }
 
-<<<<<<< HEAD
-=======
 #ifdef CONFIG_CGROUP_CPUACCT
 struct cgroup_subsys cpuacct_subsys;
 struct cpuacct root_cpuacct;
@@ -5182,6 +5183,7 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 	if (running)
 		p->sched_class->put_prev_task(rq, p);
 
+<<<<<<< HEAD
 	/*
 	 * Boosting condition are:
 	 * 1. -rt task is running and holds mutex A
@@ -5206,6 +5208,11 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 			p->dl.dl_boosted = 0;
 		if (oldprio < prio)
 			enqueue_flag = ENQUEUE_HEAD;
+=======
+	if (dl_prio(prio))
+		p->sched_class = &dl_sched_class;
+	else if (rt_prio(prio))
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		p->sched_class = &rt_sched_class;
 	} else {
 		if (dl_prio(oldprio))
@@ -5435,12 +5442,18 @@ __setparam_dl(struct task_struct *p, const struct sched_attr *attr)
 	init_dl_task_timer(dl_se);
 	dl_se->dl_runtime = attr->sched_runtime;
 	dl_se->dl_deadline = attr->sched_deadline;
+<<<<<<< HEAD
 	dl_se->dl_period = attr->sched_period ?: dl_se->dl_deadline;
 	dl_se->flags = attr->sched_flags;
 	dl_se->dl_bw = to_ratio(dl_se->dl_period, dl_se->dl_runtime);
 	dl_se->dl_throttled = 0;
 	dl_se->dl_new = 1;
 	dl_se->dl_yielded = 0;
+=======
+	dl_se->flags = attr->sched_flags;
+	dl_se->dl_throttled = 0;
+	dl_se->dl_new = 1;
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 }
 
 /* Actually do priority change: must hold pi & rq lock. */
@@ -5456,7 +5469,13 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 
 	if (dl_policy(policy))
 		__setparam_dl(p, attr);
+<<<<<<< HEAD
 	else if (fair_policy(policy))
+=======
+	else if (rt_policy(policy))
+		p->rt_priority = attr->sched_priority;
+	else
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		p->static_prio = NICE_TO_PRIO(attr->sched_nice);
 
 	/*
@@ -5487,23 +5506,31 @@ __getparam_dl(struct task_struct *p, struct sched_attr *attr)
 	attr->sched_priority = p->rt_priority;
 	attr->sched_runtime = dl_se->dl_runtime;
 	attr->sched_deadline = dl_se->dl_deadline;
+<<<<<<< HEAD
 	attr->sched_period = dl_se->dl_period;
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 	attr->sched_flags = dl_se->flags;
 }
 
 /*
  * This function validates the new parameters of a -deadline task.
  * We ask for the deadline not being zero, and greater or equal
+<<<<<<< HEAD
  * than the runtime, as well as the period of being zero or
  * greater than deadline. Furthermore, we have to be sure that
  * user parameters are above the internal resolution of 1us (we
  * check sched_runtime only since it is always the smaller one) and
  * below 2^63 ns (we have to check both sched_deadline and
  * sched_period, as the latter can be zero).
+=======
+ * than the runtime.
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
  */
 static bool
 __checkparam_dl(const struct sched_attr *attr)
 {
+<<<<<<< HEAD
 	/* deadline != 0 */
 	if (attr->sched_deadline == 0)
 		return false;
@@ -5530,6 +5557,10 @@ __checkparam_dl(const struct sched_attr *attr)
 		return false;
 
 	return true;
+=======
+	return attr && attr->sched_deadline != 0 &&
+	       (s64)(attr->sched_deadline - attr->sched_runtime) >= 0;
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 }
 
 /*
@@ -6115,8 +6146,11 @@ SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 		goto out_unlock;
 
 	attr.sched_policy = p->policy;
+<<<<<<< HEAD
 	if (p->sched_reset_on_fork)
 		attr.sched_flags |= SCHED_FLAG_RESET_ON_FORK;
+=======
+>>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 	if (task_has_dl_policy(p))
 		__getparam_dl(p, &attr);
 	else if (task_has_rt_policy(p))
