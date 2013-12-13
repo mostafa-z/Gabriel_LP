@@ -633,6 +633,8 @@ struct rq {
 	int nr_small_tasks, nr_big_tasks;
 #endif
 
+	int cur_freq, max_freq, min_freq;
+
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 	u64 prev_irq_time;
 #endif
