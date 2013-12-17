@@ -205,7 +205,7 @@ struct dl_bandwidth {
 
 static inline int dl_bandwidth_enabled(void)
 {
-	return sysctl_sched_dl_runtime >= 0;
+	return sysctl_sched_rt_runtime >= 0;
 }
 
 extern struct dl_bw *dl_bw_of(int i);
@@ -215,6 +215,7 @@ struct dl_bw {
 	u64 bw, total_bw;
 };
 
+<<<<<<< HEAD
 static inline u64 global_dl_period(void);
 static inline u64 global_dl_runtime(void);
 
@@ -262,6 +263,8 @@ struct dl_bw {
 	u64 bw, total_bw;
 };
 
+=======
+>>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 extern struct mutex sched_domains_mutex;
 
 #ifdef CONFIG_CGROUP_SCHED
@@ -1224,6 +1227,7 @@ static inline u64 global_rt_runtime(void)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 static inline u64 global_dl_period(void)
 {
@@ -1239,6 +1243,8 @@ static inline u64 global_dl_runtime(void)
 }
 
 >>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
+=======
+>>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 static inline int task_current(struct rq *rq, struct task_struct *p)
 {
 	return rq->curr == p;

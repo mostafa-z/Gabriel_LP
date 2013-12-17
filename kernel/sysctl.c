@@ -383,6 +383,7 @@ static struct ctl_table kern_table[] = {
 		.mode		= 0644,
 		.proc_handler	= sched_rr_handler,
 	},
+<<<<<<< HEAD
 	{
 		.procname	= "sched_dl_period_us",
 		.data		= &sysctl_sched_dl_period,
@@ -398,6 +399,8 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= sched_dl_handler,
 	},
 >>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
+=======
+>>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 #ifdef CONFIG_SCHED_AUTOGROUP
 	{
 		.procname	= "sched_autogroup_enabled",
