@@ -7013,7 +7013,10 @@ static inline int on_null_domain(struct rq *rq)
 void trigger_load_balance(struct rq *rq)
 {
 	int cpu = rq->cpu;
+<<<<<<< HEAD
 	int type = NOHZ_KICK_ANY;
+=======
+>>>>>>> 4669641... sched: Reduce trigger_load_balance() parameters
 
 	/* Don't need to rebalance while attached to NULL domain */
 	if (unlikely(on_null_domain(rq)))
