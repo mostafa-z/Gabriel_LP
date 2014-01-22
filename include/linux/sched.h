@@ -2304,6 +2304,8 @@ extern unsigned int sysctl_sched_ravg_window;
 =======
 >>>>>>> 66f5232... sched: Window-based load stat improvements
 extern unsigned int sysctl_sched_wakeup_load_threshold;
+extern unsigned int sysctl_sched_yield_sleep_duration;
+extern int sysctl_sched_yield_sleep_threshold;
 
 >>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 #ifdef CONFIG_SCHED_AUTOGROUP
