@@ -148,7 +148,7 @@ static inline void dl_clear_overload(struct rq *rq)
 
 static void update_dl_migration(struct dl_rq *dl_rq)
 {
-	if (dl_rq->dl_nr_migratory && dl_rq->dl_nr_total > 1) {
+	if (dl_rq->dl_nr_migratory && dl_rq->dl_nr_running > 1) {
 		if (!dl_rq->overloaded) {
 			dl_set_overload(rq_of_dl_rq(dl_rq));
 			dl_rq->overloaded = 1;
@@ -164,8 +164,12 @@ static void inc_dl_migration(struct sched_dl_entity *dl_se, struct dl_rq *dl_rq)
 	struct task_struct *p = dl_task_of(dl_se);
 	dl_rq = &rq_of_dl_rq(dl_rq)->dl;
 
+<<<<<<< HEAD
 	dl_rq->dl_nr_total++;
 	if (p->nr_cpus_allowed > 1)
+=======
+	if (dl_se->nr_cpus_allowed > 1)
+>>>>>>> 9e61f07... sched/deadline: Remove useless dl_nr_total
 		dl_rq->dl_nr_migratory++;
 
 	update_dl_migration(dl_rq);
@@ -176,8 +180,12 @@ static void dec_dl_migration(struct sched_dl_entity *dl_se, struct dl_rq *dl_rq)
 	struct task_struct *p = dl_task_of(dl_se);
 	dl_rq = &rq_of_dl_rq(dl_rq)->dl;
 
+<<<<<<< HEAD
 	dl_rq->dl_nr_total--;
 	if (p->nr_cpus_allowed > 1)
+=======
+	if (dl_se->nr_cpus_allowed > 1)
+>>>>>>> 9e61f07... sched/deadline: Remove useless dl_nr_total
 		dl_rq->dl_nr_migratory--;
 
 	update_dl_migration(dl_rq);

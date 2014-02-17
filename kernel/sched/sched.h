@@ -553,9 +553,12 @@ struct dl_rq {
 
 	unsigned long dl_nr_migratory;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	unsigned long dl_nr_total;
 >>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
+=======
+>>>>>>> 9e61f07... sched/deadline: Remove useless dl_nr_total
 	int overloaded;
 
 	/*
