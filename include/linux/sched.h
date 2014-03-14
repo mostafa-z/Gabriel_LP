@@ -2067,6 +2067,7 @@ static inline void wake_up_idle_cpu(int cpu) { }
 #endif
 
 extern unsigned int sysctl_sched_ravg_window;
+extern unsigned int sysctl_sched_wakeup_load_threshold;
 
 #ifdef CONFIG_SCHED_AUTOGROUP
 extern void sched_autogroup_create_attach(struct task_struct *p);
