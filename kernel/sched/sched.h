@@ -989,6 +989,7 @@ static inline unsigned int group_first_cpu(struct sched_group *group)
 #include "stats.h"
 #include "auto_group.h"
 
+<<<<<<< HEAD
 extern void init_new_task_load(struct task_struct *p);
 
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
@@ -1015,20 +1016,30 @@ extern void fixup_nr_big_small_task(int cpu);
 
 u64 scale_load_to_cpu(u64 load, int cpu);
 unsigned int max_task_load(void);
+=======
+extern unsigned int sched_ravg_window;
+extern unsigned int pct_task_load(struct task_struct *p);
+extern void init_new_task_load(struct task_struct *p);
+>>>>>>> 66f5232... sched: Window-based load stat improvements
 
 static inline void
 inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
 {
+<<<<<<< HEAD
 	if (sched_use_pelt)
 		rq->cumulative_runnable_avg +=
 				p->se.avg.runnable_avg_sum_scaled;
 	else
 		rq->cumulative_runnable_avg += p->ravg.demand;
+=======
+	rq->cumulative_runnable_avg += p->ravg.demand;
+>>>>>>> 66f5232... sched: Window-based load stat improvements
 }
 
 static inline void
 dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
 {
+<<<<<<< HEAD
 	if (sched_use_pelt)
 		rq->cumulative_runnable_avg -=
 				p->se.avg.runnable_avg_sum_scaled;
@@ -1100,6 +1111,12 @@ static inline void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 
 #endif /* CONFIG_SCHED_HMP */
 
+=======
+	rq->cumulative_runnable_avg -= p->ravg.demand;
+	BUG_ON((s64)rq->cumulative_runnable_avg < 0);
+}
+
+>>>>>>> 66f5232... sched: Window-based load stat improvements
 #ifdef CONFIG_CGROUP_SCHED
 
 /*

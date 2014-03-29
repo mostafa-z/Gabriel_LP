@@ -1433,6 +1433,7 @@ struct task_struct {
 	struct task_group *sched_task_group;
 #endif
 	struct sched_dl_entity dl;
+	struct ravg ravg;
 
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 	/* list of struct preempt_notifier: */
@@ -2256,6 +2257,7 @@ static inline void wake_up_nohz_cpu(int cpu) { }
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern unsigned int sysctl_sched_wakeup_load_threshold;
 
 #ifdef CONFIG_NO_HZ_FULL
@@ -2266,6 +2268,8 @@ static inline bool sched_can_stop_tick(void) { return false; }
 
 =======
 extern unsigned int sysctl_sched_ravg_window;
+=======
+>>>>>>> 66f5232... sched: Window-based load stat improvements
 extern unsigned int sysctl_sched_wakeup_load_threshold;
 
 >>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
