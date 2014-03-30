@@ -9704,6 +9704,7 @@ void __init sched_init(void)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
@@ -9714,6 +9715,11 @@ void __init sched_init(void)
 #ifdef CONFIG_SCHED_FREQ_INPUT
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 =======
+=======
+		rq->cstate = 0;
+		rq->wakeup_latency = 0;
+		rq->wakeup_energy = 0;
+>>>>>>> 94a8973... sched: Make the scheduler aware of C-state for cpus
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 >>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 		rq->cur_freq = 1;
