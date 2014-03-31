@@ -7417,9 +7417,13 @@ static int active_load_balance_cpu_stop(void *data)
 
 	push_task = busiest_rq->push_task;
 	if (push_task) {
+<<<<<<< HEAD
 		if (push_task->on_rq && push_task->state == TASK_RUNNING &&
 		    task_cpu(push_task) == busiest_cpu &&
 		    cpu_online(target_cpu))
+=======
+		if (push_task->on_rq && task_cpu(push_task) == busiest_cpu)
+>>>>>>> 5539cd5... sched: Extend active balance to accept 'push_task' argument
 			move_task(push_task, &env);
 		put_task_struct(push_task);
 		busiest_rq->push_task = NULL;
