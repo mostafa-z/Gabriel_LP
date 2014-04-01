@@ -835,6 +835,10 @@ struct rq {
 >>>>>>> b090ddc... sched: Introduce efficiency, load_scale_factor and capacity
 #endif
 
+#ifdef CONFIG_SCHED_HMP
+	int nr_small_tasks, nr_big_tasks;
+#endif
+
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 	u64 prev_irq_time;
 #endif
@@ -1300,12 +1304,26 @@ static inline unsigned long capacity_scale_cpu_freq(int cpu)
 #ifdef CONFIG_SCHED_HMP
 
 extern void check_for_migration(struct rq *rq, struct task_struct *p);
+extern void pre_big_small_task_count_change(void);
+extern void post_big_small_task_count_change(void);
+extern void inc_nr_big_small_task(struct rq *rq, struct task_struct *p);
+extern void dec_nr_big_small_task(struct rq *rq, struct task_struct *p);
 extern void set_hmp_defaults(void);
 
 #else /* CONFIG_SCHED_HMP */
 
 static inline void check_for_migration(struct rq *rq, struct task_struct *p) { }
+static inline void pre_big_small_task_count_change(void) { }
+static inline void post_big_small_task_count_change(void) { }
 static inline void set_hmp_defaults(void) { }
+
+static inline void inc_nr_big_small_task(struct rq *rq, struct task_struct *p)
+{
+}
+
+static inline void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
+{
+}
 
 #endif /* CONFIG_SCHED_HMP */
 
