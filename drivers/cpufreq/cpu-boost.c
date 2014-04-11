@@ -176,6 +176,17 @@ static void run_boost_migration(unsigned int cpu)
 
 	/* Force policy re-evaluation to trigger adjust notifier. */
 	get_online_cpus();
+	if (cpu_online(src_cpu))
+		/*
+		 * Send an unchanged policy update to the source
+		 * CPU. Even though the policy isn't changed from
+		 * its existing boosted or non-boosted state
+		 * notifying the source CPU will let the governor
+		 * know a boost happened on another CPU and that it
+		 * should re-evaluate the frequency at the next timer
+		 * event without interference from a min sample time.
+		 */
+		cpufreq_update_policy(src_cpu);
 	if (cpu_online(dest_cpu)) {
 		cpufreq_update_policy(dest_cpu);
 		queue_delayed_work_on(dest_cpu, cpu_boost_wq,
@@ -212,6 +223,11 @@ static int boost_migration_notify(struct notifier_block *nb,
 		return NOTIFY_OK;
 
 	pr_debug("Migration: CPU%d --> CPU%d\n", mnd->src_cpu, mnd->dest_cpu);
+
+	/* Avoid deadlock in try_to_wake_up() */
+	if (thread == current)
+		return NOTIFY_OK;
+
 	spin_lock_irqsave(&s->lock, flags);
 	s->pending = true;
 	s->src_cpu = mnd->src_cpu;
