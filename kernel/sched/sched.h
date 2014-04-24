@@ -1255,9 +1255,12 @@ static inline unsigned long capacity_scale_cpu_freq(int cpu)
 
 #ifdef CONFIG_SCHED_HMP
 
+<<<<<<< HEAD
 extern unsigned int sched_enable_hmp;
 extern unsigned int sched_enable_power_aware;
 
+=======
+>>>>>>> 6d57851... sched/rt: Introduce power aware scheduling for real time tasks
 int mostly_idle_cpu(int cpu);
 extern void check_for_migration(struct rq *rq, struct task_struct *p);
 extern void pre_big_small_task_count_change(void);
