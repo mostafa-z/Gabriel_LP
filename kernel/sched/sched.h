@@ -836,7 +836,13 @@ struct rq {
 >>>>>>> b090ddc... sched: Introduce efficiency, load_scale_factor and capacity
 =======
 	u64 window_start;
+<<<<<<< HEAD
 >>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
+=======
+
+	unsigned int curr_runnable_sum;
+	unsigned int prev_runnable_sum;
+>>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
 #endif
 
 #ifdef CONFIG_SCHED_HMP

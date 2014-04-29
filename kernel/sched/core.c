@@ -1333,8 +1333,13 @@ static inline void move_window_start(struct rq *rq, u64 wallclock)
 	nr_windows = div64_u64(delta, sched_ravg_window);
 	rq->window_start += (u64)nr_windows * (u64)sched_ravg_window;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	if (is_idle_task(rq->curr)) {
+=======
+
+	if (nr_windows) {
+>>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
 		if (nr_windows == 1)
 			rq->prev_runnable_sum = rq->curr_runnable_sum;
 		else
@@ -1342,6 +1347,7 @@ static inline void move_window_start(struct rq *rq, u64 wallclock)
 
 		rq->curr_runnable_sum = 0;
 	}
+<<<<<<< HEAD
 }
 
 static inline u64 scale_exec_time(u64 delta, struct rq *rq)
@@ -1365,6 +1371,8 @@ static inline u64 scale_exec_time(u64 delta, struct rq *rq)
 static void update_task_ravg(struct task_struct *p, struct rq *rq,
 			     int event, u64 wallclock, int *long_sleep)
 =======
+=======
+>>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
 }
 
 void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
@@ -1379,6 +1387,8 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 >>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	u64 mark_start = p->ravg.mark_start;
 	u64 window_start;
+	u32 prev_contrib = 0;
+	u32 curr_contrib = 0;
 
 	if (is_idle_task(p) || sched_use_pelt || !rq->window_start)
 <<<<<<< HEAD
@@ -1401,6 +1411,13 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 	move_window_start(rq, wallclock);
 	window_start = rq->window_start;
 
+	/*
+	 * Don't bother accounting for idle task, also we would not want
+	 * to attribute its time to the aggregate RQ busy time
+	 */
+	if (is_idle_task(p))
+		return;
+
 	do {
 		s64 delta = 0;
 <<<<<<< HEAD
@@ -1413,14 +1430,19 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 
 		new_window = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 		if (window_start > mark_start) {
 			delta = window_start - mark_start;
 			nr_full_windows = div64_u64(delta, window_size);
 			window_start -= nr_full_windows * window_size;
 =======
+=======
+
+>>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
 		if (window_start > mark_start) {
 			delta = window_start - mark_start;
+
 			n = div64_u64(delta, window_size);
 			window_start -= n * window_size;
 >>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
@@ -1443,6 +1465,9 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 			p->ravg.sum += delta;
 			if (unlikely(p->ravg.sum > window_size))
 				p->ravg.sum = window_size;
+
+			prev_contrib = curr_contrib;
+			curr_contrib = delta;
 		}
 
 		update_history(rq, p, p->ravg.sum, 1, update_sum,
@@ -1473,6 +1498,14 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 			if (update_sum)
 				sum = window_size;
 			update_history(rq, p, sum, n);
+
+			/*
+			 * We will always shift curr_contrib into
+			 * prev_contrib when tallying the remainder in
+			 * the current window on the next loop
+			 * iteration.
+			 */
+			curr_contrib = sum;
 		}
 >>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 		mark_start = window_start;
@@ -1495,6 +1528,9 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 #endif
 
 	p->ravg.mark_start = wallclock;
+
+	rq->curr_runnable_sum += curr_contrib;
+	rq->prev_runnable_sum += prev_contrib;
 }
 
 unsigned long __weak arch_get_cpu_efficiency(int cpu)
@@ -9579,6 +9615,7 @@ void __init sched_init(void)
 #endif
 #ifdef CONFIG_SCHED_HMP
 		rq->nr_small_tasks = rq->nr_big_tasks = 0;
+		rq->curr_runnable_sum = rq->prev_runnable_sum = 0;
 #endif
 
 		INIT_LIST_HEAD(&rq->cfs_tasks);
