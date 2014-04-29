@@ -1263,7 +1263,11 @@ struct ravg {
 	 * sum_history (empty windows are ignored in sum_history).
 	 */
 	u64 mark_start;
+<<<<<<< HEAD
 	u32 sum, demand, prev_window, partial_demand;
+=======
+	u32 sum, demand;
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	u32 sum_history[RAVG_HIST_SIZE];
 };
 

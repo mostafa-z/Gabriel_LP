@@ -832,7 +832,11 @@ struct rq {
 	int efficiency; /* Differentiate cpus with different IPC capability */
 	int load_scale_factor;
 	int capacity;
+<<<<<<< HEAD
 >>>>>>> b090ddc... sched: Introduce efficiency, load_scale_factor and capacity
+=======
+	u64 window_start;
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 #endif
 
 #ifdef CONFIG_SCHED_HMP

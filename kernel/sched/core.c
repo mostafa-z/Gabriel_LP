@@ -1314,9 +1314,13 @@ static int __init set_sched_ravg_window(char *str)
 
 early_param("sched_ravg_window", set_sched_ravg_window);
 
+<<<<<<< HEAD
 static inline void
 move_window_start(struct rq *rq, u64 wallclock, int update_sum,
 						 struct task_struct *p)
+=======
+static inline void move_window_start(struct rq *rq, u64 wallclock)
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 {
 	s64 delta;
 	int nr_windows;
@@ -1328,6 +1332,7 @@ move_window_start(struct rq *rq, u64 wallclock, int update_sum,
 
 	nr_windows = div64_u64(delta, sched_ravg_window);
 	rq->window_start += (u64)nr_windows * (u64)sched_ravg_window;
+<<<<<<< HEAD
 
 	if (is_idle_task(rq->curr)) {
 		if (nr_windows == 1)
@@ -1359,14 +1364,24 @@ static inline u64 scale_exec_time(u64 delta, struct rq *rq)
 
 static void update_task_ravg(struct task_struct *p, struct rq *rq,
 			     int event, u64 wallclock, int *long_sleep)
+=======
+}
+
+void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 {
 	u32 window_size = sched_ravg_window;
 	int update_sum = (event == PUT_PREV_TASK || event == TASK_UPDATE);
 	int new_window;
+<<<<<<< HEAD
+=======
+	u64 wallclock = sched_clock();
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	u64 mark_start = p->ravg.mark_start;
 	u64 window_start;
 
 	if (is_idle_task(p) || sched_use_pelt || !rq->window_start)
+<<<<<<< HEAD
 		return;
 
 	lockdep_assert_held(&rq->lock);
@@ -1379,28 +1394,51 @@ static void update_task_ravg(struct task_struct *p, struct rq *rq,
 	 * to attribute its time to the aggregate RQ busy time
 	 */
 	if (is_idle_task(p))
+=======
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 		return;
+
+	move_window_start(rq, wallclock);
+	window_start = rq->window_start;
 
 	do {
 		s64 delta = 0;
+<<<<<<< HEAD
 		int nr_full_windows = 0;
+=======
+		int n = 0;
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 		u64 now = wallclock;
 		u32 sum = 0;
 
 		new_window = 0;
+<<<<<<< HEAD
 
 		if (window_start > mark_start) {
 			delta = window_start - mark_start;
 			nr_full_windows = div64_u64(delta, window_size);
 			window_start -= nr_full_windows * window_size;
+=======
+		if (window_start > mark_start) {
+			delta = window_start - mark_start;
+			n = div64_u64(delta, window_size);
+			window_start -= n * window_size;
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 			now = window_start;
 			new_window = 1;
 		}
 
 		if (update_sum) {
+<<<<<<< HEAD
 			delta = now - mark_start;
 			delta = scale_exec_time(delta, rq);
 			BUG_ON(delta < 0);
+=======
+			unsigned int cur_freq = rq->cur_freq;
+			int sf;
+
+			delta = now - mark_start;
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 
 			p->ravg.sum += delta;
 			if (unlikely(p->ravg.sum > window_size))
@@ -1412,6 +1450,7 @@ static void update_task_ravg(struct task_struct *p, struct rq *rq,
 		if (!new_window)
 			break;
 
+<<<<<<< HEAD
 		if (nr_full_windows) {
 			window_start += nr_full_windows * window_size;
 			if (update_sum)
@@ -1426,6 +1465,16 @@ static void update_task_ravg(struct task_struct *p, struct rq *rq,
 			rq->curr_runnable_sum = p->ravg.partial_demand;
 		}
 
+=======
+		update_history(rq, p, p->ravg.sum, 1);
+
+		if (n) {
+			window_start += n * window_size;
+			if (update_sum)
+				sum = window_size;
+			update_history(rq, p, sum, n);
+		}
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 		mark_start = window_start;
 	} while (new_window);
 
@@ -1478,6 +1527,49 @@ static void init_cpu_efficiency(void)
 }
 
 static inline void mark_task_starting(struct task_struct *p)
+<<<<<<< HEAD
+=======
+{
+	p->ravg.mark_start = sched_clock();
+}
+
+static unsigned int sync_cpu;
+static u64 sched_init_jiffy;
+static u64 sched_clock_at_init_jiffy;
+
+static inline void set_window_start(struct rq *rq)
+{
+	int cpu = cpu_of(rq);
+	struct rq *sync_rq = cpu_rq(sync_cpu);
+
+	if (likely(rq->window_start))
+		return;
+
+	if (cpu == sync_cpu) {
+		rq->window_start = sched_clock();
+		sched_init_jiffy = get_jiffies_64();
+		sched_clock_at_init_jiffy = rq->window_start;
+	} else {
+		raw_spin_unlock(&rq->lock);
+		double_rq_lock(rq, sync_rq);
+		rq->window_start = cpu_rq(sync_cpu)->window_start;
+		raw_spin_unlock(&sync_rq->lock);
+	}
+
+	rq->curr->ravg.mark_start = rq->window_start;
+}
+
+static inline void migrate_sync_cpu(int cpu)
+{
+	if (cpu == sync_cpu)
+		sync_cpu = smp_processor_id();
+}
+
+#else	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
+
+static inline void
+update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 {
 	struct rq *rq = task_rq(p);
 	u64 wallclock = sched_clock();
@@ -1501,8 +1593,18 @@ static inline void set_window_start(struct rq *rq)
 	int cpu = cpu_of(rq);
 	struct rq *sync_rq = cpu_rq(sync_cpu);
 
+<<<<<<< HEAD
 	if (rq->window_start || !sched_enable_hmp)
 		return;
+=======
+static inline void mark_task_starting(struct task_struct *p) {}
+
+static inline void set_window_start(struct rq *rq) {}
+
+static inline void migrate_sync_cpu(int cpu) {}
+
+#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 
 	if (cpu == sync_cpu) {
 		rq->window_start = sched_clock();
@@ -3294,6 +3396,7 @@ void wake_up_new_task(struct task_struct *p)
 
 	rq = __task_rq_lock(p);
 	mark_task_starting(p);
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_FREQ_INPUT
 	if (rq_freq_margin(task_rq(p)) <
 	    sysctl_sched_freq_inc_notify_slack_pct)
@@ -3301,6 +3404,8 @@ void wake_up_new_task(struct task_struct *p)
 			&load_alert_notifier_head, 0,
 			(void *)(long)task_cpu(p));
 #endif
+=======
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	activate_task(rq, p, 0);
 	p->on_rq = 1;
 #ifdef TRACE_CRAP
@@ -9466,7 +9571,11 @@ void __init sched_init(void)
 		rq->efficiency = 1024;
 		rq->capacity = 1024;
 		rq->load_scale_factor = 1024;
+<<<<<<< HEAD
 >>>>>>> b090ddc... sched: Introduce efficiency, load_scale_factor and capacity
+=======
+		rq->window_start = 0;
+>>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 #endif
 #ifdef CONFIG_SCHED_HMP
 		rq->nr_small_tasks = rq->nr_big_tasks = 0;
