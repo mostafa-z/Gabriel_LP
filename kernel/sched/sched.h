@@ -1183,7 +1183,13 @@ extern unsigned int sched_upmigrate;
 extern unsigned int sched_downmigrate;
 extern unsigned int sched_init_task_load_pelt;
 extern unsigned int sched_init_task_load_windows;
+<<<<<<< HEAD
 >>>>>>> dbd6752... sched: Basic task placement support for HMP systems
+=======
+extern void fixup_nr_big_small_task(int cpu);
+
+u64 scale_task_load(u64 load, int cpu);
+>>>>>>> 2e2e8b9... sched: add sched_get_busy, sched_set_window APIs
 
 static inline void
 inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
