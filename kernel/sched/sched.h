@@ -807,10 +807,15 @@ struct rq {
 	 */
 	unsigned int cur_freq, max_freq, min_freq, max_possible_freq;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	struct cpumask freq_domain_cpumask;
 
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
+=======
+	struct cpumask freq_domain_cpumask;
+
+>>>>>>> 1b7815f... sched: add migration load change notifier for frequency guidance
 	u64 cumulative_runnable_avg;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1189,7 +1194,11 @@ extern unsigned int sched_init_task_load_windows;
 extern void fixup_nr_big_small_task(int cpu);
 
 u64 scale_task_load(u64 load, int cpu);
+<<<<<<< HEAD
 >>>>>>> 2e2e8b9... sched: add sched_get_busy, sched_set_window APIs
+=======
+unsigned int max_task_load(void);
+>>>>>>> 1b7815f... sched: add migration load change notifier for frequency guidance
 
 static inline void
 inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)

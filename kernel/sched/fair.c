@@ -1171,7 +1171,7 @@ static inline unsigned int task_load(struct task_struct *p)
 	return p->ravg.demand;
 }
 
-static inline unsigned int max_task_load(void)
+unsigned int max_task_load(void)
 {
 <<<<<<< HEAD
 	return LOAD_AVG_MAX;
