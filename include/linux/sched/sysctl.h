@@ -46,12 +46,19 @@ extern unsigned int sysctl_sched_task_migrate_notify_pct;
 
 #ifdef CONFIG_SCHED_HMP
 extern unsigned int sysctl_sched_enable_hmp_task_placement;
+extern unsigned int sysctl_sched_spill_nr_run;
 extern unsigned int sysctl_sched_mostly_idle_nr_run;
+extern unsigned int sysctl_sched_spill_load_pct;
 extern unsigned int sysctl_sched_mostly_idle_load_pct;
 extern unsigned int sysctl_sched_small_task_pct;
 extern unsigned int sysctl_sched_upmigrate_pct;
 extern unsigned int sysctl_sched_downmigrate_pct;
 extern int sysctl_sched_upmigrate_min_nice;
+<<<<<<< HEAD
+=======
+extern unsigned int sysctl_sched_enable_power_aware;
+extern unsigned int sysctl_sched_powerband_limit_pct;
+>>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
 
 #else /* CONFIG_SCHED_HMP */
 

@@ -2337,11 +2337,17 @@ enum rq_nohz_flag_bits {
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #define NOHZ_KICK_ANY 0
 #define NOHZ_KICK_RESTRICT 1
 
 =======
 >>>>>>> 0e85583... sched: Move cputime code to its own file
+=======
+#define NOHZ_KICK_ANY 0
+#define NOHZ_KICK_RESTRICT 1
+
+>>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 
 DECLARE_PER_CPU(u64, cpu_hardirq_time);
