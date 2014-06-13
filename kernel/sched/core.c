@@ -1191,9 +1191,12 @@ int rq_freq_margin(struct rq *rq)
 	int margin;
 	u64 demand;
 
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 		return INT_MAX;
 
+=======
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 	demand = scale_load_to_cpu(rq->prev_runnable_sum, rq->cpu);
 	demand *= 128;
 	demand = div64_u64(demand, max_task_load());

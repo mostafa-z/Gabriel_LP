@@ -1151,6 +1151,7 @@ extern unsigned int sched_init_task_load_windows;
 extern void fixup_nr_big_small_task(int cpu);
 
 u64 scale_load_to_cpu(u64 load, int cpu);
+<<<<<<< HEAD
 unsigned int max_task_load(void);
 =======
 =======
@@ -1197,6 +1198,8 @@ u64 scale_task_load(u64 load, int cpu);
 <<<<<<< HEAD
 >>>>>>> 2e2e8b9... sched: add sched_get_busy, sched_set_window APIs
 =======
+=======
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 unsigned int max_task_load(void);
 >>>>>>> 1b7815f... sched: add migration load change notifier for frequency guidance
 

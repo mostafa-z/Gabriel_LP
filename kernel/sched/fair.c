@@ -1317,7 +1317,7 @@ void set_hmp_defaults(void)
  * Scale that in reference to a given cpu, accounting for how bad it is
  * in reference to "best cpu".
  */
-u64 scale_task_load(u64 task_load, int cpu)
+u64 scale_load_to_cpu(u64 task_load, int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
 
@@ -1330,9 +1330,18 @@ u64 scale_task_load(u64 task_load, int cpu)
 /* Is a task "big" on its current cpu */
 static inline int is_big_task(struct task_struct *p)
 {
+<<<<<<< HEAD
 	unsigned int load = task_load(p);
+=======
+	u64 load = task_load(p);
+	int nice = TASK_NICE(p);
 
-	load = scale_task_load(load, task_cpu(p));
+	/* Todo: Provide cgroup-based control as well? */
+	if (nice > sysctl_sched_upmigrate_min_nice)
+		return 0;
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
+
+	load = scale_load_to_cpu(load, task_cpu(p));
 
 	return load > sched_upmigrate;
 }
@@ -1350,13 +1359,13 @@ static inline u64 cpu_load(int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
 
-	return scale_task_load(rq->cumulative_runnable_avg, cpu);
+	return scale_load_to_cpu(rq->cumulative_runnable_avg, cpu);
 }
 
 static int
 spill_threshold_crossed(struct task_struct *p, struct rq *rq, int cpu)
 {
-	u32 total_load = cpu_load(cpu) + scale_task_load(task_load(p), cpu);
+	u64 total_load = cpu_load(cpu) + scale_load_to_cpu(task_load(p), cpu);
 
 	if (total_load > sched_spill_load ||
 	    (rq->nr_running + 1) > sysctl_sched_spill_nr_run)
@@ -1383,7 +1392,7 @@ int mostly_idle_cpu(int cpu)
  */
 static int task_will_fit(struct task_struct *p, int cpu)
 {
-	unsigned int load;
+	u64 load;
 	int prev_cpu = task_cpu(p);
 	struct rq *prev_rq = cpu_rq(prev_cpu);
 	struct rq *rq = cpu_rq(cpu);
@@ -1395,7 +1404,16 @@ static int task_will_fit(struct task_struct *p, int cpu)
 			 rq->capacity == max_capacity)
 		return 1;
 
+<<<<<<< HEAD
 	load = scale_task_load(task_load(p), cpu);
+=======
+	if (sched_boost()) {
+		if (rq->capacity > prev_rq->capacity)
+			return 1;
+
+	} else {
+		load = scale_load_to_cpu(task_load(p), cpu);
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 
 	if (prev_rq->capacity > rq->capacity)
 		upmigrate = sched_downmigrate;
@@ -1479,6 +1497,7 @@ unsigned int power_cost_at_freq(int cpu, unsigned int freq)
 static unsigned int power_cost(struct task_struct *p, int cpu)
 >>>>>>> 6d57851... sched/rt: Introduce power aware scheduling for real time tasks
 {
+<<<<<<< HEAD
 	/* Todo: account cluster cost etc */
 	return cpu_rq(cpu)->capacity;
 }
@@ -1498,6 +1517,25 @@ int mostly_idle_cpu(int cpu)
 
 	return (total_load <= sched_mostly_idle_load
 		&& rq->nr_running <= sysctl_sched_mostly_idle_nr_run);
+=======
+	u64 demand;
+	unsigned int task_freq;
+	unsigned int cur_freq = cpu_rq(cpu)->cur_freq;
+
+	if (!sysctl_sched_enable_power_aware)
+		return cpu_rq(cpu)->capacity;
+
+	/* calculate % of max freq needed */
+	demand = scale_load_to_cpu(task_load(p), cpu) * 100;
+	demand = div64_u64(demand, max_task_load());
+
+	task_freq = demand * cpu_rq(cpu)->max_possible_freq;
+	task_freq /= 100; /* khz needed */
+
+	task_freq = max(cur_freq, task_freq);
+
+	return power_cost_at_freq(cpu, task_freq);
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 }
 
 <<<<<<< HEAD
@@ -1508,11 +1546,11 @@ static int best_small_task_cpu(struct task_struct *p)
 {
 	int best_busy_cpu = -1, best_fallback_cpu = -1;
 	int min_cost_cpu = -1, min_cstate_cpu = -1;
-	int min_busy_load = INT_MAX;
 	int min_cstate = INT_MAX;
 	int min_fallback_cpu_cost = INT_MAX;
 	int min_cost = INT_MAX;
-	int i, load, cstate, cpu_cost;
+	int i, cstate, cpu_cost;
+	u64 load, min_busy_load = ULLONG_MAX;
 	int cost_list[nr_cpu_ids];
 	struct cpumask search_cpus;
 
@@ -1585,9 +1623,13 @@ static int select_best_cpu(struct task_struct *p, int target)
 	int prev_cpu = task_cpu(p);
 	int cpu_cost, min_cost = INT_MAX;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	int load, min_load = INT_MAX, min_fallback_load = INT_MAX;
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+	u64 load, min_load = ULLONG_MAX, min_fallback_load = ULLONG_MAX;
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 	int small_task = is_small_task(p);
 
 	trace_sched_task_load(p);
@@ -6588,10 +6630,14 @@ struct sd_lb_stats {
 	unsigned long busiest_nr_small_tasks;
 	unsigned long busiest_nr_big_tasks;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	u64 busiest_scaled_load;
 =======
 	unsigned long busiest_scaled_load;
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+	u64 busiest_scaled_load;
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 #endif
 	unsigned long busiest_group_capacity;
 	unsigned long busiest_has_capacity;
@@ -6610,10 +6656,14 @@ struct sg_lb_stats {
 #ifdef CONFIG_SCHED_HMP
 	unsigned long sum_nr_big_tasks, sum_nr_small_tasks;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	u64 group_cpu_load; /* Scaled load of all CPUs of the group */
 =======
 	unsigned long group_cpu_load; /* Scaled load of all CPUs of the group */
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+	u64 group_cpu_load; /* Scaled load of all CPUs of the group */
+>>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 #endif
 	unsigned long sum_weighted_load; /* Weighted load of group's tasks */
 	unsigned long group_capacity;
