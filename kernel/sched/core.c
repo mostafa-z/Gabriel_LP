@@ -3508,6 +3508,7 @@ unsigned long nr_iowait(void)
 }
 
 unsigned long nr_iowait_cpu(int cpu)
+<<<<<<< HEAD
 {
 	struct rq *this = cpu_rq(cpu);
 	return atomic_read(&this->nr_iowait);
@@ -3554,6 +3555,8 @@ unsigned long avg_nr_running(void)
 EXPORT_SYMBOL(avg_nr_running);
 
 unsigned long avg_cpu_nr_running(unsigned int cpu)
+=======
+>>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 {
 	unsigned int seqcnt, ave_nr_running;
 

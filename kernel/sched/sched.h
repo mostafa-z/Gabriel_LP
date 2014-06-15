@@ -663,12 +663,15 @@ struct rq {
 	int skip_clock_update;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	/* time-based average load */
 	u64 nr_last_stamp;
 	unsigned int ave_nr_running;
 
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
+=======
+>>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 	/* capture load from *all* tasks on this cpu: */
 	struct load_weight load;
 	unsigned long nr_load_updates;
@@ -1665,6 +1668,7 @@ static inline u64 steal_ticks(u64 steal)
 }
 #endif
 
+<<<<<<< HEAD
 /* 27 ~= 134217728ns = 134.2ms
  * 26 ~=  67108864ns =  67.1ms
  * 25 ~=  33554432ns =  33.5ms
@@ -1708,6 +1712,8 @@ static inline void do_avg_nr_running(struct rq *rq)
 }
 #endif
 
+=======
+>>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 static inline void inc_nr_running(struct rq *rq)
 {
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
@@ -1715,6 +1721,7 @@ static inline void inc_nr_running(struct rq *rq)
 #endif
 
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, true);
+<<<<<<< HEAD
 <<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 	write_seqcount_begin(&nr_stats->ave_seqcnt);
@@ -1743,6 +1750,8 @@ static inline void inc_nr_running(struct rq *rq)
 #endif
 =======
 	do_avg_nr_running(rq);
+=======
+>>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 	rq->nr_running++;
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
 }
@@ -1755,6 +1764,7 @@ static inline void dec_nr_running(struct rq *rq)
 
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, false);
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 	write_seqcount_begin(&nr_stats->ave_seqcnt);
 	nr_stats->ave_nr_running = do_avg_nr_running(rq);
@@ -1766,6 +1776,8 @@ static inline void dec_nr_running(struct rq *rq)
 #endif
 =======
 	do_avg_nr_running(rq);
+=======
+>>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 	rq->nr_running--;
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
 }
