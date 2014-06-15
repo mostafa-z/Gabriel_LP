@@ -838,7 +838,11 @@ static inline u64 rq_clock_task(struct rq *rq)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+=======
+#ifdef CONFIG_INTELLI_PLUG
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 struct nr_stats_s {
 	/* time-based average load */
 	u64 nr_last_stamp;
@@ -846,7 +850,16 @@ struct nr_stats_s {
 	seqcount_t ave_seqcnt;
 };
 
+<<<<<<< HEAD
 #define NR_AVE_PERIOD_EXP	28
+=======
+/* 27 ~= 134217728ns = 134.2ms
+ * 26 ~=  67108864ns =  67.1ms
+ * 25 ~=  33554432ns =  33.5ms
+ * 24 ~=  16777216ns =  16.8ms
+ */
+#define NR_AVE_PERIOD_EXP	27
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 #define NR_AVE_SCALE(x)		((x) << FSHIFT)
 #define NR_AVE_PERIOD		(1 << NR_AVE_PERIOD_EXP)
 #define NR_AVE_DIV_PERIOD(x)	((x) >> NR_AVE_PERIOD_EXP)
@@ -854,8 +867,11 @@ struct nr_stats_s {
 DECLARE_PER_CPU(struct nr_stats_s, runqueue_stats);
 #endif
 
+<<<<<<< HEAD
 =======
 >>>>>>> ab252a7... sched: Use an accessor to read the rq clock
+=======
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 #ifdef CONFIG_SMP
 
 #define rcu_dereference_check_sched_domain(p) \
@@ -1685,17 +1701,23 @@ static inline u64 steal_ticks(u64 steal)
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 static inline unsigned int do_avg_nr_running(struct rq *rq)
 =======
 static inline void do_avg_nr_running(struct rq *rq)
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
+=======
+#ifdef CONFIG_INTELLI_PLUG
+static inline unsigned int do_avg_nr_running(struct rq *rq)
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 {
 
 	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
 	unsigned int ave_nr_running = nr_stats->ave_nr_running;
 	s64 nr, deltax;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	deltax = rq->clock_task - nr_stats->nr_last_stamp;
 =======
@@ -1717,18 +1739,41 @@ static inline void do_avg_nr_running(struct rq *rq)
 static inline void inc_nr_running(struct rq *rq)
 {
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+=======
+	deltax = rq->clock_task - nr_stats->nr_last_stamp;
+	nr = NR_AVE_SCALE(rq->nr_running);
+
+	if (deltax > NR_AVE_PERIOD)
+		ave_nr_running = nr;
+	else
+		ave_nr_running +=
+			NR_AVE_DIV_PERIOD(deltax * (nr - ave_nr_running));
+
+	return ave_nr_running;
+}
+#endif
+
+static inline void inc_nr_running(struct rq *rq)
+{
+#ifdef CONFIG_INTELLI_PLUG
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
 #endif
 
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, true);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+=======
+#ifdef CONFIG_INTELLI_PLUG
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 	write_seqcount_begin(&nr_stats->ave_seqcnt);
 	nr_stats->ave_nr_running = do_avg_nr_running(rq);
 	nr_stats->nr_last_stamp = rq->clock_task;
 #endif
 	rq->nr_running++;
+<<<<<<< HEAD
 
 	if (rq->nr_running == 2) {
 #ifdef CONFIG_SMP
@@ -1754,22 +1799,36 @@ static inline void inc_nr_running(struct rq *rq)
 >>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 	rq->nr_running++;
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
+=======
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_end(&nr_stats->ave_seqcnt);
+#endif
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 }
 
 static inline void dec_nr_running(struct rq *rq)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+=======
+#ifdef CONFIG_INTELLI_PLUG
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 	struct nr_stats_s *nr_stats = &per_cpu(runqueue_stats, rq->cpu);
 #endif
 
 	sched_update_nr_prod(cpu_of(rq), rq->nr_running, false);
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+=======
+#ifdef CONFIG_INTELLI_PLUG
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 	write_seqcount_begin(&nr_stats->ave_seqcnt);
 	nr_stats->ave_nr_running = do_avg_nr_running(rq);
 	nr_stats->nr_last_stamp = rq->clock_task;
 #endif
+<<<<<<< HEAD
 	rq->nr_running--;
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 	write_seqcount_end(&nr_stats->ave_seqcnt);
@@ -1780,6 +1839,12 @@ static inline void dec_nr_running(struct rq *rq)
 >>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 	rq->nr_running--;
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
+=======
+	rq->nr_running--;
+#ifdef CONFIG_INTELLI_PLUG
+	write_seqcount_end(&nr_stats->ave_seqcnt);
+#endif
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 }
 
 extern void update_rq_clock(struct rq *rq);

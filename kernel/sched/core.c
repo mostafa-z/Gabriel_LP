@@ -126,7 +126,11 @@ void start_bandwidth_timer(struct hrtimer *period_timer, ktime_t period)
 DEFINE_MUTEX(sched_domains_mutex);
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+=======
+#ifdef CONFIG_INTELLI_PLUG
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 DEFINE_PER_CPU_SHARED_ALIGNED(struct nr_stats_s, runqueue_stats);
 #endif
 
@@ -3520,12 +3524,21 @@ unsigned long this_cpu_load(void)
 	return this->cpu_load[0];
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
 
 <<<<<<< HEAD
+=======
+#ifdef CONFIG_INTELLI_PLUG
+unsigned long avg_nr_running(void)
+{
+	unsigned long i, sum = 0;
+	unsigned int seqcnt, ave_nr_running;
+
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 	for_each_online_cpu(i) {
 		struct nr_stats_s *stats = &per_cpu(runqueue_stats, i);
 		struct rq *q = cpu_rq(i);
@@ -3545,14 +3558,18 @@ unsigned long avg_nr_running(void)
 
 		sum += ave_nr_running;
 	}
+<<<<<<< HEAD
 =======
 	for_each_online_cpu(i)
 		sum += cpu_rq(i)->ave_nr_running;
 >>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
+=======
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 
 	return sum;
 }
 EXPORT_SYMBOL(avg_nr_running);
+<<<<<<< HEAD
 
 unsigned long avg_cpu_nr_running(unsigned int cpu)
 =======
@@ -3579,6 +3596,8 @@ unsigned long avg_cpu_nr_running(unsigned int cpu)
 	return ave_nr_running;
 }
 EXPORT_SYMBOL(avg_cpu_nr_running);
+=======
+>>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 #endif
 
 /*
