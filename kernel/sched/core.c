@@ -3523,8 +3523,8 @@ unsigned long this_cpu_load(void)
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
-	unsigned int seqcnt, ave_nr_running;
 
+<<<<<<< HEAD
 	for_each_online_cpu(i) {
 		struct nr_stats_s *stats = &per_cpu(runqueue_stats, i);
 		struct rq *q = cpu_rq(i);
@@ -3544,6 +3544,10 @@ unsigned long avg_nr_running(void)
 
 		sum += ave_nr_running;
 	}
+=======
+	for_each_online_cpu(i)
+		sum += cpu_rq(i)->ave_nr_running;
+>>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
 
 	return sum;
 }
