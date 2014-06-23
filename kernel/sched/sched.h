@@ -660,6 +660,7 @@ struct root_domain {
 	/* Indicate more than one runnable task for any CPU */
 	bool overload;
 
+<<<<<<< HEAD
 	/*
 	 * The bit corresponding to a CPU gets set here if such CPU has more
 	 * than one runnable -deadline task (as it is below for RT tasks).
@@ -669,6 +670,8 @@ struct root_domain {
 	struct dl_bw dl_bw;
 	struct cpudl cpudl;
 
+=======
+>>>>>>> c8cc23c... sched/fair: Implement fast idling of CPUs when the system is partially loaded
 	/*
 	 * The bit corresponding to a CPU gets set here if such CPU has more
 	 * than one runnable -deadline task (as it is below for RT tasks).
@@ -2073,14 +2076,23 @@ static inline void inc_nr_running(struct rq *rq)
 #ifdef CONFIG_NO_HZ_FULL
 =======
 
-#ifdef CONFIG_NO_HZ_FULL
 	if (rq->nr_running == 2) {
+<<<<<<< HEAD
 >>>>>>> 4802cc2... sched: Kick full dynticks CPU that have more than one task enqueued.
+=======
+#ifdef CONFIG_SMP
+		if (!rq->rd->overload)
+			rq->rd->overload = true;
+#endif
+
+#ifdef CONFIG_NO_HZ_FULL
+>>>>>>> c8cc23c... sched/fair: Implement fast idling of CPUs when the system is partially loaded
 		if (tick_nohz_full_cpu(rq->cpu)) {
 			/* Order rq->nr_running write against the IPI */
 			smp_wmb();
 			smp_send_reschedule(rq->cpu);
 		}
+<<<<<<< HEAD
 <<<<<<< HEAD
 #endif
 	}
@@ -2088,6 +2100,10 @@ static inline void inc_nr_running(struct rq *rq)
        }
 #endif
 >>>>>>> 4802cc2... sched: Kick full dynticks CPU that have more than one task enqueued.
+=======
+#endif
+	}
+>>>>>>> c8cc23c... sched/fair: Implement fast idling of CPUs when the system is partially loaded
 
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 	write_seqcount_end(&nr_stats->ave_seqcnt);
