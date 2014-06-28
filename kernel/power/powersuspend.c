@@ -187,6 +187,7 @@ EXPORT_SYMBOL(set_power_suspend_state_panel_hook);
 
 /* ------------------------------------------ sysfs interface ------------------------------------------ */
 
+#if 0 /* do not export controls, this mode is not for users to play with. */
 static ssize_t power_suspend_state_show(struct kobject *kobj,
 		struct kobj_attribute *attr, char *buf)
 {
@@ -274,6 +275,7 @@ static struct attribute_group power_suspend_attr_group =
 };
 
 static struct kobject *power_suspend_kobj;
+#endif
 
 /* ------------------ sysfs interface ----------------------- */
 static int __init power_suspend_init(void)
