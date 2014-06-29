@@ -127,10 +127,14 @@ DEFINE_MUTEX(sched_domains_mutex);
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 =======
 #ifdef CONFIG_INTELLI_PLUG
 >>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
+=======
+#ifdef CONFIG_INTELLI_HOTPLUG
+>>>>>>> cf79156... intelli_plug: Refactor and update
 DEFINE_PER_CPU_SHARED_ALIGNED(struct nr_stats_s, runqueue_stats);
 #endif
 
@@ -3525,6 +3529,7 @@ unsigned long this_cpu_load(void)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 unsigned long avg_nr_running(void)
 {
@@ -3533,6 +3538,9 @@ unsigned long avg_nr_running(void)
 <<<<<<< HEAD
 =======
 #ifdef CONFIG_INTELLI_PLUG
+=======
+#ifdef CONFIG_INTELLI_HOTPLUG
+>>>>>>> cf79156... intelli_plug: Refactor and update
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
