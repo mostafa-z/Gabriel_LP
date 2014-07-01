@@ -9730,9 +9730,13 @@ void __init sched_init(void)
 		rq->min_freq = 1;
 		rq->max_possible_freq = 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		rq->max_possible_capacity = 0;
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
+=======
+		rq->max_possible_capacity = 0;
+>>>>>>> 921f008... sched: Add a per rq max_possible_capacity for use in power calculations
 		rq->cumulative_runnable_avg = 0;
 <<<<<<< HEAD
 <<<<<<< HEAD

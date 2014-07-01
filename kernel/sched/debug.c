@@ -306,6 +306,24 @@ static void print_cpu(struct seq_file *m, int cpu)
 	P(cpu_load[2]);
 	P(cpu_load[3]);
 	P(cpu_load[4]);
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+	P(cpu_power);
+#endif
+#if defined(CONFIG_SCHED_HMP) || defined(CONFIG_SCHED_FREQ_INPUT)
+	P(load_scale_factor);
+	P(capacity);
+	P(max_possible_capacity);
+	P(efficiency);
+	P(cur_freq);
+	P(max_freq);
+#endif
+#ifdef CONFIG_SCHED_HMP
+	P(nr_big_tasks);
+	P(nr_small_tasks);
+#endif
+>>>>>>> 921f008... sched: Add a per rq max_possible_capacity for use in power calculations
 #undef P
 #undef PN
 
