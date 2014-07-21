@@ -1268,11 +1268,16 @@ static inline unsigned long capacity_scale_cpu_freq(int cpu)
 #ifdef CONFIG_SCHED_HMP
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern unsigned int sched_enable_hmp;
 extern unsigned int sched_enable_power_aware;
 
 =======
 >>>>>>> 6d57851... sched/rt: Introduce power aware scheduling for real time tasks
+=======
+extern unsigned int sysctl_sched_enable_hmp_task_placement;
+
+>>>>>>> 25b27de... sched: support legacy mode better
 int mostly_idle_cpu(int cpu);
 extern void check_for_migration(struct rq *rq, struct task_struct *p);
 extern void pre_big_small_task_count_change(void);
@@ -1284,7 +1289,11 @@ extern unsigned int power_cost_at_freq(int cpu, unsigned int freq);
 
 #else /* CONFIG_SCHED_HMP */
 
+<<<<<<< HEAD
 #define sched_enable_hmp 0
+=======
+#define sysctl_sched_enable_hmp_task_placement 0
+>>>>>>> 25b27de... sched: support legacy mode better
 
 static inline void check_for_migration(struct rq *rq, struct task_struct *p) { }
 static inline void pre_big_small_task_count_change(void) { }

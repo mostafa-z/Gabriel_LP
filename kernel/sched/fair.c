@@ -1382,6 +1382,66 @@ int mostly_idle_cpu(int cpu)
 		&& rq->nr_running <= sysctl_sched_mostly_idle_nr_run);
 }
 
+<<<<<<< HEAD
+=======
+static int boost_refcount;
+static DEFINE_SPINLOCK(boost_lock);
+static DEFINE_MUTEX(boost_mutex);
+
+static inline int sched_boost(void)
+{
+	return boost_refcount > 0;
+}
+
+int sched_set_boost(int enable)
+{
+	unsigned long flags;
+	int ret = 0;
+
+	if (!sysctl_sched_enable_hmp_task_placement)
+		return -EINVAL;
+
+	spin_lock_irqsave(&boost_lock, flags);
+
+	if (enable == 1) {
+		boost_refcount++;
+	} else if (!enable) {
+		if (boost_refcount >= 1)
+			boost_refcount--;
+		else
+			ret = -EINVAL;
+	} else {
+		ret = -EINVAL;
+	}
+
+	spin_unlock_irqrestore(&boost_lock, flags);
+
+	return ret;
+}
+
+int sched_boost_handler(struct ctl_table *table, int write,
+		void __user *buffer, size_t *lenp,
+		loff_t *ppos)
+{
+	int ret;
+
+	mutex_lock(&boost_mutex);
+	if (!write)
+		sysctl_sched_boost = sched_boost();
+
+	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+	if (ret || !write)
+		goto done;
+
+	ret = (sysctl_sched_boost <= 1) ?
+		sched_set_boost(sysctl_sched_boost) : -EINVAL;
+
+done:
+	mutex_unlock(&boost_mutex);
+	return ret;
+}
+
+>>>>>>> 25b27de... sched: support legacy mode better
 /*
  * Task will fit on a cpu if it's bandwidth consumption on that cpu
  * will be less than sched_upmigrate. A big task that was previously
@@ -1715,7 +1775,14 @@ done:
 
 void inc_nr_big_small_task(struct rq *rq, struct task_struct *p)
 {
+<<<<<<< HEAD
 	if (!task_will_fit(p, cpu_of(rq)))
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+		return;
+
+	if (is_big_task(p))
+>>>>>>> 25b27de... sched: support legacy mode better
 		rq->nr_big_tasks++;
 	else if (is_small_task(p))
 		rq->nr_small_tasks++;
@@ -1723,7 +1790,14 @@ void inc_nr_big_small_task(struct rq *rq, struct task_struct *p)
 
 void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 {
+<<<<<<< HEAD
 	if (!task_will_fit(p, cpu_of(rq)))
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+		return;
+
+	if (is_big_task(p))
+>>>>>>> 25b27de... sched: support legacy mode better
 		rq->nr_big_tasks--;
 	else if (is_small_task(p))
 		rq->nr_small_tasks--;
@@ -1788,7 +1862,7 @@ int sched_hmp_proc_update_handler(struct ctl_table *table, int write,
 	unsigned int old_val = *data;
 
 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
-	if (ret || !write)
+	if (ret || !write || !sysctl_sched_enable_hmp_task_placement)
 		return ret;
 
 	if ((sysctl_sched_downmigrate_pct > sysctl_sched_upmigrate_pct) ||
@@ -1870,6 +1944,13 @@ static inline int migration_needed(struct rq *rq, struct task_struct *p)
 {
 	int nice = TASK_NICE(p);
 
+<<<<<<< HEAD
+=======
+	if (is_small_task(p) || p->state != TASK_RUNNING ||
+			!sysctl_sched_enable_hmp_task_placement)
+		return 0;
+
+>>>>>>> 25b27de... sched: support legacy mode better
 	/* Todo: cgroup-based control? */
 	if (nice > sysctl_sched_upmigrate_min_nice &&
 		rq->capacity > min_capacity)
@@ -3681,7 +3762,11 @@ add_to_scaled_stat(int cpu, struct sched_avg *sa, u64 delta)
 	u64 scaled_delta;
 	int sf;
 
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return;
 
 	if (unlikely(cur_freq > max_possible_freq ||
@@ -3698,7 +3783,11 @@ add_to_scaled_stat(int cpu, struct sched_avg *sa, u64 delta)
 
 static inline void decay_scaled_stat(struct sched_avg *sa, u64 periods)
 {
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return;
 
 	sa->runnable_avg_sum_scaled =
@@ -7459,7 +7548,10 @@ ret:
 	return NULL;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
+=======
+>>>>>>> 25b27de... sched: support legacy mode better
 static struct rq *find_busiest_queue_hmp(struct lb_env *env,
 				     struct sched_group *group)
 {
@@ -7481,6 +7573,7 @@ static struct rq *find_busiest_queue_hmp(struct lb_env *env,
 
 	return busiest;
 }
+<<<<<<< HEAD
 #else
 static inline struct rq *find_busiest_queue_hmp(struct lb_env *env,
 				     struct sched_group *group)
@@ -7488,6 +7581,8 @@ static inline struct rq *find_busiest_queue_hmp(struct lb_env *env,
 	return NULL;
 }
 #endif
+=======
+>>>>>>> 25b27de... sched: support legacy mode better
 
 /*
  * find_busiest_queue - find the busiest runqueue among the cpus in group.
@@ -7499,7 +7594,11 @@ static struct rq *find_busiest_queue(struct lb_env *env,
 	unsigned long busiest_load = 0, busiest_power = 1;
 	int i;
 
+<<<<<<< HEAD
 	if (sched_enable_hmp)
+=======
+	if (sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return find_busiest_queue_hmp(env, group);
 
 	for_each_cpu_and(i, sched_group_cpus(group), env->cpus) {
@@ -8393,6 +8492,7 @@ end:
 	clear_bit(NOHZ_BALANCE_KICK, nohz_flags(this_cpu));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 <<<<<<< HEAD
 static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
@@ -8400,6 +8500,9 @@ static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
 
 static inline int _nohz_kick_needed(struct rq *rq, int *type)
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
+>>>>>>> 25b27de... sched: support legacy mode better
 {
 	struct sched_domain *sd;
 	int i, cpu = rq->cpu;
@@ -8434,18 +8537,25 @@ static inline int _nohz_kick_needed(struct rq *rq, int *type)
 	return 0;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 #else
 static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
 {
 	return 0;
 }
 #endif
+=======
+>>>>>>> 25b27de... sched: support legacy mode better
 
 static inline int _nohz_kick_needed(struct rq *rq, int *type)
 {
 	unsigned long now = jiffies;
 
+<<<<<<< HEAD
 	if (sched_enable_hmp)
+=======
+	if (sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return _nohz_kick_needed_hmp(rq, type);
 
 	/*
@@ -8461,6 +8571,7 @@ static inline int _nohz_kick_needed(struct rq *rq, int *type)
 	return (rq->nr_running >= 2);
 }
 
+<<<<<<< HEAD
 =======
 
 #else /* CONFIG_SCHED_HMP */
@@ -8473,6 +8584,8 @@ static inline int _nohz_kick_needed(struct rq *rq, int *type)
 #endif /* CONFIG_SCHED_HMP */
 
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+>>>>>>> 25b27de... sched: support legacy mode better
 /*
  * Current heuristic for kicking the idle load balancer in the presence
  * of an idle cpu is the system.

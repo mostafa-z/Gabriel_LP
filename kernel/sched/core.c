@@ -1192,11 +1192,17 @@ int rq_freq_margin(struct rq *rq)
 	u64 demand;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 		return INT_MAX;
 
 =======
 >>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+		return INT_MAX;
+
+>>>>>>> 25b27de... sched: support legacy mode better
 	demand = scale_load_to_cpu(rq->prev_runnable_sum, rq->cpu);
 	demand *= 128;
 	demand = div64_u64(demand, max_task_load());
@@ -1570,7 +1576,11 @@ static void init_cpu_efficiency(void)
 	int i, efficiency;
 	unsigned int max = 0, min = UINT_MAX;
 
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return;
 
 	for_each_possible_cpu(i) {
@@ -1720,7 +1730,11 @@ static inline void set_window_start(struct rq *rq)
 	struct rq *sync_rq = cpu_rq(sync_cpu);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (rq->window_start || !sched_enable_hmp)
+=======
+	if (rq->window_start || !sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return;
 =======
 static inline void mark_task_starting(struct task_struct *p) {}
@@ -2058,7 +2072,11 @@ static int register_sched_callback(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
+=======
+	if (!sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return 0;
 
 	ret = cpufreq_register_notifier(&notifier_policy_block,
@@ -2240,7 +2258,12 @@ void set_task_cpu(struct task_struct *p, unsigned int new_cpu)
 
 		atomic_notifier_call_chain(&task_migration_notifier, 0, &tmn);
 
+<<<<<<< HEAD
 		if (sched_enable_hmp && (p->on_rq || p->state == TASK_WAKING))
+=======
+		if (sysctl_sched_enable_hmp_task_placement &&
+		    (p->on_rq || p->state == TASK_WAKING))
+>>>>>>> 25b27de... sched: support legacy mode better
 			fixup_busy_time(p, new_cpu);
 	}
 
@@ -4556,7 +4579,11 @@ void sched_exec(void)
 	unsigned long flags;
 	int dest_cpu;
 
+<<<<<<< HEAD
 	if (sched_enable_hmp)
+=======
+	if (sysctl_sched_enable_hmp_task_placement)
+>>>>>>> 25b27de... sched: support legacy mode better
 		return;
 
 	raw_spin_lock_irqsave(&p->pi_lock, flags);
