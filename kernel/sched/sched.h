@@ -1269,6 +1269,7 @@ static inline unsigned long capacity_scale_cpu_freq(int cpu)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern unsigned int sched_enable_hmp;
 extern unsigned int sched_enable_power_aware;
 
@@ -1276,6 +1277,10 @@ extern unsigned int sched_enable_power_aware;
 >>>>>>> 6d57851... sched/rt: Introduce power aware scheduling for real time tasks
 =======
 extern unsigned int sysctl_sched_enable_hmp_task_placement;
+=======
+extern unsigned int sched_enable_hmp;
+extern unsigned int sched_enable_power_aware;
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 
 >>>>>>> 25b27de... sched: support legacy mode better
 int mostly_idle_cpu(int cpu);
@@ -1289,6 +1294,7 @@ extern unsigned int power_cost_at_freq(int cpu, unsigned int freq);
 
 #else /* CONFIG_SCHED_HMP */
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 #define sched_enable_hmp 0
 =======
@@ -1367,6 +1373,9 @@ extern void dec_nr_big_small_task(struct rq *rq, struct task_struct *p);
 extern void set_hmp_defaults(void);
 
 #else /* CONFIG_SCHED_HMP */
+=======
+#define sched_enable_hmp 0
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 
 static inline void check_for_migration(struct rq *rq, struct task_struct *p) { }
 static inline void pre_big_small_task_count_change(void) { }

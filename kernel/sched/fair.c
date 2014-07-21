@@ -1190,11 +1190,15 @@ unsigned int max_task_load(void)
 
 /* Use this knob to turn on or off HMP-aware task placement logic */
 <<<<<<< HEAD
+<<<<<<< HEAD
 unsigned int __read_mostly sched_enable_hmp = 0;
 
 /* A cpu can no longer accomodate more tasks if:
 =======
 unsigned int __read_mostly sysctl_sched_enable_hmp_task_placement = 1;
+=======
+unsigned int __read_mostly sched_enable_hmp = 1;
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 
 /* A cpu can no longer accomodate more tasks if:
  *
@@ -1217,7 +1221,7 @@ unsigned int __read_mostly sysctl_sched_mostly_idle_nr_run = 3;
  * Control whether or not individual CPU power consumption is used to
  * guide task placement.
  */
-unsigned int __read_mostly sysctl_sched_enable_power_aware = 1;
+unsigned int __read_mostly sched_enable_power_aware = 1;
 
 /*
  * This specifies the maximum percent power difference between 2
@@ -1398,7 +1402,7 @@ int sched_set_boost(int enable)
 	unsigned long flags;
 	int ret = 0;
 
-	if (!sysctl_sched_enable_hmp_task_placement)
+	if (!sched_enable_hmp)
 		return -EINVAL;
 
 	spin_lock_irqsave(&boost_lock, flags);
@@ -1529,7 +1533,7 @@ unsigned int power_cost_at_freq(int cpu, unsigned int freq)
 	struct cpu_pstate_pwr *costs;
 
 	if (!per_cpu_info || !per_cpu_info[cpu].ptable ||
-	    !sysctl_sched_enable_power_aware)
+	    !sched_enable_power_aware)
 		/* When power aware scheduling is not in use, or CPU
 		 * power data is not available, just use the CPU
 		 * capacity as a rough stand-in for real CPU power
@@ -1582,7 +1586,7 @@ int mostly_idle_cpu(int cpu)
 	unsigned int task_freq;
 	unsigned int cur_freq = cpu_rq(cpu)->cur_freq;
 
-	if (!sysctl_sched_enable_power_aware)
+	if (!sched_enable_power_aware)
 		return cpu_rq(cpu)->max_possible_capacity;
 
 	/* calculate % of max freq needed */
@@ -1776,9 +1780,13 @@ done:
 void inc_nr_big_small_task(struct rq *rq, struct task_struct *p)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!task_will_fit(p, cpu_of(rq)))
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	if (is_big_task(p))
@@ -1791,9 +1799,13 @@ void inc_nr_big_small_task(struct rq *rq, struct task_struct *p)
 void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!task_will_fit(p, cpu_of(rq)))
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	if (is_big_task(p))
@@ -1862,7 +1874,7 @@ int sched_hmp_proc_update_handler(struct ctl_table *table, int write,
 	unsigned int old_val = *data;
 
 	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
-	if (ret || !write || !sysctl_sched_enable_hmp_task_placement)
+	if (ret || !write || !sched_enable_hmp)
 		return ret;
 
 	if ((sysctl_sched_downmigrate_pct > sysctl_sched_upmigrate_pct) ||
@@ -1947,7 +1959,7 @@ static inline int migration_needed(struct rq *rq, struct task_struct *p)
 <<<<<<< HEAD
 =======
 	if (is_small_task(p) || p->state != TASK_RUNNING ||
-			!sysctl_sched_enable_hmp_task_placement)
+			!sched_enable_hmp)
 		return 0;
 
 >>>>>>> 25b27de... sched: support legacy mode better
@@ -1956,7 +1968,18 @@ static inline int migration_needed(struct rq *rq, struct task_struct *p)
 		rq->capacity > min_capacity)
 			return 1;
 
+<<<<<<< HEAD
 	return !task_will_fit(p, cpu_of(rq));
+=======
+	if (!task_will_fit(p, cpu_of(rq)))
+		return 1;
+
+	if (sched_enable_power_aware &&
+	    lower_power_cpu_available(p, cpu_of(rq)))
+		return 1;
+
+	return 0;
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 }
 
 /*
@@ -1996,6 +2019,11 @@ void check_for_migration(struct rq *rq, struct task_struct *p)
 >>>>>>> a5bbd01... sched: Handle cpu-bound tasks stuck on wrong cpu
 #else	/* CONFIG_SCHED_HMP */
 
+<<<<<<< HEAD
+=======
+#define sched_enable_power_aware 0
+
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 static inline int select_best_cpu(struct task_struct *p, int target)
 {
 	return 0;
@@ -3763,10 +3791,14 @@ add_to_scaled_stat(int cpu, struct sched_avg *sa, u64 delta)
 	int sf;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	if (unlikely(cur_freq > max_possible_freq ||
@@ -3784,10 +3816,14 @@ add_to_scaled_stat(int cpu, struct sched_avg *sa, u64 delta)
 static inline void decay_scaled_stat(struct sched_avg *sa, u64 periods)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	sa->runnable_avg_sum_scaled =
@@ -5812,10 +5848,14 @@ select_task_rq_fair(struct task_struct *p, int sd_flag, int wake_flags)
 		return prev_cpu;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (sched_enable_hmp)
 =======
 	if (sysctl_sched_enable_hmp_task_placement)
 >>>>>>> dbd6752... sched: Basic task placement support for HMP systems
+=======
+	if (sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return select_best_cpu(p, prev_cpu);
 
 	if (sd_flag & SD_BALANCE_WAKE) {
@@ -7595,10 +7635,14 @@ static struct rq *find_busiest_queue(struct lb_env *env,
 	int i;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (sched_enable_hmp)
 =======
 	if (sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return find_busiest_queue_hmp(env, group);
 
 	for_each_cpu_and(i, sched_group_cpus(group), env->cpus) {
@@ -8152,10 +8196,14 @@ static inline int find_new_ilb(int cpu, int type)
 	int ilb;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (sched_enable_hmp)
 =======
 	if (sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+=======
+	if (sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return find_new_hmp_ilb(cpu, type);
 
 	ilb = cpumask_first(nohz.idle_cpus_mask);
@@ -8552,10 +8600,14 @@ static inline int _nohz_kick_needed(struct rq *rq, int *type)
 	unsigned long now = jiffies;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (sched_enable_hmp)
 =======
 	if (sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return _nohz_kick_needed_hmp(rq, type);
 
 	/*

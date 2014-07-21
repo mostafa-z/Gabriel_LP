@@ -1193,6 +1193,7 @@ int rq_freq_margin(struct rq *rq)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 		return INT_MAX;
 
@@ -1200,6 +1201,9 @@ int rq_freq_margin(struct rq *rq)
 >>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return INT_MAX;
 
 >>>>>>> 25b27de... sched: support legacy mode better
@@ -1577,10 +1581,14 @@ static void init_cpu_efficiency(void)
 	unsigned int max = 0, min = UINT_MAX;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	for_each_possible_cpu(i) {
@@ -1731,10 +1739,14 @@ static inline void set_window_start(struct rq *rq)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (rq->window_start || !sched_enable_hmp)
 =======
 	if (rq->window_start || !sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (rq->window_start || !sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 =======
 static inline void mark_task_starting(struct task_struct *p) {}
@@ -2073,10 +2085,14 @@ static int register_sched_callback(void)
 	int ret;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (!sched_enable_hmp)
 =======
 	if (!sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (!sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return 0;
 
 	ret = cpufreq_register_notifier(&notifier_policy_block,
@@ -2259,11 +2275,15 @@ void set_task_cpu(struct task_struct *p, unsigned int new_cpu)
 		atomic_notifier_call_chain(&task_migration_notifier, 0, &tmn);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (sched_enable_hmp && (p->on_rq || p->state == TASK_WAKING))
 =======
 		if (sysctl_sched_enable_hmp_task_placement &&
 		    (p->on_rq || p->state == TASK_WAKING))
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+		if (sched_enable_hmp && (p->on_rq || p->state == TASK_WAKING))
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 			fixup_busy_time(p, new_cpu);
 	}
 
@@ -4580,10 +4600,14 @@ void sched_exec(void)
 	int dest_cpu;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if (sched_enable_hmp)
 =======
 	if (sysctl_sched_enable_hmp_task_placement)
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+	if (sched_enable_hmp)
+>>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	raw_spin_lock_irqsave(&p->pi_lock, flags);
