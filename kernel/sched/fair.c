@@ -2041,11 +2041,6 @@ static inline int power_cost(struct task_struct *p, int cpu)
 	return SCHED_POWER_SCALE;
 }
 
-static unsigned int power_cost_at_freq(int cpu, unsigned int freq)
-{
-	return 1;
-}
-
 static inline int
 spill_threshold_crossed(struct task_struct *p, struct rq *rq, int cpu)
 {
@@ -7589,9 +7584,13 @@ ret:
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 =======
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+#ifdef CONFIG_SCHED_HMP
+>>>>>>> 8c316f1... sched: fixes for compilation without CONFIG_SCHED_HMP
 static struct rq *find_busiest_queue_hmp(struct lb_env *env,
 				     struct sched_group *group)
 {
@@ -7614,6 +7613,9 @@ static struct rq *find_busiest_queue_hmp(struct lb_env *env,
 	return busiest;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8c316f1... sched: fixes for compilation without CONFIG_SCHED_HMP
 #else
 static inline struct rq *find_busiest_queue_hmp(struct lb_env *env,
 				     struct sched_group *group)
@@ -7621,8 +7623,11 @@ static inline struct rq *find_busiest_queue_hmp(struct lb_env *env,
 	return NULL;
 }
 #endif
+<<<<<<< HEAD
 =======
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+>>>>>>> 8c316f1... sched: fixes for compilation without CONFIG_SCHED_HMP
 
 /*
  * find_busiest_queue - find the busiest runqueue among the cpus in group.
@@ -8541,6 +8546,7 @@ end:
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #ifdef CONFIG_SCHED_HMP
 <<<<<<< HEAD
 static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
@@ -8549,6 +8555,9 @@ static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
 static inline int _nohz_kick_needed(struct rq *rq, int *type)
 >>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
 =======
+=======
+#ifdef CONFIG_SCHED_HMP
+>>>>>>> 8c316f1... sched: fixes for compilation without CONFIG_SCHED_HMP
 static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
 >>>>>>> 25b27de... sched: support legacy mode better
 {
@@ -8586,14 +8595,20 @@ static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
 }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8c316f1... sched: fixes for compilation without CONFIG_SCHED_HMP
 #else
 static inline int _nohz_kick_needed_hmp(struct rq *rq, int *type)
 {
 	return 0;
 }
 #endif
+<<<<<<< HEAD
 =======
 >>>>>>> 25b27de... sched: support legacy mode better
+=======
+>>>>>>> 8c316f1... sched: fixes for compilation without CONFIG_SCHED_HMP
 
 static inline int _nohz_kick_needed(struct rq *rq, int *type)
 {
