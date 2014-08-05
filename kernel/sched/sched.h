@@ -1116,6 +1116,7 @@ extern void init_new_task_load(struct task_struct *p);
 
 extern unsigned int sched_ravg_window;
 extern unsigned int sched_use_pelt;
+<<<<<<< HEAD
 extern unsigned int max_possible_freq;
 extern unsigned int min_max_freq;
 extern unsigned int pct_task_load(struct task_struct *p);
@@ -1145,6 +1146,8 @@ unsigned int max_task_load(void);
 
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 extern unsigned int sched_ravg_window;
+=======
+>>>>>>> 927a5d6... sched: Provide tunable to switch between PELT and window-based stats
 extern unsigned int max_possible_freq;
 extern unsigned int min_max_freq;
 extern unsigned int pct_task_load(struct task_struct *p);
@@ -1176,25 +1179,35 @@ static inline void
 inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 927a5d6... sched: Provide tunable to switch between PELT and window-based stats
 	if (sched_use_pelt)
 		rq->cumulative_runnable_avg +=
 				p->se.avg.runnable_avg_sum_scaled;
 	else
 		rq->cumulative_runnable_avg += p->ravg.demand;
+<<<<<<< HEAD
 =======
 	rq->cumulative_runnable_avg += p->ravg.demand;
 >>>>>>> 66f5232... sched: Window-based load stat improvements
+=======
+>>>>>>> 927a5d6... sched: Provide tunable to switch between PELT and window-based stats
 }
 
 static inline void
 dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 927a5d6... sched: Provide tunable to switch between PELT and window-based stats
 	if (sched_use_pelt)
 		rq->cumulative_runnable_avg -=
 				p->se.avg.runnable_avg_sum_scaled;
 	else
 		rq->cumulative_runnable_avg -= p->ravg.demand;
+<<<<<<< HEAD
 	BUG_ON((s64)rq->cumulative_runnable_avg < 0);
 }
 
@@ -1263,6 +1276,8 @@ static inline void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 
 =======
 	rq->cumulative_runnable_avg -= p->ravg.demand;
+=======
+>>>>>>> 927a5d6... sched: Provide tunable to switch between PELT and window-based stats
 	BUG_ON((s64)rq->cumulative_runnable_avg < 0);
 }
 
