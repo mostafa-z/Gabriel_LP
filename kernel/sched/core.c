@@ -2274,6 +2274,8 @@ static void ttwu_activate(struct rq *rq, struct task_struct *p, int en_flags)
 		wq_worker_waking_up(p, cpu_of(rq));
 }
 
+#ifdef CONFIG_SCHED_FREQ_INPUT
+
 /* Window size (in ns) */
 __read_mostly unsigned int sched_ravg_window = 10000000;
 
@@ -2419,6 +2421,15 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 
 	p->ravg.mark_start = wallclock;
 }
+
+#else	/* CONFIG_SCHED_FREQ_INPUT */
+
+static inline void
+update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
+{
+}
+
+#endif	/* CONFIG_SCHED_FREQ_INPUT */
 
 /*
 >>>>>>> 66f5232... sched: Window-based load stat improvements
@@ -8997,6 +9008,7 @@ void __init sched_init_smp(void)
 =======
 =======
 
+#ifdef CONFIG_SCHED_FREQ_INPUT
 /*
  * Maximum possible frequency across all cpus. Task demand and cpu
  * capacity (cpu_power) metrics are scaled in reference to it.
@@ -9087,7 +9099,12 @@ static int register_sched_callback(void)
  */
 core_initcall(register_sched_callback);
 
+<<<<<<< HEAD
 >>>>>>> 66f5232... sched: Window-based load stat improvements
+=======
+#endif /* CONFIG_SCHED_FREQ_INPUT */
+
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 const_debug unsigned int sysctl_timer_migration = 1;
 
 int in_sched_functions(unsigned long addr)
@@ -9258,12 +9275,16 @@ void __init sched_init(void)
 		rq->avg_idle = 2*sysctl_sched_migration_cost;
 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
+=======
+#ifdef CONFIG_SCHED_FREQ_INPUT
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 		rq->cur_freq = 1;
 		rq->max_freq = 1;
 		rq->min_freq = 1;
@@ -9273,6 +9294,7 @@ void __init sched_init(void)
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 		rq->cumulative_runnable_avg = 0;
+<<<<<<< HEAD
 		rq->efficiency = 1024;
 		rq->capacity = 1024;
 		rq->load_scale_factor = 1024;
@@ -9281,6 +9303,8 @@ void __init sched_init(void)
 #ifdef CONFIG_SCHED_HMP
 		rq->nr_small_tasks = rq->nr_big_tasks = 0;
 		rq->curr_runnable_sum = rq->prev_runnable_sum = 0;
+=======
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 #endif
 
 		INIT_LIST_HEAD(&rq->cfs_tasks);

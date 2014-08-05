@@ -790,9 +790,13 @@ struct rq {
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
+=======
+#ifdef CONFIG_SCHED_FREQ_INPUT
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 	/*
 	 * max_freq = user or thermal defined maximum
 	 * max_possible_freq = maximum supported by hardware
@@ -804,6 +808,7 @@ struct rq {
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 	u64 cumulative_runnable_avg;
+<<<<<<< HEAD
 	int efficiency; /* Differentiate cpus with different IPC capability */
 	int load_scale_factor;
 	int capacity;
@@ -816,6 +821,8 @@ struct rq {
 
 #ifdef CONFIG_SCHED_HMP
 	int nr_small_tasks, nr_big_tasks;
+=======
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 #endif
 
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
@@ -1083,6 +1090,7 @@ static inline unsigned int group_first_cpu(struct sched_group *group)
 #include "auto_group.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern void init_new_task_load(struct task_struct *p);
 
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
@@ -1110,6 +1118,10 @@ extern void fixup_nr_big_small_task(int cpu);
 u64 scale_load_to_cpu(u64 load, int cpu);
 unsigned int max_task_load(void);
 =======
+=======
+#ifdef CONFIG_SCHED_FREQ_INPUT
+
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 extern unsigned int sched_ravg_window;
 extern unsigned int max_possible_freq;
 extern unsigned int min_max_freq;
@@ -1211,7 +1223,28 @@ static inline void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 	BUG_ON((s64)rq->cumulative_runnable_avg < 0);
 }
 
+<<<<<<< HEAD
 >>>>>>> 66f5232... sched: Window-based load stat improvements
+=======
+#else	/* CONFIG_SCHED_FREQ_INPUT */
+
+static inline int pct_task_load(struct task_struct *p) { return 0; }
+
+static inline void
+inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
+{
+}
+
+static inline void
+dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
+{
+}
+
+static inline void init_new_task_load(struct task_struct *p) { }
+
+#endif	/* CONFIG_SCHED_FREQ_INPUT */
+
+>>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 #ifdef CONFIG_CGROUP_SCHED
 
 /*
