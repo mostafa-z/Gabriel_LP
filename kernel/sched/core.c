@@ -320,6 +320,7 @@ int sysctl_sched_rt_runtime = 950000;
 <<<<<<< HEAD
 =======
 /*
+<<<<<<< HEAD
  * Maximum bandwidth available for all -deadline tasks and groups
  * (if group scheduling is configured) on each CPU.
  *
@@ -343,6 +344,8 @@ const_debug int sysctl_sched_yield_sleep_threshold = 4;
 const_debug unsigned int sysctl_sched_yield_sleep_duration = 50;
 
 /*
+=======
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
  * __task_rq_lock - lock the rq @p resides on.
  */
 static inline struct rq *__task_rq_lock(struct task_struct *p)
@@ -8969,12 +8972,32 @@ void __init sched_init_smp(void)
 #endif /* CONFIG_SMP */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+
+/*
+ * Maximum possible frequency across all cpus. Task demand and cpu
+ * capacity (cpu_power) metrics are scaled in reference to it.
+ */
+unsigned int max_possible_freq = 1;
+
+/*
+ * Minimum possible max_freq across all cpus. This will be same as
+ * max_possible_freq on homogeneous systems and could be different from
+ * max_possible_freq on heterogenous systems. min_max_freq is used to derive
+ * capacity (cpu_power) of cpus.
+ */
+unsigned int min_max_freq = 1;
+
+
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 static int cpufreq_notifier_policy(struct notifier_block *nb,
 		unsigned long val, void *data)
 {
 	struct cpufreq_policy *policy = (struct cpufreq_policy *)data;
 	int i;
+	unsigned int min_max = min_max_freq;
 
 	if (val != CPUFREQ_NOTIFY)
 		return 0;
@@ -8982,9 +9005,18 @@ static int cpufreq_notifier_policy(struct notifier_block *nb,
 	for_each_cpu(i, policy->related_cpus) {
 		cpu_rq(i)->min_freq = policy->min;
 		cpu_rq(i)->max_freq = policy->max;
+		cpu_rq(i)->max_possible_freq = policy->cpuinfo.max_freq;
 	}
 
 	max_possible_freq = max(max_possible_freq, policy->cpuinfo.max_freq);
+<<<<<<< HEAD
+=======
+	if (min_max_freq == 1)
+		min_max = UINT_MAX;
+	min_max_freq = min(min_max, policy->cpuinfo.max_freq);
+	BUG_ON(!min_max_freq);
+	BUG_ON(!policy->max);
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 
 	return 0;
 }
@@ -9026,6 +9058,12 @@ static int register_sched_callback(void)
 	return 0;
 }
 
+/*
+ * cpufreq callbacks can be registered at core_initcall or later time.
+ * Any registration done prior to that is "forgotten" by cpufreq. See
+ * initialization of variable init_cpufreq_transition_notifier_list_called
+ * for further information.
+ */
 core_initcall(register_sched_callback);
 
 >>>>>>> 66f5232... sched: Window-based load stat improvements
@@ -9198,15 +9236,21 @@ void __init sched_init(void)
 		rq->idle_stamp = 0;
 		rq->avg_idle = 2*sysctl_sched_migration_cost;
 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
+<<<<<<< HEAD
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+=======
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 		rq->cur_freq = 1;
 		rq->max_freq = 1;
 		rq->min_freq = 1;
 		rq->max_possible_freq = 1;
+<<<<<<< HEAD
 		rq->max_possible_capacity = 0;
+=======
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 		rq->cumulative_runnable_avg = 0;
 		rq->efficiency = 1024;
 		rq->capacity = 1024;

@@ -23,6 +23,9 @@
 
 extern __read_mostly int scheduler_running;
 
+extern unsigned int max_possible_freq;
+extern unsigned int min_max_freq;
+
 /*
  * Convert user-nice values [ -20 ... 0 ... 19 ]
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
@@ -789,14 +792,20 @@ struct rq {
 	int cstate, wakeup_latency, wakeup_energy;
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+=======
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 	/*
 	 * max_freq = user or thermal defined maximum
 	 * max_possible_freq = maximum supported by hardware
 	 */
 	unsigned int cur_freq, max_freq, min_freq, max_possible_freq;
+<<<<<<< HEAD
 	struct cpumask freq_domain_cpumask;
 
+=======
+>>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 	u64 cumulative_runnable_avg;
 	int efficiency; /* Differentiate cpus with different IPC capability */
 	int load_scale_factor;
