@@ -1326,6 +1326,8 @@ static inline void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 {
 }
 
+#define trace_sched_cpu_load(...)
+
 #endif /* CONFIG_SCHED_HMP */
 
 >>>>>>> dbd6752... sched: Basic task placement support for HMP systems

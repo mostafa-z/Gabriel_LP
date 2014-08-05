@@ -1361,6 +1361,11 @@ static int select_best_cpu(struct task_struct *p, int target)
 	int cpu_cost, min_cost = INT_MAX;
 	int small_task = is_small_task(p);
 
+	trace_sched_task_load(p);
+	for_each_online_cpu(i)
+		trace_sched_cpu_load(cpu_rq(i), idle_cpu(i),
+				     mostly_idle_cpu(i), power_cost(p, i));
+
 	/* provide bias for prev_cpu */
 	if (!small_task && mostly_idle_cpu(prev_cpu) &&
 	    task_will_fit(p, prev_cpu)) {
@@ -6523,7 +6528,11 @@ static inline void update_sg_lb_stats(struct lb_env *env,
 
 		trace_sched_cpu_load(cpu_rq(i), idle_cpu(i),
 				     mostly_idle_cpu(i),
+<<<<<<< HEAD
 				     power_cost_at_freq(i, 0));
+=======
+				     power_cost(NULL, i));
+>>>>>>> 6d60033... sched: Add additional ftrace events
 		nr_running = rq->cfs.h_nr_running;
 
 		/* Bias balancing toward cpus of our domain */
