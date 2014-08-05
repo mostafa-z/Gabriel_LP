@@ -2358,7 +2358,13 @@ static inline void dequeue_entity_load_avg(struct cfs_rq *cfs_rq,
 		se->avg.decay_count = atomic64_read(&cfs_rq->decay_counter);
 	} /* migrations, e.g. sleep=0 leave decay_count == 0 */
 }
+
+static inline void update_rq_runnable_avg(struct rq *rq, int runnable)
+{
+	__update_entity_runnable_avg(rq->clock_task, &rq->avg, runnable);
+}
 #else
+<<<<<<< HEAD
 static inline void update_entity_load_avg(struct sched_entity *se,
 					  int update_cfs_rq) {}
 static inline void update_rq_runnable_avg(struct rq *rq, int runnable) {}
@@ -2370,6 +2376,10 @@ static inline void dequeue_entity_load_avg(struct cfs_rq *cfs_rq,
 					   int sleep) {}
 static inline void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq,
 					      int force_update) {}
+=======
+static inline void update_entity_load_avg(struct sched_entity *se) {}
+static inline void update_rq_runnable_avg(struct rq *rq, int runnable) {}
+>>>>>>> f20f9f6... sched: Maintain per-rq runnable averages
 #endif
 
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
@@ -3779,7 +3789,10 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	if (!se) {
 		update_rq_runnable_avg(rq, rq->nr_running);
 		inc_nr_running(rq);
+<<<<<<< HEAD
 		inc_nr_big_small_task(rq, p);
+=======
+>>>>>>> f20f9f6... sched: Maintain per-rq runnable averages
 	}
 	hrtick_update(rq);
 }
@@ -3841,7 +3854,10 @@ static void dequeue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	if (!se) {
 		dec_nr_running(rq);
 		update_rq_runnable_avg(rq, 1);
+<<<<<<< HEAD
 		dec_nr_big_small_task(rq, p);
+=======
+>>>>>>> f20f9f6... sched: Maintain per-rq runnable averages
 	}
 	hrtick_update(rq);
 }
@@ -6357,6 +6373,7 @@ void idle_balance(int this_cpu, struct rq *this_rq)
 
 	update_rq_runnable_avg(this_rq, 1);
 
+<<<<<<< HEAD
 	/* If this CPU is not the most power-efficient idle CPU in the
 	 * lowest level domain, run load balance on behalf of that
 	 * most power-efficient idle CPU. */
@@ -6381,6 +6398,8 @@ void idle_balance(int this_cpu, struct rq *this_rq)
 	balance_rq = cpu_rq(balance_cpu);
 
 
+=======
+>>>>>>> f20f9f6... sched: Maintain per-rq runnable averages
 	/*
 	 * Drop the rq->lock, but keep IRQ/preempt disabled.
 	 */
