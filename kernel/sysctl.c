@@ -280,9 +280,19 @@ static struct ctl_table kern_table[] = {
 	},
 	{
 <<<<<<< HEAD
+<<<<<<< HEAD
 		.procname	= "sched_ravg_window",
 		.data		= &sysctl_sched_ravg_window,
 =======
+=======
+		.procname       = "sched_window_stats_policy",
+		.data           = &sysctl_sched_window_stats_policy,
+		.maxlen         = sizeof(unsigned int),
+		.mode           = 0644,
+		.proc_handler   = proc_dointvec,
+	},
+	{
+>>>>>>> b239296... sched: window-based load stats improvements
 		.procname	= "sched_wakeup_load_threshold",
 		.data		= &sysctl_sched_wakeup_load_threshold,
 >>>>>>> 66f5232... sched: Window-based load stat improvements

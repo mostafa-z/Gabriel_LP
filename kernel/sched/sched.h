@@ -23,9 +23,6 @@
 
 extern __read_mostly int scheduler_running;
 
-extern unsigned int max_possible_freq;
-extern unsigned int min_max_freq;
-
 /*
  * Convert user-nice values [ -20 ... 0 ... 19 ]
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
@@ -1114,6 +1111,8 @@ u64 scale_load_to_cpu(u64 load, int cpu);
 unsigned int max_task_load(void);
 =======
 extern unsigned int sched_ravg_window;
+extern unsigned int max_possible_freq;
+extern unsigned int min_max_freq;
 extern unsigned int pct_task_load(struct task_struct *p);
 extern void init_new_task_load(struct task_struct *p);
 >>>>>>> 66f5232... sched: Window-based load stat improvements
