@@ -2779,7 +2779,21 @@ static inline void update_cfs_rq_blocked_load(struct cfs_rq *cfs_rq,
 #endif
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+=======
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+
+static inline unsigned int task_load(struct task_struct *p)
+{
+	return p->ravg.demand;
+}
+
+static inline unsigned int max_task_load(void)
+{
+	return sched_ravg_window;
+}
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 
 /* Return task demand in percentage scale */
 unsigned int pct_task_load(struct task_struct *p)
@@ -2841,6 +2855,7 @@ static inline void decay_scaled_stat(struct sched_avg *sa, u64 periods)
 }
 
 #endif /* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
+<<<<<<< HEAD
 =======
 #ifdef CONFIG_SCHED_FREQ_INPUT
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
@@ -2879,6 +2894,8 @@ void init_new_task_load(struct task_struct *p)
 }
 
 #endif /* CONFIG_SCHED_FREQ_INPUT */
+=======
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 
 static void enqueue_sleeper(struct cfs_rq *cfs_rq, struct sched_entity *se)
 {

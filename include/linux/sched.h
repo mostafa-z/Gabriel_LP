@@ -1438,10 +1438,14 @@ struct task_struct {
 	struct sched_entity se;
 	struct sched_rt_entity rt;
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 =======
 #ifdef CONFIG_SCHED_FREQ_INPUT
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
+=======
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 	struct ravg ravg;
 #endif
 #ifdef CONFIG_CGROUP_SCHED

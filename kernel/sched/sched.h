@@ -791,12 +791,16 @@ struct rq {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 =======
 >>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
 =======
 #ifdef CONFIG_SCHED_FREQ_INPUT
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
+=======
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 	/*
 	 * max_freq = user or thermal defined maximum
 	 * max_possible_freq = maximum supported by hardware
@@ -1091,6 +1095,7 @@ static inline unsigned int group_first_cpu(struct sched_group *group)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern void init_new_task_load(struct task_struct *p);
 
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
@@ -1120,6 +1125,9 @@ unsigned int max_task_load(void);
 =======
 =======
 #ifdef CONFIG_SCHED_FREQ_INPUT
+=======
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 extern unsigned int sched_ravg_window;
@@ -1224,9 +1232,13 @@ static inline void dec_nr_big_small_task(struct rq *rq, struct task_struct *p)
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 66f5232... sched: Window-based load stat improvements
 =======
 #else	/* CONFIG_SCHED_FREQ_INPUT */
+=======
+#else	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 
 static inline int pct_task_load(struct task_struct *p) { return 0; }
 
@@ -1242,7 +1254,7 @@ dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
 
 static inline void init_new_task_load(struct task_struct *p) { }
 
-#endif	/* CONFIG_SCHED_FREQ_INPUT */
+#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
 
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 #ifdef CONFIG_CGROUP_SCHED

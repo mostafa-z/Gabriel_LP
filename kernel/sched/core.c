@@ -2274,7 +2274,7 @@ static void ttwu_activate(struct rq *rq, struct task_struct *p, int en_flags)
 		wq_worker_waking_up(p, cpu_of(rq));
 }
 
-#ifdef CONFIG_SCHED_FREQ_INPUT
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 
 /* Window size (in ns) */
 __read_mostly unsigned int sched_ravg_window = 10000000;
@@ -2422,14 +2422,14 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 	p->ravg.mark_start = wallclock;
 }
 
-#else	/* CONFIG_SCHED_FREQ_INPUT */
+#else	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
 
 static inline void
 update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 {
 }
 
-#endif	/* CONFIG_SCHED_FREQ_INPUT */
+#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
 
 /*
 >>>>>>> 66f5232... sched: Window-based load stat improvements
@@ -9008,7 +9008,8 @@ void __init sched_init_smp(void)
 =======
 =======
 
-#ifdef CONFIG_SCHED_FREQ_INPUT
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+
 /*
  * Maximum possible frequency across all cpus. Task demand and cpu
  * capacity (cpu_power) metrics are scaled in reference to it.
@@ -9100,9 +9101,13 @@ static int register_sched_callback(void)
 core_initcall(register_sched_callback);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 66f5232... sched: Window-based load stat improvements
 =======
 #endif /* CONFIG_SCHED_FREQ_INPUT */
+=======
+#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 const_debug unsigned int sysctl_timer_migration = 1;
@@ -9276,6 +9281,7 @@ void __init sched_init(void)
 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
@@ -9285,6 +9291,9 @@ void __init sched_init(void)
 =======
 #ifdef CONFIG_SCHED_FREQ_INPUT
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
+=======
+#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
+>>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 		rq->cur_freq = 1;
 		rq->max_freq = 1;
 		rq->min_freq = 1;
