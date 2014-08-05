@@ -4638,12 +4638,15 @@ unlock:
 }
 
 /*
+<<<<<<< HEAD
  * Load-tracking only depends on SMP, FAIR_GROUP_SCHED dependency below may be
  * removed when useful for applications beyond shares distribution (e.g.
  * load-balance).
  */
 #ifdef CONFIG_FAIR_GROUP_SCHED
 /*
+=======
+>>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
  * Called immediately before a task is migrated to a new cpu; task_cpu(p) and
  * cfs_rq_of(p) references at time of call are still valid and identify the
  * previous cpu.  However, the caller only guarantees p->pi_lock is held; no
@@ -4652,6 +4655,7 @@ unlock:
 static void
 migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 {
+<<<<<<< HEAD
 	struct sched_entity *se = &p->se;
 	struct cfs_rq *cfs_rq = cfs_rq_of(se);
 
@@ -4667,6 +4671,9 @@ migrate_task_rq_fair(struct task_struct *p, int next_cpu)
 	}
 }
 #endif
+=======
+}
+>>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
 #endif /* CONFIG_SMP */
 
 static unsigned long
@@ -7734,9 +7741,14 @@ const struct sched_class fair_sched_class = {
 
 #ifdef CONFIG_SMP
 	.select_task_rq		= select_task_rq_fair,
+<<<<<<< HEAD
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	.migrate_task_rq	= migrate_task_rq_fair,
 #endif
+=======
+	.migrate_task_rq	= migrate_task_rq_fair,
+
+>>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
 	.rq_online		= rq_online_fair,
 	.rq_offline		= rq_offline_fair,
 

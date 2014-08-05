@@ -1548,9 +1548,13 @@ struct sched_class {
 #ifdef CONFIG_SMP
 	int  (*select_task_rq)(struct task_struct *p, int sd_flag, int flags);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	void (*migrate_task_rq)(struct task_struct *p, int next_cpu);
 =======
 >>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
+=======
+	void (*migrate_task_rq)(struct task_struct *p, int next_cpu);
+>>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
 
 	void (*pre_schedule) (struct rq *this_rq, struct task_struct *task);
 	void (*post_schedule) (struct rq *this_rq);
