@@ -2863,9 +2863,12 @@ static void __sched_fork(struct task_struct *p)
 	p->se.nr_migrations		= 0;
 	p->se.vruntime			= 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	init_new_task_load(p);
 >>>>>>> 66f5232... sched: Window-based load stat improvements
+=======
+>>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 
 	INIT_LIST_HEAD(&p->se.group_node);
 
@@ -2876,11 +2879,15 @@ static void __sched_fork(struct task_struct *p)
  */
 #if defined(CONFIG_SMP) && defined(CONFIG_FAIR_GROUP_SCHED)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	init_new_task_load(p);
 =======
 	p->se.avg.runnable_avg_period = 0;
 	p->se.avg.runnable_avg_sum = 0;
 >>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
+=======
+	init_new_task_load(p);
+>>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 #endif
 #ifdef CONFIG_SCHEDSTATS
 	memset(&p->se.statistics, 0, sizeof(p->se.statistics));

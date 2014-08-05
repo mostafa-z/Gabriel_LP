@@ -1102,6 +1102,9 @@ static inline unsigned int group_first_cpu(struct sched_group *group)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 extern void init_new_task_load(struct task_struct *p);
 
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
@@ -1140,17 +1143,29 @@ extern unsigned int sched_ravg_window;
 extern unsigned int max_possible_freq;
 extern unsigned int min_max_freq;
 extern unsigned int pct_task_load(struct task_struct *p);
+<<<<<<< HEAD
 extern void init_new_task_load(struct task_struct *p);
 <<<<<<< HEAD
 >>>>>>> 66f5232... sched: Window-based load stat improvements
 =======
+=======
+>>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 extern unsigned int max_possible_efficiency;
 extern unsigned int min_possible_efficiency;
 extern unsigned int max_capacity;
 extern unsigned int min_capacity;
 extern unsigned long capacity_scale_cpu_efficiency(int cpu);
 extern unsigned long capacity_scale_cpu_freq(int cpu);
+<<<<<<< HEAD
 >>>>>>> b090ddc... sched: Introduce efficiency, load_scale_factor and capacity
+=======
+extern unsigned int sched_mostly_idle_load;
+extern unsigned int sched_small_task;
+extern unsigned int sched_upmigrate;
+extern unsigned int sched_downmigrate;
+extern unsigned int sched_init_task_load_pelt;
+extern unsigned int sched_init_task_load_windows;
+>>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 
 static inline void
 inc_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
@@ -1267,8 +1282,6 @@ dec_cumulative_runnable_avg(struct rq *rq, struct task_struct *p)
 {
 }
 
-static inline void init_new_task_load(struct task_struct *p) { }
-
 static inline unsigned long capacity_scale_cpu_efficiency(int cpu)
 {
 	return SCHED_LOAD_SCALE;
@@ -1281,7 +1294,20 @@ static inline unsigned long capacity_scale_cpu_freq(int cpu)
 
 #endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
 
+<<<<<<< HEAD
 >>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
+=======
+#ifdef CONFIG_SCHED_HMP
+
+extern void set_hmp_defaults(void);
+
+#else /* CONFIG_SCHED_HMP */
+
+static inline void set_hmp_defaults(void) { }
+
+#endif /* CONFIG_SCHED_HMP */
+
+>>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 #ifdef CONFIG_CGROUP_SCHED
 
 /*
