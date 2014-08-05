@@ -1388,12 +1388,36 @@ static inline int is_small_task(struct task_struct *p)
 	return load < sched_small_task;
 }
 
+<<<<<<< HEAD
 static inline u64 cpu_load(int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
 
 	return scale_load_to_cpu(rq->cumulative_runnable_avg, cpu);
 }
+=======
+static inline u64 cfs_rq_clock_task(struct cfs_rq *cfs_rq);
+
+/* Update a sched_entity's runnable average */
+static inline void update_entity_load_avg(struct sched_entity *se,
+					  int update_cfs_rq)
+{
+	struct cfs_rq *cfs_rq = cfs_rq_of(se);
+	long contrib_delta;
+	u64 now;
+
+	/*
+	 * For a group entity we need to use their owned cfs_rq_clock_task() in
+	 * case they are the parent of a throttled hierarchy.
+	 */
+	if (entity_is_task(se))
+		now = cfs_rq_clock_task(cfs_rq);
+	else
+		now = cfs_rq_clock_task(group_cfs_rq(se));
+
+	if (!__update_entity_runnable_avg(now, &se->avg, se->on_rq))
+		return;
+>>>>>>> c41b254... sched: Maintain runnable averages across throttled periods
 
 static int
 spill_threshold_crossed(struct task_struct *p, struct rq *rq, int cpu)
@@ -1409,7 +1433,12 @@ spill_threshold_crossed(struct task_struct *p, struct rq *rq, int cpu)
 
 int mostly_idle_cpu(int cpu)
 {
+<<<<<<< HEAD
 	struct rq *rq = cpu_rq(cpu);
+=======
+	u64 now = cfs_rq_clock_task(cfs_rq) >> 20;
+	u64 decays;
+>>>>>>> c41b254... sched: Maintain runnable averages across throttled periods
 
 	return (cpu_load(cpu) <= sched_mostly_idle_load
 		&& rq->nr_running <= sysctl_sched_mostly_idle_nr_run);
@@ -3506,6 +3535,10 @@ static int tg_unthrottle_up(struct task_group *tg, void *data)
 		cfs_rq->load_stamp += delta;
 		cfs_rq->load_last += delta;
 
+		/* adjust cfs_rq_clock_task() */
+		cfs_rq->throttled_clock_task_time += rq->clock_task -
+					     cfs_rq->throttled_clock_task;
+
 		/* update entity weight now that we are on_rq again */
 		update_cfs_shares(cfs_rq);
 >>>>>>> ab252a7... sched: Use an accessor to read the rq clock
@@ -3520,9 +3553,17 @@ static int tg_throttle_down(struct task_group *tg, void *data)
 	struct rq *rq = data;
 	struct cfs_rq *cfs_rq = tg->cfs_rq[cpu_of(rq)];
 
+<<<<<<< HEAD
 	/* group is entering throttled state, stop time */
 	if (!cfs_rq->throttle_count)
 		cfs_rq->throttled_clock_task = rq->clock_task;
+=======
+	/* group is entering throttled state, record last load */
+	if (!cfs_rq->throttle_count) {
+		update_cfs_load(cfs_rq, 0);
+		cfs_rq->throttled_clock_task = rq->clock_task;
+	}
+>>>>>>> c41b254... sched: Maintain runnable averages across throttled periods
 	cfs_rq->throttle_count++;
 
 	return 0;
@@ -3562,10 +3603,14 @@ static void throttle_cfs_rq(struct cfs_rq *cfs_rq)
 
 	cfs_rq->throttled = 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cfs_rq->throttled_clock = rq_clock(rq);
 =======
 	cfs_rq->throttled_timestamp = rq_clock(rq);
 >>>>>>> ab252a7... sched: Use an accessor to read the rq clock
+=======
+	cfs_rq->throttled_clock = rq_clock(rq);
+>>>>>>> c41b254... sched: Maintain runnable averages across throttled periods
 	raw_spin_lock(&cfs_b->lock);
 	/*
 	 * Add to the _head_ of the list, so that an already-started
@@ -3593,10 +3638,14 @@ void unthrottle_cfs_rq(struct cfs_rq *cfs_rq)
 
 	raw_spin_lock(&cfs_b->lock);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	cfs_b->throttled_time += rq_clock(rq) - cfs_rq->throttled_clock;
 =======
 	cfs_b->throttled_time += rq_clock(rq) - cfs_rq->throttled_timestamp;
 >>>>>>> ab252a7... sched: Use an accessor to read the rq clock
+=======
+	cfs_b->throttled_time += rq_clock(rq) - cfs_rq->throttled_clock;
+>>>>>>> c41b254... sched: Maintain runnable averages across throttled periods
 	list_del_rcu(&cfs_rq->throttled_list);
 	raw_spin_unlock(&cfs_b->lock);
 
