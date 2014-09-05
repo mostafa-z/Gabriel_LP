@@ -57,7 +57,7 @@
  */
 #define MAX_ALIGN_SIZE  0x40
 
-#define QCRYPTO_HIGH_BANDWIDTH_TIMEOUT 200
+#define QCRYPTO_HIGH_BANDWIDTH_TIMEOUT 1000
 
 /* are FIPS self tests done ?? */
 static bool is_fips_qcrypto_tests_done;
@@ -587,6 +587,7 @@ static void qcrypto_bw_reaper_work(struct work_struct *work)
 
 			qcrypto_ce_set_bus(pengine, true);
 
+			qcrypto_bw_set_timeout(pengine);
 			spin_lock_irqsave(&cp->lock, flags);
 			pengine->bw_state = BUS_HAS_BANDWIDTH;
 			pengine->high_bw_req = false;
@@ -4695,8 +4696,6 @@ static int  _qcrypto_suspend(struct platform_device *pdev, pm_message_t state)
 	if (ret)
 		return ret;
 	else {
-		cancel_work_sync(&pengine->bw_allocate_ws);
-		del_timer_sync(&pengine->bw_reaper_timer);
 		if (qce_pm_table.suspend)
 			qce_pm_table.suspend(pengine->qce);
 		return 0;
@@ -4723,7 +4722,6 @@ static int  _qcrypto_resume(struct platform_device *pdev)
 			qce_pm_table.resume(pengine->qce);
 
 		init_timer(&(pengine->bw_reaper_timer));
-		qcrypto_bw_set_timeout(pengine);
 
 		spin_lock_irqsave(&cp->lock, flags);
 		pengine->bw_state = BUS_NO_BANDWIDTH;
