@@ -223,12 +223,18 @@ extern int nr_processes(void);
 extern unsigned long nr_running(void);
 extern unsigned long nr_iowait(void);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 extern unsigned long avg_nr_running(void);
 extern unsigned long avg_cpu_nr_running(unsigned int cpu);
 #endif
+<<<<<<< HEAD
 =======
 >>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
+=======
+>>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 extern unsigned long nr_iowait_cpu(int cpu);
 extern unsigned long this_cpu_load(void);
 

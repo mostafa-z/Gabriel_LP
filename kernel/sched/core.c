@@ -128,6 +128,7 @@ DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 =======
 #ifdef CONFIG_INTELLI_PLUG
@@ -135,6 +136,9 @@ DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 =======
 #ifdef CONFIG_INTELLI_HOTPLUG
 >>>>>>> cf79156... intelli_plug: Refactor and update
+=======
+#if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+>>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 DEFINE_PER_CPU_SHARED_ALIGNED(struct nr_stats_s, runqueue_stats);
 #endif
 
@@ -3947,6 +3951,7 @@ unsigned long this_cpu_load(void)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 unsigned long avg_nr_running(void)
 {
@@ -3958,6 +3963,9 @@ unsigned long avg_nr_running(void)
 =======
 #ifdef CONFIG_INTELLI_HOTPLUG
 >>>>>>> cf79156... intelli_plug: Refactor and update
+=======
+#if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
+>>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
