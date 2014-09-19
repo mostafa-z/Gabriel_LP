@@ -3246,12 +3246,16 @@ static void __sched_fork(struct task_struct *p)
 	RB_CLEAR_NODE(&p->dl.rb_node);
 	hrtimer_init(&p->dl.dl_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	__dl_clear_params(p);
 =======
 	p->dl.dl_runtime = p->dl.runtime = 0;
 	p->dl.dl_deadline = p->dl.deadline = 0;
 	p->dl.flags = 0;
 >>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
+=======
+	__dl_clear_params(p);
+>>>>>>> 0e84924... sched/deadline: Clear dl_entity params when setscheduling to different class
 
 	INIT_LIST_HEAD(&p->rt.run_list);
 
