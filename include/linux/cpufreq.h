@@ -325,6 +325,8 @@ cputime64_t get_cpu_idle_time(unsigned int cpu, cputime64_t *wall, int io_busy);
 u64 get_cpu_iowait_time(unsigned int cpu, u64 *wall);
 int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu);
 int cpufreq_update_policy(unsigned int cpu);
+int cpufreq_update_freq(unsigned int cpu, unsigned int min, unsigned int max);
+int cpufreq_qos_requirement(unsigned int kHz);
 
 #ifdef CONFIG_CPU_FREQ
 /* query the current CPU frequency (in kHz). If zero, cpufreq couldn't detect it */
