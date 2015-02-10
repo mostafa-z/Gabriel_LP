@@ -186,7 +186,7 @@ static int max17048_get_config(struct i2c_client *client)
 		dev_err(&client->dev, "%s: err %d\n", __func__, config);
 		return config;
 	} else {
-		printk(KERN_ERR "%s : config = 0x%x\n", __func__, config);
+		pr_debug("%s : config = 0x%x\n", __func__, config);
 		chip->config = config;
 		return 0;
 	}
@@ -203,7 +203,7 @@ static int max17048_get_status(struct i2c_client *client)
 		return status;
 	} else {
 #ifdef MAX17048_DEBUG
-		printk(KERN_ERR "%s : status = 0x%x\n", __func__, status);
+		pr_debug("%s : status = 0x%x\n", __func__, status);
 #endif
 		chip->status = status;
 		return 0;
@@ -558,7 +558,7 @@ static void max17048_work(struct work_struct *work)
 	max17048_get_soc(chip->client);
 
 #ifdef MAX17048_DEBUG
-	printk(KERN_ERR "%s : Raw SOC : 0x%x / vcell : 0x%x\n",
+	pr_debug("%s : Raw SOC : 0x%x / vcell : 0x%x\n",
 		__func__, chip->soc, chip->vcell);
 #endif
 
@@ -569,7 +569,7 @@ static void max17048_work(struct work_struct *work)
 		chip->lasttime_soc = chip->soc;
 		chip->lasttime_capacity_level = chip->capacity_level;
 
-		printk(KERN_ERR "%s : Reported Capacity : %d / voltage : %d\n",
+		pr_debug("%s : Reported Capacity : %d / voltage : %d\n",
 				__func__, chip->capacity_level, chip->voltage);
 
 		if (!chip->batt_psy) {
@@ -699,7 +699,7 @@ static int max17048_set_athd_alert(struct i2c_client *client, int level)
 {
 	struct max17048_chip *chip = i2c_get_clientdata(client);
 	int ret;
-	printk(KERN_INFO "%s.\n", __func__);
+	pr_debug("%s.\n", __func__);
 	if (chip == NULL)
 		return -ENODEV;
 
@@ -860,7 +860,7 @@ int max17048_set_rcomp_by_temperature(struct i2c_client *client)
 	else if (new_rcomp < 0)
 		new_rcomp = 0;
 
-	pr_err("%s : temp = %d, pre_rcomp = 0x%02X -> new_rcomp = 0x%02X\n"
+	pr_debug("%s : temp = %d, pre_rcomp = 0x%02X -> new_rcomp = 0x%02X\n"
 		, __func__ , temp, pre_rcomp, new_rcomp);
 
 	/* Write RCOMP */

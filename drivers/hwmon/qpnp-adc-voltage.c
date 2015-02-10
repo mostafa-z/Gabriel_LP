@@ -1521,8 +1521,12 @@ void xo_therm_logging(void)
 		if (rc)
 			pr_err("VADC read error with %d\n", rc);
 		else {
+<<<<<<< HEAD
 #if 0
 			printk(KERN_INFO "[XO_THERM] Result:%lld Raw:%d\n",
+=======
+			pr_debug("[XO_THERM] Result:%lld Raw:%d\n",
+>>>>>>> 0d2018f... logging: chill out br0
 					tmp.physical, tmp.adc_code);
 #endif
 #if defined (CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4)
