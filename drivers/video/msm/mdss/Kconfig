@@ -46,3 +46,19 @@ config LGE_SUPPORT_LCD_MAKER_ID
 	bool "LGE LCD MAKER ID support configuration"
 	help
 	   Say Y here to enable support for LCD MAKER ID lge feature.
+	   
+config LGE_MIPI_DZNY_JDI_INCELL_FHD_VIDEO_PANEL
+	bool "MIPI Disney JDI FHD LCD Video Panel"
+	default n
+
+config LGE_LION_DSV
+	bool "LION_DSV Power Management chip"
+	default n
+
+config FB_MSM_MDSS_KCAL_CTRL
+	depends on FB_MSM_MDSS
+	bool "MDSS color control"
+	---help---
+	  Enable sysfs for rgb/lut control for mdss-mdp display controllers
+	  in the MDSS sub-system.
+
