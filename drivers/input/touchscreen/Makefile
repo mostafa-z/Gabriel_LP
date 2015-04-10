@@ -6,6 +6,7 @@
 
 wm97xx-ts-y := wm97xx-core.o
 
+obj-$(CONFIG_TOUCHSCREEN_SWEEP2WAKE)	+= sweep2wake.o
 obj-$(CONFIG_TOUCHSCREEN_88PM860X)	+= 88pm860x-ts.o
 obj-$(CONFIG_TOUCHSCREEN_AD7877)	+= ad7877.o
 obj-$(CONFIG_TOUCHSCREEN_AD7879)	+= ad7879.o
@@ -83,4 +84,5 @@ obj-$(CONFIG_TOUCHSCREEN_CYTTSP_I2C_QC)       += cyttsp-i2c-qc.o
 obj-$(CONFIG_TOUCHSCREEN_FT5X06)	+= ft5x06_ts.o
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_G3) 	+= g3/
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_G2) 	+= g2/
+obj-$(CONFIG_ALUCARD_TOUCHSCREEN_BOOST)	+= alu-t-boost.o
 
