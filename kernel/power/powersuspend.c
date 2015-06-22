@@ -132,27 +132,33 @@ abort_resume:
         mutex_unlock(&power_suspend_lock);
 }
 
+bool power_suspended = false;
+
 void set_power_suspend_state(int new_state)
 {
-        unsigned long irqflags;
-        int old_sleep;
+	unsigned long irqflags;
 
-        spin_lock_irqsave(&state_lock, irqflags);
-        old_sleep = state;
-        if (old_sleep == POWER_SUSPEND_INACTIVE && new_state == POWER_SUSPEND_ACTIVE) {
-#ifdef POWER_SUSPEND_DEBUG
-                pr_warn("power_suspend: activated.\n");
-#endif
-                state = new_state;
-                queue_work(suspend_work_queue, &power_suspend_work);
-        } else if (old_sleep == POWER_SUSPEND_INACTIVE || new_state == POWER_SUSPEND_INACTIVE) {
-#ifdef POWER_SUSPEND_DEBUG
-                pr_warn("power_suspend: deactivated.\n");
-#endif
-                state = new_state;
-                queue_work(suspend_work_queue, &power_resume_work);
-        }
-        spin_unlock_irqrestore(&state_lock, irqflags);
+	spin_lock_irqsave(&state_lock, irqflags);
+	if (state == POWER_SUSPEND_INACTIVE && new_state == POWER_SUSPEND_ACTIVE) {
+		dprintk("[POWERSUSPEND] state activated.\n");
+		state = new_state;
+		power_suspended = true;
+		queue_work(suspend_work_queue, &power_suspend_work);
+	} else if (state == POWER_SUSPEND_ACTIVE && new_state == POWER_SUSPEND_INACTIVE) {
+		dprintk("[POWERSUSPEND] state deactivated.\n");
+		state = new_state;
+		power_suspended = false;
+		queue_work(suspend_work_queue, &power_resume_work);
+	}
+	spin_unlock_irqrestore(&state_lock, irqflags);
+}
+
+void set_power_suspend_state_autosleep_hook(int new_state)
+{
+	dprintk("[POWERSUSPEND] autosleep resquests %s.\n", new_state == POWER_SUSPEND_ACTIVE ? "sleep" : "wakeup");
+	/* Yank555.lu : Only allow autosleep hook changes in autosleep */
+	if (suspend_mode == POWER_SUSPEND_AUTOSLEEP)
+		set_power_suspend_state(new_state);
 }
 
 void set_power_suspend_state_hook(int new_state)
