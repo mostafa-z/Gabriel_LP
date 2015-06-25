@@ -46,9 +46,6 @@ static DEFINE_SPINLOCK(tz_lock);
 
 #define TAG "msm_adreno_tz: "
 
-static unsigned int tz_target = TARGET;
-static unsigned int tz_cap = CAP;
-
 /* Boolean to detect if pm has entered suspend mode */
 static bool suspended = false;
 
