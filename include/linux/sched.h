@@ -2009,16 +2009,8 @@ extern void wake_up_idle_cpu(int cpu);
 static inline void wake_up_idle_cpu(int cpu) { }
 #endif
 
-<<<<<<< HEAD
-extern unsigned int sysctl_sched_latency;
-extern unsigned int sysctl_sched_min_granularity;
-extern unsigned int sysctl_sched_wakeup_granularity;
-extern unsigned int sysctl_sched_child_runs_first;
-extern unsigned int sysctl_sched_wake_to_idle;
-=======
 extern unsigned int sysctl_sched_ravg_window;
 extern unsigned int sysctl_sched_wakeup_load_threshold;
->>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 
 #ifdef CONFIG_SCHED_AUTOGROUP
 extern void sched_autogroup_create_attach(struct task_struct *p);
