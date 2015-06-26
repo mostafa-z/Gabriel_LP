@@ -51,16 +51,9 @@
  * removed updating charging scenario when no charger connected. no point to do so.
  * version 2.4 allowed full 2000ma to be set in charger driver.
  * version 2.5 fixed broken mitigation set if USB is connected.
- * version 2.6 adapted force fast charge to LP kernel source.
- * version 2.7 fixed activation of force fast charge when no power connected. and rom set thermal mitigation.
- * version 2.8 fixed wrong ma set for 2000ma, fixed missing ma step (900) for charge prepare function,
- * cleaned mitigation set functions. reset OTG charge max/min to defaults,
- * cleaned not supported ma level 300. it's not in drivers or tables. best to clean it.
- * version 2.9 allowed higher ma set on misc chargers. was locked to 1000ma. + set max ma to 900 for USB
- * charge connection.
- * version 3.0 guard max charge for OTG driver. to protect hardware. max is 1500.
- * version 3.1 fix bugs in mitigation functions and lge_charging_scenario. + optimizations.
  */
+
+#define FAST_CHARGE_VERSION	"Version 2.5"
 
 int force_fast_charge;
 int force_fast_charge_temp;
@@ -112,6 +105,7 @@ static ssize_t charge_level_store(struct kobject *kobj,
 	sscanf(buf, "%du", &new_charge_level);
 
 	switch (new_charge_level) {
+		case FAST_CHARGE_300:
 		case FAST_CHARGE_500:
 		case FAST_CHARGE_900:
 		case FAST_CHARGE_1200:
@@ -215,3 +209,4 @@ MODULE_AUTHOR("Jean-Pierre Rasquin <yank555.lu@gmail.com>");
 MODULE_AUTHOR("Paul Reioux <reioux@gmail.com>");
 MODULE_AUTHOR("Yuri Sh. <yuri@bynet.co.il>");
 MODULE_DESCRIPTION("Fast Charge Hack for Android");
+
