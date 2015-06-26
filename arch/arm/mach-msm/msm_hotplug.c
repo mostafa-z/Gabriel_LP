@@ -41,7 +41,7 @@
 #define DEFAULT_DOWN_LOCK_DUR		1000
 #define DEFAULT_BOOST_LOCK_DUR		500 * 1000L
 #define DEFAULT_NR_CPUS_BOOSTED		2
-#define DEFAULT_MIN_CPUS_ONLINE		4
+#define DEFAULT_MIN_CPUS_ONLINE		1
 #define DEFAULT_MAX_CPUS_ONLINE		NR_CPUS
 /* cur_avg_load can be > 200! */
 #define DEFAULT_FAST_LANE_LOAD		180
@@ -497,20 +497,36 @@ reschedule:
 	reschedule_hotplug_work();
 }
 
-static void msm_hotplug_suspend(struct work_struct *work)
+static void __ref msm_hotplug_suspend(struct work_struct *work)
 {
+	int cpu;
+
 	if (!hotplug.suspended) {
 		mutex_lock(&hotplug.msm_hotplug_mutex);
 		hotplug.suspended = 1;
 		hotplug.min_cpus_online_res = hotplug.min_cpus_online;
 		hotplug.min_cpus_online = 1;
 		hotplug.max_cpus_online_res = hotplug.max_cpus_online;
-		hotplug.max_cpus_online = 1;
+		hotplug.max_cpus_online = 3;
 		mutex_unlock(&hotplug.msm_hotplug_mutex);
 
 		/* Flush hotplug workqueue */
 		flush_workqueue(hotplug_wq);
 		cancel_delayed_work_sync(&hotplug_work);
+
+		/* Put sibling cores to sleep */
+		for_each_online_cpu(cpu) {
+			if (cpu == 0)
+				continue;
+			cpu_down(cpu);
+		}
+
+		/*
+		 * Enabled core 1,2 so we will have 0-2 online
+		 * when screen is OFF to reduce system lags and reboots.
+		 */
+		cpu_up(1);
+		cpu_up(2);
 
 		if (debug >= 2)
 			dprintk("%s: suspended.\n", MSM_HOTPLUG);
@@ -786,11 +802,19 @@ static int __ref msm_hotplug_start(void)
 	INIT_DELAYED_WORK(&hotplug.suspend_work, msm_hotplug_suspend);
 	INIT_WORK(&hotplug.resume_work, msm_hotplug_resume);
 
-	/* Put all sibling cores to sleep */
+	/* Put all sibling cores to sleep to release all locks */
 	for_each_online_cpu(cpu) {
 		if (cpu == 0)
 			continue;
 		cpu_down(cpu);
+	}
+
+	/* Fire up all CPUs to boost performance */
+	for_each_cpu_not(cpu, cpu_online_mask) {
+		if (cpu == 0)
+			continue;
+		cpu_up(cpu);
+		apply_down_lock(cpu);
 	}
 
 	mod_delayed_work_on(0, hotplug_wq, &hotplug_work,
@@ -835,6 +859,13 @@ static void msm_hotplug_stop(void)
 
 	destroy_workqueue(susp_wq);
 	destroy_workqueue(hotplug_wq);
+
+	/* Put all sibling cores to sleep */
+	for_each_online_cpu(cpu) {
+		if (cpu == 0)
+			continue;
+		cpu_down(cpu);
+	}
 }
 
 static unsigned int *get_tokenized_data(const char *buf, int *num_tokens)
