@@ -56,6 +56,7 @@ struct cpufreq_yankactive_cpuinfo {
 	int governor_enabled;
 	int prev_load;
 	bool limits_changed;
+	unsigned int cpu;
 };
 
 #define MIN_TIMER_JIFFIES 1UL
@@ -94,7 +95,7 @@ static unsigned long freq_calc_thresh;
 /*
  * The minimum amount of time to spend at a frequency before we can ramp down.
  */
-#define DEFAULT_MIN_SAMPLE_TIME (20 * USEC_PER_MSEC)
+#define DEFAULT_MIN_SAMPLE_TIME (50 * USEC_PER_MSEC)
 static unsigned int default_min_sample_time[] = {DEFAULT_MIN_SAMPLE_TIME};
 static spinlock_t min_sample_time_lock;
 static unsigned int *min_sample_times = default_min_sample_time;
@@ -1256,14 +1257,17 @@ static ssize_t show_sync_freq(struct kobject *kobj,
 static ssize_t store_sync_freq(struct kobject *kobj,
 			struct attribute *attr, const char *buf, size_t count)
 {
-	int ret;
+	int ret = 0;
 	unsigned long val;
+	int mpd = strcmp(current->comm, "mpdecision");
+
+	if (mpd == 0)
+		return ret;
 
 	ret = kstrtoul(buf, 0, &val);
 	if (ret < 0)
 		return ret;
-	if (val <= 960000)
-		return count;
+
 	sync_freq = val;
 	return count;
 }
@@ -1393,19 +1397,23 @@ static int cpufreq_governor_yankactive(struct cpufreq_policy *policy,
 {
 	int rc;
 	unsigned int j;
+	unsigned int cpu;
 	struct cpufreq_yankactive_cpuinfo *pcpu;
 	struct cpufreq_frequency_table *freq_table;
 	unsigned long flags, expire_time;
 
+	pcpu = &per_cpu(cpuinfo, policy->cpu);
+	cpu = pcpu->cpu;
+
 	switch (event) {
 	case CPUFREQ_GOV_START:
-		if (!cpu_online(policy->cpu))
+		if (!cpu_online(cpu))
 			return -EINVAL;
 
 		mutex_lock(&gov_lock);
 
 		freq_table =
-			cpufreq_frequency_get_table(policy->cpu);
+			cpufreq_frequency_get_table(cpu);
 		if (!hispeed_freq)
 			hispeed_freq = DEFAULT_HISPEED_FREQ;
 		freq_calc_thresh = policy->cpuinfo.min_freq;
@@ -1478,6 +1486,9 @@ static int cpufreq_governor_yankactive(struct cpufreq_policy *policy,
 		break;
 
 	case CPUFREQ_GOV_LIMITS:
+		/* If device is being removed, skip set limits */
+		if (!policy->cur)
+			break;
 		if (policy->max < policy->cur)
 			__cpufreq_driver_target(policy,
 					policy->max, CPUFREQ_RELATION_H);

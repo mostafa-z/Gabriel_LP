@@ -171,7 +171,11 @@ static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 				   const char *buf, size_t count)
 {
 	unsigned int input;
-	int ret;
+	int ret = 0;
+	int mpd = strcmp(current->comm, "mpdecision");
+
+	if (mpd == 0)
+		return ret;
 
 	ret = sscanf(buf, "%u", &input);
 	if (ret != 1)
@@ -565,12 +569,13 @@ static inline void dbs_timer_exit(struct cpu_dbs_info_s *dbs_info)
 static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				unsigned int event)
 {
-	unsigned int cpu = policy->cpu;
+	unsigned int cpu;
 	struct cpu_dbs_info_s *this_dbs_info;
 	unsigned int j;
 	int rc;
 
-	this_dbs_info = &per_cpu(od_cpu_dbs_info, cpu);
+	this_dbs_info = &per_cpu(od_cpu_dbs_info, policy->cpu);
+	cpu = this_dbs_info->cpu;
 
 	switch (event) {
 	case CPUFREQ_GOV_START:
@@ -596,7 +601,6 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				j_dbs_info->prev_cpu_nice =
 						kcpustat_cpu(j).cpustat[CPUTIME_NICE];
 		}
-		this_dbs_info->cpu = cpu;
 		this_dbs_info->rate_mult = 1;
 		/*
 		 * Start the timerschedule work, when this governor
