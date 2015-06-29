@@ -1,10 +1,7 @@
 
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
-<<<<<<< HEAD
 #include <linux/sched/rt.h>
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 #include <linux/sched/deadline.h>
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
@@ -108,7 +105,6 @@ static inline int task_has_dl_policy(struct task_struct *p)
 	return dl_policy(p->policy);
 }
 
-<<<<<<< HEAD
 static inline bool dl_time_before(u64 a, u64 b)
 {
 	return (s64)(a - b) < 0;
@@ -123,8 +119,6 @@ dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
 	return dl_time_before(a->deadline, b->deadline);
 }
 
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * This is the priority-queue data structure of the RT scheduling class:
  */
@@ -454,7 +448,6 @@ struct dl_rq {
 	struct rb_node *rb_leftmost;
 
 	unsigned long dl_nr_running;
-<<<<<<< HEAD
 
 #ifdef CONFIG_SMP
 	/*
@@ -481,8 +474,6 @@ struct dl_rq {
 #else
 	struct dl_bw dl_bw;
 #endif
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 };
 
 #ifdef CONFIG_SMP
@@ -1345,8 +1336,6 @@ extern void init_dl_bandwidth(struct dl_bandwidth *dl_b, u64 period, u64 runtime
 extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
 
 unsigned long to_ratio(u64 period, u64 runtime);
-
-extern void init_dl_task_timer(struct sched_dl_entity *dl_se);
 
 extern void update_idle_cpu_load(struct rq *this_rq);
 
