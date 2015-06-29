@@ -2254,11 +2254,7 @@ ttwu_do_wakeup(struct rq *rq, struct task_struct *p, int wake_flags)
 		p->sched_class->task_woken(rq, p);
 
 	if (rq->idle_stamp) {
-<<<<<<< HEAD
 		u64 delta = rq_clock(rq) - rq->idle_stamp;
-=======
-		u64 delta = rq->clock - rq->idle_stamp;
->>>>>>> 1cfba1d... sched: Consider max cost of idle balance per sched domain
 		u64 max = 2*rq->max_idle_balance_cost;
 
 		update_avg(&rq->avg_idle, delta);
@@ -7333,10 +7329,7 @@ static void update_top_cache_domain(int cpu)
 	if (sd) {
 		id = cpumask_first(sched_domain_span(sd));
 		size = cpumask_weight(sched_domain_span(sd));
-<<<<<<< HEAD
 		rcu_assign_pointer(per_cpu(sd_busy, cpu), sd->parent);
-=======
->>>>>>> a52c9bc... sched: Micro-optimize the smart wake-affine logic
 	}
 
 	rcu_assign_pointer(per_cpu(sd_llc, cpu), sd);
@@ -8492,7 +8485,6 @@ void __init sched_init(void)
 		rq->idle_stamp = 0;
 		rq->avg_idle = 2*sysctl_sched_migration_cost;
 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
-<<<<<<< HEAD
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
@@ -8502,11 +8494,6 @@ void __init sched_init(void)
 		rq->min_freq = 1;
 		rq->max_possible_freq = 1;
 		rq->max_possible_capacity = 0;
-=======
-		rq->cur_freq = 0;
-		rq->max_freq = 0;
-		rq->min_freq = 0;
->>>>>>> 1cfba1d... sched: Consider max cost of idle balance per sched domain
 		rq->cumulative_runnable_avg = 0;
 		rq->efficiency = 1024;
 		rq->capacity = 1024;

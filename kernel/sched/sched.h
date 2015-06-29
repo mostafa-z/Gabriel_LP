@@ -13,7 +13,6 @@
 
 extern __read_mostly int scheduler_running;
 
-extern unsigned int sysctl_sched_ravg_window;
 /*
  * Convert user-nice values [ -20 ... 0 ... 19 ]
  * to static priority [ MAX_RT_PRIO..MAX_PRIO-1 ],
@@ -324,11 +323,7 @@ struct cfs_rq {
 	 *               the cpu power of that cfs_rq
 	 * h_nr_running: present how many tasks in current cfs runqueue
 	 */
-<<<<<<< HEAD
 	unsigned int nr_running, h_nr_running;
-=======
-	unsigned long nr_running, h_nr_running;
->>>>>>> c8ac09c... sched: document the difference between nr_running and h_nr_running
 
 	u64 exec_clock;
 	u64 min_vruntime;
@@ -611,7 +606,6 @@ struct rq {
 
 	/* Set to max idle balance cost for any one sched domain */
 	u64 max_idle_balance_cost;
-<<<<<<< HEAD
 	int cstate, wakeup_latency, wakeup_energy;
 #endif
 
@@ -636,12 +630,7 @@ struct rq {
 
 #ifdef CONFIG_SCHED_HMP
 	int nr_small_tasks, nr_big_tasks;
-=======
->>>>>>> 1cfba1d... sched: Consider max cost of idle balance per sched domain
 #endif
-
-	int cur_freq, max_freq, min_freq;
-	u64 cumulative_runnable_avg;
 
 #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 	u64 prev_irq_time;
