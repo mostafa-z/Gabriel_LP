@@ -40,10 +40,7 @@
 /* SCHED_ISO: reserved but not implemented yet */
 #define SCHED_IDLE		5
 #define SCHED_DEADLINE		6
-<<<<<<< HEAD
 
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /* Can be ORed in to make sure the process is reverted back to SCHED_NORMAL on fork */
 #define SCHED_RESET_ON_FORK     0x40000000
 
@@ -145,19 +142,10 @@ struct sched_param {
  * Given this task model, there are a multiplicity of scheduling algorithms
  * and policies, that can be used to ensure all the tasks will make their
  * timing constraints.
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
  *
  * As of now, the SCHED_DEADLINE policy (sched_dl scheduling class) is the
  * only user of this new interface. More information about the algorithm
  * available in the scheduling class file or in Documentation/.
-<<<<<<< HEAD
-=======
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
  */
 struct sched_attr {
 	u32 size;
@@ -222,19 +210,10 @@ DECLARE_PER_CPU(unsigned long, process_counts);
 extern int nr_processes(void);
 extern unsigned long nr_running(void);
 extern unsigned long nr_iowait(void);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
 extern unsigned long avg_nr_running(void);
 extern unsigned long avg_cpu_nr_running(unsigned int cpu);
 #endif
-<<<<<<< HEAD
-=======
->>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
-=======
->>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 extern unsigned long nr_iowait_cpu(int cpu);
 extern unsigned long this_cpu_load(void);
 
@@ -949,23 +928,6 @@ enum cpu_idle_type {
 
 extern int __weak arch_sd_sibiling_asym_packing(void);
 
-<<<<<<< HEAD
-=======
-/*
- * Optimise SD flags for power savings:
- * SD_BALANCE_NEWIDLE helps aggressive task consolidation and power savings.
- * Keep default SD flags if sched_{smt,mc}_power_saving=0
- */
-
-static inline int sd_power_saving_flags(void)
-{
-	if (sched_mc_power_savings | sched_smt_power_savings)
-		return SD_BALANCE_NEWIDLE;
-
-	return 0;
-}
-
->>>>>>> 28ae5a0... sched: Move struct sched_group to kernel/sched/sched.h
 struct sched_domain_attr {
 	int relax_domain_level;
 };
@@ -1005,7 +967,6 @@ struct sched_domain {
 	unsigned int nr_balance_failed; /* initialise to 0 */
 
 	u64 last_update;
-	u64 max_newidle_lb_cost;
 
 	/* idle_balance() stats */
 	u64 max_newidle_lb_cost;
@@ -1116,69 +1077,9 @@ struct mempolicy;
 struct pipe_inode_info;
 struct uts_namespace;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 struct load_weight {
 	unsigned long weight;
 	u32 inv_weight;
-=======
-struct rq;
-struct sched_domain;
-
-#define ENQUEUE_WAKEUP		1
-#define ENQUEUE_HEAD		2
-#ifdef CONFIG_SMP
-#define ENQUEUE_WAKING		4	/* sched_class::task_waking was called */
-#else
-#define ENQUEUE_WAKING		0
-#endif
-
-#define DEQUEUE_SLEEP		1
-
-struct sched_class {
-	const struct sched_class *next;
-
-	void (*enqueue_task) (struct rq *rq, struct task_struct *p, int flags);
-	void (*dequeue_task) (struct rq *rq, struct task_struct *p, int flags);
-	void (*yield_task) (struct rq *rq);
-	bool (*yield_to_task) (struct rq *rq, struct task_struct *p, bool preempt);
-
-	void (*check_preempt_curr) (struct rq *rq, struct task_struct *p, int flags);
-
-	struct task_struct * (*pick_next_task) (struct rq *rq);
-	void (*put_prev_task) (struct rq *rq, struct task_struct *p);
-
-#ifdef CONFIG_SMP
-	int  (*select_task_rq)(struct task_struct *p, int sd_flag, int flags);
-
-	void (*pre_schedule) (struct rq *this_rq, struct task_struct *task);
-	void (*post_schedule) (struct rq *this_rq);
-	void (*task_waking) (struct task_struct *task);
-	void (*task_woken) (struct rq *this_rq, struct task_struct *task);
-
-	void (*set_cpus_allowed)(struct task_struct *p,
-				 const struct cpumask *newmask);
-
-	void (*rq_online)(struct rq *rq);
-	void (*rq_offline)(struct rq *rq);
-#endif
-
-	void (*set_curr_task) (struct rq *rq);
-	void (*task_tick) (struct rq *rq, struct task_struct *p, int queued);
-	void (*task_fork) (struct task_struct *p);
-
-	void (*switched_from) (struct rq *this_rq, struct task_struct *task);
-	void (*switched_to) (struct rq *this_rq, struct task_struct *task);
-	void (*prio_changed) (struct rq *this_rq, struct task_struct *task,
-			     int oldprio);
-
-	unsigned int (*get_rr_interval) (struct rq *rq,
-					 struct task_struct *task);
-
-#ifdef CONFIG_FAIR_GROUP_SCHED
-	void (*task_move_group) (struct task_struct *p, int on_rq);
-#endif
->>>>>>> f749f49... sched: Move wake flags to kernel/sched/sched.h
 };
 
 struct sched_avg {
@@ -1192,20 +1093,8 @@ struct sched_avg {
 	u32 runnable_avg_sum_scaled;
 #endif
 	u64 last_runnable_update;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	s64 decay_count;
 	unsigned long load_avg_contrib;
-=======
-struct load_weight {
-	unsigned long weight, inv_weight;
->>>>>>> fa13c05... sched: Move struct sched_class to kernel/sched/sched.h
-=======
-=======
-	s64 decay_count;
->>>>>>> c0d55fd... sched: Maintain the load contribution of blocked entities
-	unsigned long load_avg_contrib;
->>>>>>> c29a116... sched: Aggregate load contributed by task entities on parenting cfs_rq
 };
 
 #ifdef CONFIG_SCHEDSTATS
@@ -1269,11 +1158,7 @@ struct ravg {
 	 * sum_history (empty windows are ignored in sum_history).
 	 */
 	u64 mark_start;
-<<<<<<< HEAD
 	u32 sum, demand, prev_window, partial_demand;
-=======
-	u32 sum, demand;
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	u32 sum_history[RAVG_HIST_SIZE];
 };
 
@@ -1328,8 +1213,6 @@ struct sched_rt_entity {
 #endif
 };
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 struct sched_dl_entity {
 	struct rb_node	rb_node;
 	int nr_cpus_allowed;
@@ -1343,23 +1226,6 @@ struct sched_dl_entity {
 	u64 dl_deadline;	/* relative deadline of each instance	*/
 	u64 dl_period;		/* separation of two instances (period) */
 	u64 dl_bw;		/* dl_runtime / dl_deadline		*/
-=======
-struct sched_dl_entity {
-	struct rb_node	rb_node;
-
-	/*
-	 * Original scheduling parameters. Copied here from sched_attr
-	 * during sched_setscheduler2(), they will remain the same until
-	 * the next sched_setscheduler2().
-	 */
-	u64 dl_runtime;		/* maximum runtime for each instance	*/
-	u64 dl_deadline;	/* relative deadline of each instance	*/
-<<<<<<< HEAD
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
-=======
-	u64 dl_period;		/* separation of two instances (period) */
-	u64 dl_bw;		/* dl_runtime / dl_deadline		*/
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 
 	/*
 	 * Actual scheduling parameters. Initialized with the values above,
@@ -1380,8 +1246,6 @@ struct sched_dl_entity {
 	 * @dl_new tells if a new instance arrived. If so we must
 	 * start executing it with full runtime and reset its absolute
 	 * deadline;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	 *
 	 * @dl_boosted tells if we are boosted due to DI. If so we are
 	 * outside bandwidth enforcement mechanism (but only until we
@@ -1391,18 +1255,6 @@ struct sched_dl_entity {
 	 * all its available runtime during the last job.
 	 */
 	int dl_throttled, dl_new, dl_boosted, dl_yielded;
-=======
-	 */
-	int dl_throttled, dl_new;
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
-=======
-	 *
-	 * @dl_boosted tells if we are boosted due to DI. If so we are
-	 * outside bandwidth enforcement mechanism (but only until we
-	 * exit the critical section).
-	 */
-	int dl_throttled, dl_new, dl_boosted;
->>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 
 	/*
 	 * Bandwidth enforcement timer. Each -deadline task has its
@@ -1411,11 +1263,6 @@ struct sched_dl_entity {
 	struct hrtimer dl_timer;
 };
 
-<<<<<<< HEAD
-=======
->>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 struct rcu_node;
 
 enum perf_event_task_context {
@@ -1447,22 +1294,13 @@ struct task_struct {
 	const struct sched_class *sched_class;
 	struct sched_entity se;
 	struct sched_rt_entity rt;
-<<<<<<< HEAD
-<<<<<<< HEAD
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
-=======
-#ifdef CONFIG_SCHED_FREQ_INPUT
->>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
-=======
-#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
->>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 	struct ravg ravg;
 #endif
 #ifdef CONFIG_CGROUP_SCHED
 	struct task_group *sched_task_group;
 #endif
 	struct sched_dl_entity dl;
-	struct ravg ravg;
 
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 	/* list of struct preempt_notifier: */
@@ -1660,8 +1498,6 @@ struct task_struct {
 	struct rb_node *pi_waiters_leftmost;
 	/* Deadlock detection and priority inheritance handling */
 	struct rt_mutex_waiter *pi_blocked_on;
-	/* Top pi_waiters task */
-	struct task_struct *pi_top_task;
 #endif
 
 #ifdef CONFIG_DEBUG_MUTEXES
@@ -1994,12 +1830,8 @@ extern void thread_group_cputime_adjusted(struct task_struct *p, cputime_t *ut, 
 
 extern int task_free_register(struct notifier_block *n);
 extern int task_free_unregister(struct notifier_block *n);
-<<<<<<< HEAD
 extern int sched_set_window(u64 window_start, unsigned int window_size);
 static inline void sched_set_io_is_busy(int val) {};
-=======
-extern void sched_set_window(u64 window_start, unsigned int window_size);
->>>>>>> 2e2e8b9... sched: add sched_get_busy, sched_set_window APIs
 extern unsigned long sched_get_busy(int cpu);
 
 /*
@@ -2284,17 +2116,11 @@ static inline void idle_task_exit(void) {}
 #endif
 
 #if defined(CONFIG_NO_HZ_COMMON) && defined(CONFIG_SMP)
-<<<<<<< HEAD
 extern void wake_up_nohz_cpu(int cpu);
-=======
-extern void wake_up_idle_cpu(int cpu);
->>>>>>> 8761bf0... nohz: Rename CONFIG_NO_HZ to CONFIG_NO_HZ_COMMON
 #else
 static inline void wake_up_nohz_cpu(int cpu) { }
 #endif
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 extern unsigned int sysctl_sched_wakeup_load_threshold;
 
 #ifdef CONFIG_NO_HZ_FULL
@@ -2303,15 +2129,6 @@ extern bool sched_can_stop_tick(void);
 static inline bool sched_can_stop_tick(void) { return false; }
 #endif
 
-=======
-extern unsigned int sysctl_sched_ravg_window;
-=======
->>>>>>> 66f5232... sched: Window-based load stat improvements
-extern unsigned int sysctl_sched_wakeup_load_threshold;
-extern unsigned int sysctl_sched_yield_sleep_duration;
-extern int sysctl_sched_yield_sleep_threshold;
-
->>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
 #ifdef CONFIG_SCHED_AUTOGROUP
 extern void sched_autogroup_create_attach(struct task_struct *p);
 extern void sched_autogroup_detach(struct task_struct *p);
@@ -2328,37 +2145,6 @@ static inline void sched_autogroup_fork(struct signal_struct *sig) { }
 static inline void sched_autogroup_exit(struct signal_struct *sig) { }
 #endif
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_RT_MUTEXES
-extern int rt_mutex_getprio(struct task_struct *p);
-extern void rt_mutex_setprio(struct task_struct *p, int prio);
-extern struct task_struct *rt_mutex_get_top_task(struct task_struct *task);
-extern void rt_mutex_adjust_pi(struct task_struct *p);
-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
-{
-	return tsk->pi_blocked_on != NULL;
-}
-#else
-static inline int rt_mutex_getprio(struct task_struct *p)
-{
-	return p->normal_prio;
-}
-static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
-{
-	return NULL;
-}
-# define rt_mutex_adjust_pi(p)		do { } while (0)
-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
-{
-	return false;
-}
-#endif
-
->>>>>>> 6c27edb... sched: Move sched.h sysctl bits into separate header
-=======
->>>>>>> e9bafb9... sched/rt: Move rt specific bits into new header file
 extern bool yield_to(struct task_struct *p, bool preempt);
 extern void set_user_nice(struct task_struct *p, long nice);
 extern int task_prio(const struct task_struct *p);

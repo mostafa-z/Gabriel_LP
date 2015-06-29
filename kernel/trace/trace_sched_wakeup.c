@@ -16,14 +16,7 @@
 #include <linux/uaccess.h>
 #include <linux/ftrace.h>
 #include <linux/sched/deadline.h>
-<<<<<<< HEAD
-<<<<<<< HEAD
 #include <linux/sched/rt.h>
-=======
->>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
-=======
-#include <linux/sched/rt.h>
->>>>>>> e9bafb9... sched/rt: Move rt specific bits into new header file
 #include <trace/events/sched.h>
 #include "trace.h"
 
@@ -320,7 +313,8 @@ static int report_latency(cycle_t delta)
 }
 
 static void
-probe_wakeup_migrate_task(void *ignore, struct task_struct *task, int cpu)
+probe_wakeup_migrate_task(void *ignore, struct task_struct *task, int cpu,
+							unsigned int load)
 {
 	if (task != wakeup_task)
 		return;

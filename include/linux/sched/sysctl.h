@@ -38,11 +38,22 @@ extern unsigned int sysctl_sched_child_runs_first;
 extern unsigned int sysctl_sched_wake_to_idle;
 extern unsigned int sysctl_sched_window_stats_policy;
 
+#ifdef CONFIG_SCHED_DEBUG
+extern __read_mostly unsigned int sysctl_sched_yield_sleep_duration;
+extern __read_mostly int sysctl_sched_yield_sleep_threshold;
+#else
+extern const unsigned int sysctl_sched_yield_sleep_duration;
+extern const int sysctl_sched_yield_sleep_threshold;
+#endif
+
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
 extern unsigned int sysctl_sched_init_task_load_pct;
 #endif
 
-extern unsigned int sysctl_sched_task_migrate_notify_pct;
+#ifdef CONFIG_SCHED_FREQ_INPUT
+extern int sysctl_sched_freq_inc_notify_slack_pct;
+extern int sysctl_sched_freq_dec_notify_slack_pct;
+#endif
 
 #ifdef CONFIG_SCHED_HMP
 extern unsigned int sysctl_sched_spill_nr_run;
@@ -53,14 +64,8 @@ extern unsigned int sysctl_sched_small_task_pct;
 extern unsigned int sysctl_sched_upmigrate_pct;
 extern unsigned int sysctl_sched_downmigrate_pct;
 extern int sysctl_sched_upmigrate_min_nice;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-extern unsigned int sysctl_sched_enable_power_aware;
-=======
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 extern unsigned int sysctl_sched_powerband_limit_pct;
->>>>>>> 9c17c87... sched: Introduce spill threshold tunables to manage overcommitment
+extern unsigned int sysctl_sched_boost;
 
 #else /* CONFIG_SCHED_HMP */
 
@@ -94,6 +99,9 @@ extern int sched_migrate_notify_proc_handler(struct ctl_table *table,
 extern int sched_hmp_proc_update_handler(struct ctl_table *table,
 		int write, void __user *buffer, size_t *lenp, loff_t *ppos);
 
+extern int sched_boost_handler(struct ctl_table *table, int write,
+		void __user *buffer, size_t *lenp, loff_t *ppos);
+
 #ifdef CONFIG_SCHED_DEBUG
 static inline unsigned int get_sysctl_timer_migration(void)
 {
@@ -105,6 +113,13 @@ static inline unsigned int get_sysctl_timer_migration(void)
 	return 1;
 }
 #endif
+
+/*
+ *  control realtime throttling:
+ *
+ *  /proc/sys/kernel/sched_rt_period_us
+ *  /proc/sys/kernel/sched_rt_runtime_us
+ */
 extern unsigned int sysctl_sched_rt_period;
 extern int sysctl_sched_rt_runtime;
 
@@ -122,7 +137,13 @@ extern unsigned int sysctl_sched_autogroup_enabled;
  */
 #define RR_TIMESLICE		(100 * HZ / 1000)
 
-int sched_rt_handler(struct ctl_table *table, int write,
+extern int sched_rr_timeslice;
+
+extern int sched_rr_handler(struct ctl_table *table, int write,
+		void __user *buffer, size_t *lenp,
+		loff_t *ppos);
+
+extern int sched_rt_handler(struct ctl_table *table, int write,
 		void __user *buffer, size_t *lenp,
 		loff_t *ppos);
 

@@ -126,19 +126,7 @@ void start_bandwidth_timer(struct hrtimer *period_timer, ktime_t period)
 DEFINE_MUTEX(sched_domains_mutex);
 DEFINE_PER_CPU_SHARED_ALIGNED(struct rq, runqueues);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
-=======
-#ifdef CONFIG_INTELLI_PLUG
->>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
-=======
-#ifdef CONFIG_INTELLI_HOTPLUG
->>>>>>> cf79156... intelli_plug: Refactor and update
-=======
-#if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
->>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 DEFINE_PER_CPU_SHARED_ALIGNED(struct nr_stats_s, runqueue_stats);
 #endif
 
@@ -321,20 +309,6 @@ __read_mostly int scheduler_running;
  */
 int sysctl_sched_rt_runtime = 950000;
 
-<<<<<<< HEAD
-=======
-/*
-<<<<<<< HEAD
- * Maximum bandwidth available for all -deadline tasks and groups
- * (if group scheduling is configured) on each CPU.
- *
- * default: 5%
- */
-unsigned int sysctl_sched_dl_period = 1000000;
-int sysctl_sched_dl_runtime = 50000;
-
-
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 /*
  * Number of sched_yield calls that result in a thread yielding
  * to itself before a sleep is injected in its next sched_yield call
@@ -348,23 +322,6 @@ const_debug int sysctl_sched_yield_sleep_threshold = 4;
 const_debug unsigned int sysctl_sched_yield_sleep_duration = 50;
 
 /*
-<<<<<<< HEAD
-=======
->>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
-=======
- * Number of sched_yield calls that result in a thread yielding
- * to itself before a sleep is injected in its next sched_yield call
- * Setting this to -1 will disable adding sleep in sched_yield
- */
-const_debug int sysctl_sched_yield_sleep_threshold = 4;
-/*
- * Sleep duration in us used when sched_yield_sleep_threshold
- * is exceeded.
- */
-const_debug unsigned int sysctl_sched_yield_sleep_duration = 50;
-
-/*
->>>>>>> 78873db... sched: Force sleep on consecutive sched_yields
  * __task_rq_lock - lock the rq @p resides on.
  */
 static inline struct rq *__task_rq_lock(struct task_struct *p)
@@ -756,7 +713,6 @@ static inline bool got_nohz_idle_kick(void)
 }
 
 #endif /* CONFIG_NO_HZ_COMMON */
-<<<<<<< HEAD
 
 #ifdef CONFIG_NO_HZ_FULL
 bool sched_can_stop_tick(void)
@@ -775,8 +731,6 @@ bool sched_can_stop_tick(void)
        return true;
 }
 #endif /* CONFIG_NO_HZ_FULL */
-=======
->>>>>>> 8761bf0... nohz: Rename CONFIG_NO_HZ to CONFIG_NO_HZ_COMMON
 
 void sched_avg_update(struct rq *rq)
 {
@@ -888,13 +842,9 @@ static void enqueue_task(struct rq *rq, struct task_struct *p, int flags)
 	update_rq_clock(rq);
 	sched_info_queued(p);
 	p->sched_class->enqueue_task(rq, p, flags);
-<<<<<<< HEAD
 #ifdef TRACE_CRAP
 	trace_sched_enq_deq_task(p, 1, cpumask_bits(&p->cpus_allowed)[0]);
 #endif
-=======
-	trace_sched_enq_deq_task(p, 1);
->>>>>>> 66f5232... sched: Window-based load stat improvements
 	inc_cumulative_runnable_avg(rq, p);
 }
 
@@ -903,13 +853,9 @@ static void dequeue_task(struct rq *rq, struct task_struct *p, int flags)
 	update_rq_clock(rq);
 	sched_info_dequeued(p);
 	p->sched_class->dequeue_task(rq, p, flags);
-<<<<<<< HEAD
 #ifdef TRACE_CRAP
 	trace_sched_enq_deq_task(p, 0, cpumask_bits(&p->cpus_allowed)[0]);
 #endif
-=======
-	trace_sched_enq_deq_task(p, 0);
->>>>>>> 66f5232... sched: Window-based load stat improvements
 	dec_cumulative_runnable_avg(rq, p);
 }
 
@@ -1176,7 +1122,6 @@ unsigned int __read_mostly sched_use_pelt;
 unsigned int max_possible_efficiency = 1024;
 unsigned int min_possible_efficiency = 1024;
 
-<<<<<<< HEAD
 __read_mostly int sysctl_sched_freq_inc_notify_slack_pct;
 __read_mostly int sysctl_sched_freq_dec_notify_slack_pct = 25;
 
@@ -1213,22 +1158,9 @@ int rq_freq_margin(struct rq *rq)
 	int margin;
 	u64 demand;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (!sched_enable_hmp)
 		return INT_MAX;
 
-=======
->>>>>>> f89bffb... sched: Make task and CPU load calculations safe from truncation
-=======
-	if (!sysctl_sched_enable_hmp_task_placement)
-=======
-	if (!sched_enable_hmp)
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
-		return INT_MAX;
-
->>>>>>> 25b27de... sched: support legacy mode better
 	demand = scale_load_to_cpu(rq->prev_runnable_sum, rq->cpu);
 	demand *= 128;
 	demand = div64_u64(demand, max_task_load());
@@ -1240,29 +1172,6 @@ int rq_freq_margin(struct rq *rq)
 	margin *= 100;
 	margin /= (int)rq->max_possible_freq;
 	return margin;
-=======
-__read_mostly unsigned int sysctl_sched_task_migrate_notify_pct = 25;
-unsigned int sched_task_migrate_notify;
-
-int sched_migrate_notify_proc_handler(struct ctl_table *table, int write,
-				      void __user *buffer, size_t *lenp,
-				      loff_t *ppos)
-{
-	int ret;
-	unsigned int *data = (unsigned int *)table->data;
-
-	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
-	if (ret || !write)
-		return ret;
-
-	if (*data > 100)
-		return -EINVAL;
-
-	sched_task_migrate_notify = div64_u64((u64)*data *
-					      (u64)max_task_load(), 100);
-
-	return 0;
->>>>>>> 1b7815f... sched: add migration load change notifier for frequency guidance
 }
 
 /*
@@ -1373,13 +1282,9 @@ static int __init set_sched_ravg_window(char *str)
 
 early_param("sched_ravg_window", set_sched_ravg_window);
 
-<<<<<<< HEAD
 static inline void
 move_window_start(struct rq *rq, u64 wallclock, int update_sum,
 						 struct task_struct *p)
-=======
-static inline void move_window_start(struct rq *rq, u64 wallclock)
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 {
 	s64 delta;
 	int nr_windows;
@@ -1391,14 +1296,8 @@ static inline void move_window_start(struct rq *rq, u64 wallclock)
 
 	nr_windows = div64_u64(delta, sched_ravg_window);
 	rq->window_start += (u64)nr_windows * (u64)sched_ravg_window;
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 	if (is_idle_task(rq->curr)) {
-=======
-
-	if (nr_windows) {
->>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
 		if (nr_windows == 1)
 			rq->prev_runnable_sum = rq->curr_runnable_sum;
 		else
@@ -1406,7 +1305,6 @@ static inline void move_window_start(struct rq *rq, u64 wallclock)
 
 		rq->curr_runnable_sum = 0;
 	}
-<<<<<<< HEAD
 }
 
 static inline u64 scale_exec_time(u64 delta, struct rq *rq)
@@ -1429,28 +1327,14 @@ static inline u64 scale_exec_time(u64 delta, struct rq *rq)
 
 static void update_task_ravg(struct task_struct *p, struct rq *rq,
 			     int event, u64 wallclock, int *long_sleep)
-=======
-=======
->>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
-}
-
-void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 {
 	u32 window_size = sched_ravg_window;
 	int update_sum = (event == PUT_PREV_TASK || event == TASK_UPDATE);
 	int new_window;
-<<<<<<< HEAD
-=======
-	u64 wallclock = sched_clock();
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	u64 mark_start = p->ravg.mark_start;
 	u64 window_start;
-	u32 prev_contrib = 0;
-	u32 curr_contrib = 0;
 
 	if (is_idle_task(p) || sched_use_pelt || !rq->window_start)
-<<<<<<< HEAD
 		return;
 
 	lockdep_assert_held(&rq->lock);
@@ -1463,70 +1347,32 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 	 * to attribute its time to the aggregate RQ busy time
 	 */
 	if (is_idle_task(p))
-=======
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
-		return;
-
-	move_window_start(rq, wallclock);
-	window_start = rq->window_start;
-
-	/*
-	 * Don't bother accounting for idle task, also we would not want
-	 * to attribute its time to the aggregate RQ busy time
-	 */
-	if (is_idle_task(p))
 		return;
 
 	do {
 		s64 delta = 0;
-<<<<<<< HEAD
 		int nr_full_windows = 0;
-=======
-		int n = 0;
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 		u64 now = wallclock;
 		u32 sum = 0;
 
 		new_window = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 		if (window_start > mark_start) {
 			delta = window_start - mark_start;
 			nr_full_windows = div64_u64(delta, window_size);
 			window_start -= nr_full_windows * window_size;
-=======
-=======
-
->>>>>>> 3b396f6... sched: window-stats: Add aggregated runqueue windowed stats
-		if (window_start > mark_start) {
-			delta = window_start - mark_start;
-
-			n = div64_u64(delta, window_size);
-			window_start -= n * window_size;
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 			now = window_start;
 			new_window = 1;
 		}
 
 		if (update_sum) {
-<<<<<<< HEAD
 			delta = now - mark_start;
 			delta = scale_exec_time(delta, rq);
 			BUG_ON(delta < 0);
-=======
-			unsigned int cur_freq = rq->cur_freq;
-			int sf;
-
-			delta = now - mark_start;
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 
 			p->ravg.sum += delta;
 			if (unlikely(p->ravg.sum > window_size))
 				p->ravg.sum = window_size;
-
-			prev_contrib = curr_contrib;
-			curr_contrib = delta;
 		}
 
 		update_history(rq, p, p->ravg.sum, 1, update_sum,
@@ -1534,7 +1380,6 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 		if (!new_window)
 			break;
 
-<<<<<<< HEAD
 		if (nr_full_windows) {
 			window_start += nr_full_windows * window_size;
 			if (update_sum)
@@ -1549,24 +1394,6 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 			rq->curr_runnable_sum = p->ravg.partial_demand;
 		}
 
-=======
-		update_history(rq, p, p->ravg.sum, 1);
-
-		if (n) {
-			window_start += n * window_size;
-			if (update_sum)
-				sum = window_size;
-			update_history(rq, p, sum, n);
-
-			/*
-			 * We will always shift curr_contrib into
-			 * prev_contrib when tallying the remainder in
-			 * the current window on the next loop
-			 * iteration.
-			 */
-			curr_contrib = sum;
-		}
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 		mark_start = window_start;
 	} while (new_window);
 
@@ -1587,9 +1414,6 @@ void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
 #endif
 
 	p->ravg.mark_start = wallclock;
-
-	rq->curr_runnable_sum += curr_contrib;
-	rq->prev_runnable_sum += prev_contrib;
 }
 
 unsigned long __weak arch_get_cpu_efficiency(int cpu)
@@ -1602,15 +1426,7 @@ static void init_cpu_efficiency(void)
 	int i, efficiency;
 	unsigned int max = 0, min = UINT_MAX;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (!sched_enable_hmp)
-=======
-	if (!sysctl_sched_enable_hmp_task_placement)
->>>>>>> 25b27de... sched: support legacy mode better
-=======
-	if (!sched_enable_hmp)
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	for_each_possible_cpu(i) {
@@ -1630,112 +1446,6 @@ static void init_cpu_efficiency(void)
 }
 
 static inline void mark_task_starting(struct task_struct *p)
-<<<<<<< HEAD
-=======
-{
-	p->ravg.mark_start = sched_clock();
-}
-
-static unsigned int sync_cpu;
-static u64 sched_init_jiffy;
-static u64 sched_clock_at_init_jiffy;
-
-static inline void set_window_start(struct rq *rq)
-{
-	int cpu = cpu_of(rq);
-	struct rq *sync_rq = cpu_rq(sync_cpu);
-
-	if (likely(rq->window_start))
-		return;
-
-	if (cpu == sync_cpu) {
-		rq->window_start = sched_clock();
-		sched_init_jiffy = get_jiffies_64();
-		sched_clock_at_init_jiffy = rq->window_start;
-	} else {
-		raw_spin_unlock(&rq->lock);
-		double_rq_lock(rq, sync_rq);
-		rq->window_start = cpu_rq(sync_cpu)->window_start;
-		raw_spin_unlock(&sync_rq->lock);
-	}
-
-	rq->curr->ravg.mark_start = rq->window_start;
-}
-
-static inline void migrate_sync_cpu(int cpu)
-{
-	if (cpu == sync_cpu)
-		sync_cpu = smp_processor_id();
-}
-
-unsigned long sched_get_busy(int cpu)
-{
-	struct rq *rq = cpu_rq(cpu);
-
-	/*
-	 * This function could be called in timer context, and the
-	 * current task may have been executing for a long time. Ensure
-	 * that the window stats are current by doing an update.
-	 */
-	raw_spin_lock(&rq->lock);
-	update_task_ravg(rq->curr, rq, 1);
-	raw_spin_unlock(&rq->lock);
-
-	return div64_u64(scale_task_load(rq->prev_runnable_sum, cpu),
-			  NSEC_PER_USEC);
-}
-
-void sched_set_window(u64 window_start, unsigned int window_size)
-{
-	int cpu;
-	u64 ws;
-	u64 now = get_jiffies_64();
-	int delta;
-	unsigned long flags;
-
-	delta = window_start - now; /* how many jiffies ahead */
-
-	if (delta > 0) {
-		delta /= window_size; /* # of windows to roll back */
-		delta += 1;
-		window_start -= (delta * window_size);
-	}
-
-	ws = (window_start - sched_init_jiffy); /* jiffy difference */
-	ws *= TICK_NSEC;
-	ws += sched_clock_at_init_jiffy;
-
-	BUG_ON(sched_clock() < ws);
-
-	local_irq_save(flags);
-
-	for_each_online_cpu(cpu) {
-		struct rq *rq = cpu_rq(cpu);
-		raw_spin_lock(&rq->lock);
-	}
-
-	sched_ravg_window = window_size * TICK_NSEC;
-	set_hmp_defaults();
-
-	for_each_online_cpu(cpu) {
-		struct rq *rq = cpu_rq(cpu);
-		rq->window_start = ws;
-		fixup_nr_big_small_task(cpu);
-	}
-
-	for_each_online_cpu(cpu) {
-		struct rq *rq = cpu_rq(cpu);
-		raw_spin_unlock(&rq->lock);
-	}
-
-	local_irq_restore(flags);
-}
-
-#else	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
-
-static inline void
-update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 {
 	struct rq *rq = task_rq(p);
 	u64 wallclock = sched_clock();
@@ -1759,26 +1469,8 @@ static inline void set_window_start(struct rq *rq)
 	int cpu = cpu_of(rq);
 	struct rq *sync_rq = cpu_rq(sync_cpu);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (rq->window_start || !sched_enable_hmp)
-=======
-	if (rq->window_start || !sysctl_sched_enable_hmp_task_placement)
->>>>>>> 25b27de... sched: support legacy mode better
-=======
-	if (rq->window_start || !sched_enable_hmp)
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
-=======
-static inline void mark_task_starting(struct task_struct *p) {}
-
-static inline void set_window_start(struct rq *rq) {}
-
-static inline void migrate_sync_cpu(int cpu) {}
-
-#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 
 	if (cpu == sync_cpu) {
 		rq->window_start = sched_clock();
@@ -1840,33 +1532,11 @@ int sched_set_window(u64 window_start, unsigned int window_size)
 		window_start -= (delta * window_size);
 	}
 
-<<<<<<< HEAD
 	ws = (window_start - sched_init_jiffy); /* jiffy difference */
 	ws *= TICK_NSEC;
 	ws += sched_clock_at_init_jiffy;
 
 	BUG_ON(sched_clock() < ws);
-=======
-#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
-		if (p->on_rq || p->state == TASK_WAKING) {
-			struct rq *src_rq = task_rq(p);
-			struct rq *dest_rq = cpu_rq(new_cpu);
-
-			/* In the wakeup case the task has already had
-			 * its statisics updated (and the RQ is not locked). */
-			if (p->state != TASK_WAKING) {
-				p->on_rq = 0;	/* todo */
-				update_task_ravg(p, task_rq(p), 0,
-						 sched_clock());
-				p->on_rq = 1;	/* todo */
-			}
-
-			if (p->state == TASK_WAKING)
-				double_rq_lock(src_rq, dest_rq);
-
-			update_task_ravg(dest_rq->curr, dest_rq,
-					 1, sched_clock());
->>>>>>> 1b7815f... sched: add migration load change notifier for frequency guidance
 
 	local_irq_save(flags);
 
@@ -1889,34 +1559,11 @@ int sched_set_window(u64 window_start, unsigned int window_size)
 	for_each_online_cpu(cpu) {
 		struct rq *rq = cpu_rq(cpu);
 
-<<<<<<< HEAD
 		rq->window_start = ws;
 		rq->curr_runnable_sum = rq->prev_runnable_sum = 0;
 		if (!is_idle_task(rq->curr)) {
 			rq->curr->ravg.mark_start = wallclock;
 			rq->curr_runnable_sum += rq->curr->ravg.partial_demand;
-=======
-			src_rq->curr_runnable_sum -= p->ravg.sum;
-			src_rq->prev_runnable_sum -= p->ravg.prev_window;
-			dest_rq->curr_runnable_sum += p->ravg.sum;
-			dest_rq->prev_runnable_sum += p->ravg.prev_window;
-
-			if (p->state == TASK_WAKING)
-				double_rq_unlock(src_rq, dest_rq);
-
-			/* Is p->ravg.prev_window significant? Trigger a load
-			   alert notifier if so. */
-			if (p->ravg.prev_window > sched_task_migrate_notify &&
-			    !cpumask_test_cpu(new_cpu,
-					     &src_rq->freq_domain_cpumask)) {
-				atomic_notifier_call_chain(
-					&load_alert_notifier_head, 0,
-					(void *)task_cpu(p));
-				atomic_notifier_call_chain(
-					&load_alert_notifier_head, 0,
-					(void *)new_cpu);
-			}
->>>>>>> 1b7815f... sched: add migration load change notifier for frequency guidance
 		}
 		fixup_nr_big_small_task(cpu);
 	}
@@ -2106,15 +1753,7 @@ static int register_sched_callback(void)
 {
 	int ret;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (!sched_enable_hmp)
-=======
-	if (!sysctl_sched_enable_hmp_task_placement)
->>>>>>> 25b27de... sched: support legacy mode better
-=======
-	if (!sched_enable_hmp)
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return 0;
 
 	ret = cpufreq_register_notifier(&notifier_policy_block,
@@ -2277,16 +1916,11 @@ void set_task_cpu(struct task_struct *p, unsigned int new_cpu)
 #endif
 
 	if (task_cpu(p) != new_cpu) {
-<<<<<<< HEAD
 		struct task_migration_notifier tmn;
 
 		if (p->sched_class->migrate_task_rq)
 			p->sched_class->migrate_task_rq(p, new_cpu);
 
-=======
-		if (p->sched_class->migrate_task_rq)
-			p->sched_class->migrate_task_rq(p, new_cpu);
->>>>>>> 1b0fd4e... sched: Add an rq migration call-back to sched_class
 		p->se.nr_migrations++;
 		perf_sw_event(PERF_COUNT_SW_CPU_MIGRATIONS, 1, NULL, 0);
 
@@ -2296,16 +1930,7 @@ void set_task_cpu(struct task_struct *p, unsigned int new_cpu)
 
 		atomic_notifier_call_chain(&task_migration_notifier, 0, &tmn);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 		if (sched_enable_hmp && (p->on_rq || p->state == TASK_WAKING))
-=======
-		if (sysctl_sched_enable_hmp_task_placement &&
-		    (p->on_rq || p->state == TASK_WAKING))
->>>>>>> 25b27de... sched: support legacy mode better
-=======
-		if (sched_enable_hmp && (p->on_rq || p->state == TASK_WAKING))
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 			fixup_busy_time(p, new_cpu);
 	}
 
@@ -2612,211 +2237,7 @@ static void ttwu_activate(struct rq *rq, struct task_struct *p, int en_flags)
 		wq_worker_waking_up(p, cpu_of(rq));
 }
 
-#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
-
-/* Window size (in ns) */
-__read_mostly unsigned int sched_ravg_window = 10000000;
-
-/* Min window size (in ns) = 10ms */
-#define MIN_SCHED_RAVG_WINDOW 10000000
-
-/* Max window size (in ns) = 1s */
-#define MAX_SCHED_RAVG_WINDOW 1000000000
-
-#define WINDOW_STATS_USE_RECENT        0
-#define WINDOW_STATS_USE_MAX   1
-#define WINDOW_STATS_USE_AVG   2
-
-__read_mostly unsigned int sysctl_sched_window_stats_policy =
-	WINDOW_STATS_USE_AVG;
-
-/* 1 -> use PELT based load stats, 0 -> use window-based load stats */
-unsigned int __read_mostly sched_use_pelt = 1;
-
-unsigned int max_possible_efficiency = 1024;
-unsigned int min_possible_efficiency = 1024;
-
 /*
-<<<<<<< HEAD
-=======
- * Called when new window is starting for a task, to record cpu usage over
- * recently concluded window(s). Normally 'samples' should be 1. It can be > 1
- * when, say, a real-time task runs without preemption for several windows at a
- * stretch.
- */
-static inline void
-update_history(struct rq *rq, struct task_struct *p, u32 runtime, int samples)
-{
-	u32 *hist = &p->ravg.sum_history[0];
-	int ridx, widx;
-	u32 max = 0, avg, demand;
-	u64 sum = 0;
-
-	/* Ignore windows where task had no activity */
-	if (!runtime)
-		return;
-
-	/* Push new 'runtime' value onto stack */
-	widx = RAVG_HIST_SIZE - 1;
-	ridx = widx - samples;
-	for (; ridx >= 0; --widx, --ridx) {
-		hist[widx] = hist[ridx];
-		sum += hist[widx];
-		if (hist[widx] > max)
-			max = hist[widx];
-	}
-
-	for (widx = 0; widx < samples && widx < RAVG_HIST_SIZE; widx++) {
-		hist[widx] = runtime;
-		sum += hist[widx];
-		if (hist[widx] > max)
-			max = hist[widx];
-	}
-
-	p->ravg.sum = 0;
-	if (p->on_rq) {
-		rq->cumulative_runnable_avg -= p->ravg.demand;
-		BUG_ON((s64)rq->cumulative_runnable_avg < 0);
-		if (p->sched_class == &fair_sched_class)
-			dec_nr_big_small_task(rq, p);
-	}
-
-	avg = div64_u64(sum, RAVG_HIST_SIZE);
-
-	if (sysctl_sched_window_stats_policy == WINDOW_STATS_USE_RECENT)
-		demand = runtime;
-	else if (sysctl_sched_window_stats_policy == WINDOW_STATS_USE_MAX)
-		demand = max;
-	else
-		demand = max(avg, runtime);
-
-	p->ravg.demand = demand;
-
-	if (p->on_rq) {
-		rq->cumulative_runnable_avg += p->ravg.demand;
-		if (p->sched_class == &fair_sched_class)
-			inc_nr_big_small_task(rq, p);
-	}
-}
-
-static int __init set_sched_ravg_window(char *str)
-{
-	get_option(&str, &sched_ravg_window);
-
-	sched_use_pelt = (sched_ravg_window < MIN_SCHED_RAVG_WINDOW ||
-				sched_ravg_window > MAX_SCHED_RAVG_WINDOW);
-
-	return 0;
-}
-
-early_param("sched_ravg_window", set_sched_ravg_window);
-
-void update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
-{
-	u32 window_size = sched_ravg_window;
-	int new_window;
-	u64 wallclock = sched_clock();
-
-<<<<<<< HEAD
-	if (sched_ravg_window < min_sched_ravg_window)
-=======
-	if (is_idle_task(p) || sched_use_pelt)
->>>>>>> 927a5d6... sched: Provide tunable to switch between PELT and window-based stats
-		return;
-
-	do {
-		s64 delta = 0;
-		int n;
-		u64 now = wallclock;
-
-		new_window = 0;
-		delta = now - p->ravg.window_start;
-		BUG_ON(delta < 0);
-		if (delta > window_size) {
-			p->ravg.window_start += window_size;
-			now = p->ravg.window_start;
-			new_window = 1;
-		}
-
-		if (update_sum) {
-			unsigned int cur_freq = rq->cur_freq;
-
-			delta = now - p->ravg.mark_start;
-			BUG_ON(delta < 0);
-
-			if (unlikely(cur_freq > max_possible_freq ||
-				     (cur_freq == rq->max_freq &&
-				      rq->max_freq < rq->max_possible_freq)))
-				cur_freq = rq->max_possible_freq;
-
-			delta = div64_u64(delta  * cur_freq,
-							max_possible_freq);
-			p->ravg.sum += delta;
-			WARN_ON(p->ravg.sum > window_size);
-		}
-
-		if (!new_window)
-			break;
-
-		update_history(rq, p, p->ravg.sum, 1);
-
-		delta = wallclock - p->ravg.window_start;
-		BUG_ON(delta < 0);
-		n = div64_u64(delta, window_size);
-		if (n) {
-			if (!update_sum)
-				p->ravg.window_start = wallclock;
-			else
-				p->ravg.window_start += n * window_size;
-			BUG_ON(p->ravg.window_start > wallclock);
-			if (update_sum)
-				update_history(rq, p, window_size, n);
-		}
-		p->ravg.mark_start =  p->ravg.window_start;
-	} while (new_window);
-
-	p->ravg.mark_start = wallclock;
-}
-
-unsigned long __weak arch_get_cpu_efficiency(int cpu)
-{
-	return SCHED_LOAD_SCALE;
-}
-
-static void init_cpu_efficiency(void)
-{
-	int i, efficiency;
-	unsigned int max = 0, min = UINT_MAX;
-
-	for_each_possible_cpu(i) {
-		efficiency = arch_get_cpu_efficiency(i);
-		cpu_rq(i)->efficiency = efficiency;
-
-		if (efficiency > max)
-			max = efficiency;
-		if (efficiency < min)
-			min = efficiency;
-	}
-
-	BUG_ON(!max || !min);
-
-	max_possible_efficiency = max;
-	min_possible_efficiency = min;
-}
-
-#else	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
-
-static inline void
-update_task_ravg(struct task_struct *p, struct rq *rq, int update_sum)
-{
-}
-
-static inline void init_cpu_efficiency(void) {}
-
-#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
-
-/*
->>>>>>> 66f5232... sched: Window-based load stat improvements
  * Mark the task runnable and perform wakeup-preemption.
  */
 static void
@@ -3215,13 +2636,6 @@ static void __sched_fork(struct task_struct *p)
 	p->se.prev_sum_exec_runtime	= 0;
 	p->se.nr_migrations		= 0;
 	p->se.vruntime			= 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	init_new_task_load(p);
->>>>>>> 66f5232... sched: Window-based load stat improvements
-=======
->>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 
 	INIT_LIST_HEAD(&p->se.group_node);
 
@@ -3231,16 +2645,7 @@ static void __sched_fork(struct task_struct *p)
  * load-balance).
  */
 #if defined(CONFIG_SMP) && defined(CONFIG_FAIR_GROUP_SCHED)
-<<<<<<< HEAD
-<<<<<<< HEAD
 	init_new_task_load(p);
-=======
-	p->se.avg.runnable_avg_period = 0;
-	p->se.avg.runnable_avg_sum = 0;
->>>>>>> 9644d3e... sched: Introduce temporary FAIR_GROUP_SCHED dependency for load-tracking
-=======
-	init_new_task_load(p);
->>>>>>> dbd6752... sched: Basic task placement support for HMP systems
 #endif
 #ifdef CONFIG_SCHEDSTATS
 	memset(&p->se.statistics, 0, sizeof(p->se.statistics));
@@ -3248,17 +2653,7 @@ static void __sched_fork(struct task_struct *p)
 
 	RB_CLEAR_NODE(&p->dl.rb_node);
 	hrtimer_init(&p->dl.dl_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-<<<<<<< HEAD
-<<<<<<< HEAD
 	__dl_clear_params(p);
-=======
-	p->dl.dl_runtime = p->dl.runtime = 0;
-	p->dl.dl_deadline = p->dl.deadline = 0;
-	p->dl.flags = 0;
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
-=======
-	__dl_clear_params(p);
->>>>>>> 0e84924... sched/deadline: Clear dl_entity params when setscheduling to different class
 
 	INIT_LIST_HEAD(&p->rt.run_list);
 
@@ -3419,7 +2814,6 @@ bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
 	       dl_b->bw * cpus < dl_b->total_bw - old_bw + new_bw;
 }
 
-<<<<<<< HEAD
 /*
  * We must be sure that accepting a new task (or allowing changing the
  * parameters of an existing one) is consistent with the bandwidth
@@ -3431,16 +2825,6 @@ bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
 static int dl_overflow(struct task_struct *p, int policy,
 		       const struct sched_attr *attr)
 {
-=======
-	if (dl_prio(p->prio)) {
-		put_cpu();
-		return -EAGAIN;
-	} else if (rt_prio(p->prio)) {
-		p->sched_class = &rt_sched_class;
-	} else {
-		p->sched_class = &fair_sched_class;
-	}
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 	struct dl_bw *dl_b = dl_bw_of(task_cpu(p));
 	u64 period = attr->sched_period ?: attr->sched_deadline;
@@ -3456,7 +2840,6 @@ static int dl_overflow(struct task_struct *p, int policy,
 	 * its parameters, we may need to update accordingly the total
 	 * allocated bandwidth of the container.
 	 */
-<<<<<<< HEAD
 	raw_spin_lock(&dl_b->lock);
 	cpus = dl_bw_cpus(task_cpu(p));
 	if (dl_policy(policy) && !task_has_dl_policy(p) &&
@@ -3474,142 +2857,9 @@ static int dl_overflow(struct task_struct *p, int policy,
 	}
 	raw_spin_unlock(&dl_b->lock);
 
-<<<<<<< HEAD
-	return err;
-=======
-=======
-	raw_spin_lock_irqsave(&p->pi_lock, flags);
-	set_task_cpu(p, cpu);
-	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
-
-#if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
-	if (likely(sched_info_on()))
-		memset(&p->sched_info, 0, sizeof(p->sched_info));
-#endif
-#if defined(CONFIG_SMP)
-	p->on_cpu = 0;
-#endif
-#ifdef CONFIG_PREEMPT_COUNT
-	/* Want to start with kernel preemption disabled. */
-	task_thread_info(p)->preempt_count = 1;
-#endif
-#ifdef CONFIG_SMP
-	plist_node_init(&p->pushable_tasks, MAX_PRIO);
-	RB_CLEAR_NODE(&p->pushable_dl_tasks);
-#endif
-
->>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
-	put_cpu();
-	return 0;
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
-}
-
-<<<<<<< HEAD
-=======
-unsigned long to_ratio(u64 period, u64 runtime)
-{
-	if (runtime == RUNTIME_INF)
-		return 1ULL << 20;
-
-	/*
-	 * Doing this here saves a lot of checks in all
-	 * the calling paths, and returning zero seems
-	 * safe for them anyway.
-	 */
-	if (period == 0)
-		return 0;
-
-	return div64_u64(runtime << 20, period);
-}
-
-#ifdef CONFIG_SMP
-inline struct dl_bw *dl_bw_of(int i)
-{
-	return &cpu_rq(i)->rd->dl_bw;
-}
-
-static inline int __dl_span_weight(struct rq *rq)
-{
-	return cpumask_weight(rq->rd->span);
-}
-#else
-inline struct dl_bw *dl_bw_of(int i)
-{
-	return &cpu_rq(i)->dl.dl_bw;
-}
-
-static inline int __dl_span_weight(struct rq *rq)
-{
-	return 1;
-}
-#endif
-
-static inline
-void __dl_clear(struct dl_bw *dl_b, u64 tsk_bw)
-{
-	dl_b->total_bw -= tsk_bw;
-}
-
-static inline
-void __dl_add(struct dl_bw *dl_b, u64 tsk_bw)
-{
-	dl_b->total_bw += tsk_bw;
-}
-
-static inline
-bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
-{
-	return dl_b->bw != -1 &&
-	       dl_b->bw * cpus < dl_b->total_bw - old_bw + new_bw;
-}
-
-/*
- * We must be sure that accepting a new task (or allowing changing the
- * parameters of an existing one) is consistent with the bandwidth
- * constraints. If yes, this function also accordingly updates the currently
- * allocated bandwidth to reflect the new situation.
- *
- * This function is called while holding p's rq->lock.
- */
-static int dl_overflow(struct task_struct *p, int policy,
-		       const struct sched_attr *attr)
-{
-
-	struct dl_bw *dl_b = dl_bw_of(task_cpu(p));
-	u64 period = attr->sched_period;
-	u64 runtime = attr->sched_runtime;
-	u64 new_bw = dl_policy(policy) ? to_ratio(period, runtime) : 0;
-	int cpus = __dl_span_weight(task_rq(p));
-	int err = -1;
-
-	if (new_bw == p->dl.dl_bw)
-		return 0;
-
-	/*
-	 * Either if a task, enters, leave, or stays -deadline but changes
-	 * its parameters, we may need to update accordingly the total
-	 * allocated bandwidth of the container.
-	 */
-	raw_spin_lock(&dl_b->lock);
-	if (dl_policy(policy) && !task_has_dl_policy(p) &&
-	    !__dl_overflow(dl_b, cpus, 0, new_bw)) {
-		__dl_add(dl_b, new_bw);
-		err = 0;
-	} else if (dl_policy(policy) && task_has_dl_policy(p) &&
-		   !__dl_overflow(dl_b, cpus, p->dl.dl_bw, new_bw)) {
-		__dl_clear(dl_b, p->dl.dl_bw);
-		__dl_add(dl_b, new_bw);
-		err = 0;
-	} else if (!dl_policy(policy) && task_has_dl_policy(p)) {
-		__dl_clear(dl_b, p->dl.dl_bw);
-		err = 0;
-	}
-	raw_spin_unlock(&dl_b->lock);
-
 	return err;
 }
 
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 extern void init_dl_bw(struct dl_bw *dl_b);
 
 /*
@@ -3636,7 +2886,6 @@ void wake_up_new_task(struct task_struct *p)
 
 	rq = __task_rq_lock(p);
 	mark_task_starting(p);
-<<<<<<< HEAD
 #ifdef CONFIG_SCHED_FREQ_INPUT
 	if (rq_freq_margin(task_rq(p)) <
 	    sysctl_sched_freq_inc_notify_slack_pct)
@@ -3644,8 +2893,6 @@ void wake_up_new_task(struct task_struct *p)
 			&load_alert_notifier_head, 0,
 			(void *)(long)task_cpu(p));
 #endif
-=======
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 	activate_task(rq, p, 0);
 	p->on_rq = 1;
 #ifdef TRACE_CRAP
@@ -3959,7 +3206,6 @@ unsigned long nr_iowait(void)
 }
 
 unsigned long nr_iowait_cpu(int cpu)
-<<<<<<< HEAD
 {
 	struct rq *this = cpu_rq(cpu);
 	return atomic_read(&this->nr_iowait);
@@ -3971,29 +3217,12 @@ unsigned long this_cpu_load(void)
 	return this->cpu_load[0];
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 #if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
-unsigned long avg_nr_running(void)
-{
-	unsigned long i, sum = 0;
-
-<<<<<<< HEAD
-=======
-#ifdef CONFIG_INTELLI_PLUG
-=======
-#ifdef CONFIG_INTELLI_HOTPLUG
->>>>>>> cf79156... intelli_plug: Refactor and update
-=======
-#if defined(CONFIG_INTELLI_HOTPLUG) || defined(CONFIG_MSM_RUN_QUEUE_STATS_BE_CONSERVATIVE)
->>>>>>> 535f50d... sched: Compute avg_nr_running for RQ Stats
 unsigned long avg_nr_running(void)
 {
 	unsigned long i, sum = 0;
 	unsigned int seqcnt, ave_nr_running;
 
->>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 	for_each_online_cpu(i) {
 		struct nr_stats_s *stats = &per_cpu(runqueue_stats, i);
 		struct rq *q = cpu_rq(i);
@@ -4013,22 +3242,12 @@ unsigned long avg_nr_running(void)
 
 		sum += ave_nr_running;
 	}
-<<<<<<< HEAD
-=======
-	for_each_online_cpu(i)
-		sum += cpu_rq(i)->ave_nr_running;
->>>>>>> a6c6ae3... Revert "scheduler: Re-compute time-average nr_running on read"
-=======
->>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 
 	return sum;
 }
 EXPORT_SYMBOL(avg_nr_running);
-<<<<<<< HEAD
 
 unsigned long avg_cpu_nr_running(unsigned int cpu)
-=======
->>>>>>> ae2e9ec... Revert "scheduler: compute time-average nr_running per run-queue"
 {
 	unsigned int seqcnt, ave_nr_running;
 
@@ -4051,8 +3270,6 @@ unsigned long avg_cpu_nr_running(unsigned int cpu)
 	return ave_nr_running;
 }
 EXPORT_SYMBOL(avg_cpu_nr_running);
-=======
->>>>>>> d2be1ba... intelli_plug: refactor stats calculation code to be less intrusive
 #endif
 
 /*
@@ -4629,15 +3846,7 @@ void sched_exec(void)
 	unsigned long flags;
 	int dest_cpu;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (sched_enable_hmp)
-=======
-	if (sysctl_sched_enable_hmp_task_placement)
->>>>>>> 25b27de... sched: support legacy mode better
-=======
-	if (sched_enable_hmp)
->>>>>>> 1eba36b... sched: remove sysctl control for HMP and power-aware task placement
 		return;
 
 	raw_spin_lock_irqsave(&p->pi_lock, flags);
@@ -5550,11 +4759,7 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 
 #ifdef TRACE_CRAP
 	trace_sched_pi_setprio(p, prio);
-<<<<<<< HEAD
 #endif
-=======
-	p->pi_top_task = rt_mutex_get_top_task(p);
->>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 	oldprio = p->prio;
 	prev_class = p->sched_class;
 	on_rq = p->on_rq;
@@ -5564,10 +4769,6 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 	if (running)
 		p->sched_class->put_prev_task(rq, p);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 	/*
 	 * Boosting condition are:
 	 * 1. -rt task is running and holds mutex A
@@ -5578,39 +4779,20 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 	 *          running task
 	 */
 	if (dl_prio(prio)) {
-<<<<<<< HEAD
 		struct task_struct *pi_task = rt_mutex_get_top_task(p);
 		if (!dl_prio(p->normal_prio) ||
 		    (pi_task && dl_entity_preempt(&pi_task->dl, &p->dl))) {
-=======
-		if (!dl_prio(p->normal_prio) || (p->pi_top_task &&
-			dl_entity_preempt(&p->pi_top_task->dl, &p->dl))) {
->>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 			p->dl.dl_boosted = 1;
 			p->dl.dl_throttled = 0;
 			enqueue_flag = ENQUEUE_REPLENISH;
 		} else
 			p->dl.dl_boosted = 0;
-<<<<<<< HEAD
 		p->sched_class = &dl_sched_class;
 	} else if (rt_prio(prio)) {
 		if (dl_prio(oldprio))
 			p->dl.dl_boosted = 0;
 		if (oldprio < prio)
 			enqueue_flag = ENQUEUE_HEAD;
-=======
-	if (dl_prio(prio))
-		p->sched_class = &dl_sched_class;
-	else if (rt_prio(prio))
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
-=======
-		p->sched_class = &dl_sched_class;
-	} else if (rt_prio(prio)) {
-		if (dl_prio(oldprio))
-			p->dl.dl_boosted = 0;
-		if (oldprio < prio)
-			enqueue_flag = ENQUEUE_HEAD;
->>>>>>> ae55f6e... sched/deadline: Add SCHED_DEADLINE inheritance logic
 		p->sched_class = &rt_sched_class;
 	} else {
 		if (dl_prio(oldprio))
@@ -5824,10 +5006,6 @@ static struct task_struct *find_process_by_pid(pid_t pid)
 	return pid ? find_task_by_vpid(pid) : current;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * This function initializes the sched_dl_entity of a newly becoming
  * SCHED_DEADLINE task.
@@ -5844,7 +5022,6 @@ __setparam_dl(struct task_struct *p, const struct sched_attr *attr)
 	init_dl_task_timer(dl_se);
 	dl_se->dl_runtime = attr->sched_runtime;
 	dl_se->dl_deadline = attr->sched_deadline;
-<<<<<<< HEAD
 	dl_se->dl_period = attr->sched_period ?: dl_se->dl_deadline;
 	dl_se->flags = attr->sched_flags;
 	dl_se->dl_bw = to_ratio(dl_se->dl_period, dl_se->dl_runtime);
@@ -5853,22 +5030,12 @@ __setparam_dl(struct task_struct *p, const struct sched_attr *attr)
 	dl_se->dl_yielded = 0;
 }
 
-=======
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
-	dl_se->flags = attr->sched_flags;
-	dl_se->dl_throttled = 0;
-	dl_se->dl_new = 1;
-}
-
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /* Actually do priority change: must hold pi & rq lock. */
 static void __setscheduler(struct rq *rq, struct task_struct *p,
 			   const struct sched_attr *attr)
 {
 	int policy = attr->sched_policy;
 
-<<<<<<< HEAD
 	if (policy == -1) /* setparam */
 		policy = p->policy;
 
@@ -5892,37 +5059,12 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 	if (dl_prio(p->prio))
 		p->sched_class = &dl_sched_class;
 	else if (rt_prio(p->prio))
-=======
-	p->policy = policy;
-
-	if (dl_policy(policy))
-		__setparam_dl(p, attr);
-	else if (rt_policy(policy))
-		p->rt_priority = attr->sched_priority;
-	else
-		p->static_prio = NICE_TO_PRIO(attr->sched_nice);
-
-	p->normal_prio = normal_prio(p);
-	p->prio = rt_mutex_getprio(p);
-
-<<<<<<< HEAD
-	if (rt_prio(p->prio))
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
-	if (dl_prio(p->prio))
-		p->sched_class = &dl_sched_class;
-	else if (rt_prio(p->prio))
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
 
 	set_load_weight(p);
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 static void
 __getparam_dl(struct task_struct *p, struct sched_attr *attr)
@@ -5932,36 +5074,23 @@ __getparam_dl(struct task_struct *p, struct sched_attr *attr)
 	attr->sched_priority = p->rt_priority;
 	attr->sched_runtime = dl_se->dl_runtime;
 	attr->sched_deadline = dl_se->dl_deadline;
-<<<<<<< HEAD
 	attr->sched_period = dl_se->dl_period;
-=======
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 	attr->sched_flags = dl_se->flags;
 }
 
 /*
  * This function validates the new parameters of a -deadline task.
  * We ask for the deadline not being zero, and greater or equal
-<<<<<<< HEAD
  * than the runtime, as well as the period of being zero or
  * greater than deadline. Furthermore, we have to be sure that
-<<<<<<< HEAD
  * user parameters are above the internal resolution of 1us (we
  * check sched_runtime only since it is always the smaller one) and
  * below 2^63 ns (we have to check both sched_deadline and
  * sched_period, as the latter can be zero).
-=======
- * than the runtime.
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
-=======
- * user parameters are above the internal resolution (1us); we
- * check sched_runtime only since it is always the smaller one.
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
  */
 static bool
 __checkparam_dl(const struct sched_attr *attr)
 {
-<<<<<<< HEAD
 	/* deadline != 0 */
 	if (attr->sched_deadline == 0)
 		return false;
@@ -5990,21 +5119,6 @@ __checkparam_dl(const struct sched_attr *attr)
 	return true;
 }
 
-=======
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
-	return attr && attr->sched_deadline != 0 &&
-<<<<<<< HEAD
-	       (s64)(attr->sched_deadline - attr->sched_runtime) >= 0;
-=======
-		(attr->sched_period == 0 ||
-		(s64)(attr->sched_period   - attr->sched_deadline) >= 0) &&
-		(s64)(attr->sched_deadline - attr->sched_runtime ) >= 0  &&
-		attr->sched_runtime >= (2 << (DL_SCALE - 1));
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
-}
-
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 /*
  * check the target process has a UID that matches the current process's
  */
@@ -6060,24 +5174,11 @@ recheck:
 	 * 1..MAX_USER_RT_PRIO-1, valid priority for SCHED_NORMAL,
 	 * SCHED_BATCH and SCHED_IDLE is 0.
 	 */
-<<<<<<< HEAD
 	if ((p->mm && attr->sched_priority > MAX_USER_RT_PRIO-1) ||
 	    (!p->mm && attr->sched_priority > MAX_RT_PRIO-1))
 		return -EINVAL;
 	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
 	    (rt_policy(policy) != (attr->sched_priority != 0)))
-=======
-	if (attr->sched_priority < 0 ||
-	    (p->mm && attr->sched_priority > MAX_USER_RT_PRIO-1) ||
-	    (!p->mm && attr->sched_priority > MAX_RT_PRIO-1))
-		return -EINVAL;
-<<<<<<< HEAD
-	if (rt_policy(policy) != (attr->sched_priority != 0))
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
-	if ((dl_policy(policy) && !__checkparam_dl(attr)) ||
-	    (rt_policy(policy) != (attr->sched_priority != 0)))
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		return -EINVAL;
 
 	/*
@@ -6085,12 +5186,8 @@ recheck:
 	 */
 	if (user && !capable(CAP_SYS_NICE)) {
 		if (fair_policy(policy)) {
-<<<<<<< HEAD
 			if (attr->sched_nice < TASK_NICE(p) &&
 			    !can_nice(p, attr->sched_nice))
-=======
-			if (!can_nice(p, attr->sched_nice))
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 				return -EPERM;
 		}
 
@@ -6166,16 +5263,8 @@ recheck:
 			goto change;
 		if (rt_policy(policy) && attr->sched_priority != p->rt_priority)
 			goto change;
-<<<<<<< HEAD
-<<<<<<< HEAD
 		if (dl_policy(policy))
 			goto change;
-=======
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
-		if (dl_policy(policy))
-			goto change;
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 
 		__task_rq_unlock(rq);
 		raw_spin_unlock_irqrestore(&p->pi_lock, flags);
@@ -6199,31 +5288,14 @@ change:
 #ifdef CONFIG_SMP
 		if (dl_bandwidth_enabled() && dl_policy(policy)) {
 			cpumask_t *span = rq->rd->span;
-<<<<<<< HEAD
-=======
-			cpumask_t act_affinity;
-
-			/*
-			 * cpus_allowed mask is statically initialized with
-			 * CPU_MASK_ALL, span is instead dynamic. Here we
-			 * compute the "dynamic" affinity of a task.
-			 */
-			cpumask_and(&act_affinity, &p->cpus_allowed,
-				    cpu_active_mask);
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 
 			/*
 			 * Don't allow tasks with an affinity mask smaller than
 			 * the entire root_domain to become SCHED_DEADLINE. We
 			 * will also fail if there's no bandwidth available.
 			 */
-<<<<<<< HEAD
 			if (!cpumask_subset(span, &p->cpus_allowed) ||
 			    rq->rd->dl_bw.bw == 0) {
-=======
-			if (!cpumask_equal(&act_affinity, span) ||
-					   rq->rd->dl_bw.bw == 0) {
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 				task_rq_unlock(rq, p, &flags);
 				return -EPERM;
 			}
@@ -6243,12 +5315,7 @@ change:
 	 * of a SCHED_DEADLINE task) we need to check if enough bandwidth
 	 * is available.
 	 */
-<<<<<<< HEAD
 	if ((dl_policy(policy) || dl_task(p)) && dl_overflow(p, policy, attr)) {
-=======
-	if ((dl_policy(policy) || dl_task(p)) &&
-	    dl_overflow(p, policy, attr)) {
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 		task_rq_unlock(rq, p, &flags);
 		return -EBUSY;
 	}
@@ -6311,15 +5378,7 @@ static int _sched_setscheduler(struct task_struct *p, int policy,
 int sched_setscheduler(struct task_struct *p, int policy,
 		       const struct sched_param *param)
 {
-<<<<<<< HEAD
 	return _sched_setscheduler(p, policy, param, true);
-=======
-	struct sched_attr attr = {
-		.sched_policy   = policy,
-		.sched_priority = param->sched_priority
-	};
-	return __sched_setscheduler(p, &attr, true);
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 EXPORT_SYMBOL_GPL(sched_setscheduler);
 
@@ -6345,15 +5404,7 @@ EXPORT_SYMBOL_GPL(sched_setattr);
 int sched_setscheduler_nocheck(struct task_struct *p, int policy,
 			       const struct sched_param *param)
 {
-<<<<<<< HEAD
 	return _sched_setscheduler(p, policy, param, false);
-=======
-	struct sched_attr attr = {
-		.sched_policy   = policy,
-		.sched_priority = param->sched_priority
-	};
-	return __sched_setscheduler(p, &attr, false);
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 
 static int
@@ -6442,21 +5493,11 @@ static int sched_copy_attr(struct sched_attr __user *uattr,
 	 */
 	attr->sched_nice = clamp(attr->sched_nice, -20, 19);
 
-<<<<<<< HEAD
 	return 0;
 
 err_size:
 	put_user(sizeof(*attr), &uattr->size);
 	return -E2BIG;
-=======
-out:
-	return ret;
-
-err_size:
-	put_user(sizeof(*attr), &uattr->size);
-	ret = -E2BIG;
-	goto out;
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 }
 
 /**
@@ -6492,22 +5533,15 @@ SYSCALL_DEFINE2(sched_setparam, pid_t, pid, struct sched_param __user *, param)
 /**
  * sys_sched_setattr - same as above, but with extended sched_attr
  * @pid: the pid in question.
-<<<<<<< HEAD
  * @uattr: structure containing the extended parameters.
  */
 SYSCALL_DEFINE3(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr,
 			       unsigned int, flags)
-=======
- * @attr: structure containing the extended parameters.
- */
-SYSCALL_DEFINE2(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr)
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 {
 	struct sched_attr attr;
 	struct task_struct *p;
 	int retval;
 
-<<<<<<< HEAD
 	if (!uattr || pid < 0 || flags)
 		return -EINVAL;
 
@@ -6517,13 +5551,6 @@ SYSCALL_DEFINE2(sched_setattr, pid_t, pid, struct sched_attr __user *, uattr)
 
 	if ((int)attr.sched_policy < 0)
 		return -EINVAL;
-=======
-	if (!uattr || pid < 0)
-		return -EINVAL;
-
-	if (sched_copy_attr(uattr, &attr))
-		return -EFAULT;
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 
 	rcu_read_lock();
 	retval = -ESRCH;
@@ -6632,17 +5659,12 @@ static int sched_read_attr(struct sched_attr __user *uattr,
 
 		for (; addr < end; addr++) {
 			if (*addr)
-<<<<<<< HEAD
 				return -EFBIG;
-=======
-				goto err_size;
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		}
 
 		attr->size = usize;
 	}
 
-<<<<<<< HEAD
 	ret = copy_to_user(uattr, attr, attr->size);
 	if (ret)
 		return -EFAULT;
@@ -6658,28 +5680,6 @@ static int sched_read_attr(struct sched_attr __user *uattr,
  */
 SYSCALL_DEFINE4(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 		unsigned int, size, unsigned int, flags)
-=======
-	ret = copy_to_user(uattr, attr, usize);
-	if (ret)
-		return -EFAULT;
-
-out:
-	return ret;
-
-err_size:
-	ret = -E2BIG;
-	goto out;
-}
-
-/**
- * sys_sched_getattr - similar to sched_getparam, but with sched_attr
- * @pid: the pid in question.
- * @attr: structure containing the extended parameters.
- * @size: sizeof(attr) for fwd/bwd comp.
- */
-SYSCALL_DEFINE3(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
-		unsigned int, size)
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 {
 	struct sched_attr attr = {
 		.size = sizeof(struct sched_attr),
@@ -6688,11 +5688,7 @@ SYSCALL_DEFINE3(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 	int retval;
 
 	if (!uattr || pid < 0 || size > PAGE_SIZE ||
-<<<<<<< HEAD
 	    size < SCHED_ATTR_SIZE_VER0 || flags)
-=======
-	    size < SCHED_ATTR_SIZE_VER0)
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
 		return -EINVAL;
 
 	rcu_read_lock();
@@ -6706,21 +5702,11 @@ SYSCALL_DEFINE3(sched_getattr, pid_t, pid, struct sched_attr __user *, uattr,
 		goto out_unlock;
 
 	attr.sched_policy = p->policy;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	if (p->sched_reset_on_fork)
 		attr.sched_flags |= SCHED_FLAG_RESET_ON_FORK;
 	if (task_has_dl_policy(p))
 		__getparam_dl(p, &attr);
 	else if (task_has_rt_policy(p))
-=======
-	if (task_has_rt_policy(p))
->>>>>>> 51e2f9c... sched: Add new scheduler syscalls to support an extended scheduling parameters ABI
-=======
-	if (task_has_dl_policy(p))
-		__getparam_dl(p, &attr);
-	else if (task_has_rt_policy(p))
->>>>>>> 57d7acf... sched/deadline: Add SCHED_DEADLINE structures & implementation
 		attr.sched_priority = p->rt_priority;
 	else
 		attr.sched_nice = TASK_NICE(p);
@@ -6769,24 +5755,6 @@ long sched_setaffinity(pid_t pid, const struct cpumask *in_mask)
 	if (retval)
 		goto out_free_new_mask;
 
-
-	/*
-	 * Since bandwidth control happens on root_domain basis,
-	 * if admission test is enabled, we only admit -deadline
-	 * tasks allowed to run on all the CPUs in the task's
-	 * root_domain.
-	 */
-#ifdef CONFIG_SMP
-	if (task_has_dl_policy(p)) {
-		const struct cpumask *span = task_rq(p)->rd->span;
-
-		if (dl_bandwidth_enabled() &&
-		    !cpumask_equal(in_mask, span)) {
-			retval = -EBUSY;
-			goto out_unlock;
-		}
-	}
-#endif
 
 	cpuset_cpus_allowed(p, cpus_allowed);
 	cpumask_and(new_mask, in_mask, cpus_allowed);
@@ -7480,42 +6448,6 @@ out:
 EXPORT_SYMBOL_GPL(set_cpus_allowed_ptr);
 
 /*
- * When dealing with a -deadline task, we have to check if moving it to
- * a new CPU is possible or not. In fact, this is only true iff there
- * is enough bandwidth available on such CPU, otherwise we want the
- * whole migration progedure to fail over.
- */
-static inline
-bool set_task_cpu_dl(struct task_struct *p, unsigned int cpu)
-{
-	struct dl_bw *dl_b = dl_bw_of(task_cpu(p));
-	struct dl_bw *cpu_b = dl_bw_of(cpu);
-	int ret = 1;
-	u64 bw;
-
-	if (dl_b == cpu_b)
-		return 1;
-
-	raw_spin_lock(&dl_b->lock);
-	raw_spin_lock(&cpu_b->lock);
-
-	bw = cpu_b->bw * cpumask_weight(cpu_rq(cpu)->rd->span);
-	if (dl_bandwidth_enabled() &&
-	    bw < cpu_b->total_bw + p->dl.dl_bw) {
-		ret = 0;
-		goto unlock;
-	}
-	dl_b->total_bw -= p->dl.dl_bw;
-	cpu_b->total_bw += p->dl.dl_bw;
-
-unlock:
-	raw_spin_unlock(&cpu_b->lock);
-	raw_spin_unlock(&dl_b->lock);
-
-	return ret;
-}
-
-/*
  * Move (not current) task off this cpu, onto dest cpu. We're doing
  * this because either it can't run here any more (set_cpus_allowed()
  * away from this CPU, or CPU going down), or because we're
@@ -7546,13 +6478,6 @@ static int __migrate_task(struct task_struct *p, int src_cpu, int dest_cpu)
 		goto done;
 	/* Affinity changed (again). */
 	if (!cpumask_test_cpu(dest_cpu, tsk_cpus_allowed(p)))
-		goto fail;
-
-	/*
-	 * If p is -deadline, proceed only if there is enough
-	 * bandwidth available on dest_cpu
-	 */
-	if (unlikely(dl_task(p)) && !set_task_cpu_dl(p, dest_cpu))
 		goto fail;
 
 	/*
@@ -8225,14 +7150,7 @@ static void free_rootdomain(struct rcu_head *rcu)
 	struct root_domain *rd = container_of(rcu, struct root_domain, rcu);
 
 	cpupri_cleanup(&rd->cpupri);
-<<<<<<< HEAD
-<<<<<<< HEAD
 	cpudl_cleanup(&rd->cpudl);
-=======
->>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
-=======
-	cpudl_cleanup(&rd->cpudl);
->>>>>>> 15978f5... sched/deadline: speed up SCHED_DEADLINE pushes with a push-heap
 	free_cpumask_var(rd->dlo_mask);
 	free_cpumask_var(rd->rto_mask);
 	free_cpumask_var(rd->online);
@@ -8289,13 +7207,6 @@ static int init_rootdomain(struct root_domain *rd)
 		goto free_online;
 	if (!alloc_cpumask_var(&rd->rto_mask, GFP_KERNEL))
 		goto free_dlo_mask;
-<<<<<<< HEAD
-
-	init_dl_bw(&rd->dl_bw);
-	if (cpudl_init(&rd->cpudl) != 0)
-		goto free_dlo_mask;
-=======
->>>>>>> de0edca... sched/deadline: Add SCHED_DEADLINE SMP-related data structures & logic
 
 	init_dl_bw(&rd->dl_bw);
 	if (cpudl_init(&rd->cpudl) != 0)
@@ -9413,209 +8324,6 @@ void __init sched_init_smp(void)
 }
 #endif /* CONFIG_SMP */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-
-#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
-
-/*
- * Maximum possible frequency across all cpus. Task demand and cpu
- * capacity (cpu_power) metrics are scaled in reference to it.
- */
-unsigned int max_possible_freq = 1;
-
-/*
- * Minimum possible max_freq across all cpus. This will be same as
- * max_possible_freq on homogeneous systems and could be different from
- * max_possible_freq on heterogenous systems. min_max_freq is used to derive
- * capacity (cpu_power) of cpus.
- */
-unsigned int min_max_freq = 1;
-
-unsigned int max_capacity = 1024; /* max(rq->capacity) */
-unsigned int min_capacity = 1024; /* min(rq->capacity) */
-
-/* Keep track of max/min capacity possible across CPUs "currently" */
-static void update_min_max_capacity(void)
-{
-	int i;
-	int max = 0, min = INT_MAX;
-
-	for_each_possible_cpu(i) {
-		if (cpu_rq(i)->capacity > max)
-			max = cpu_rq(i)->capacity;
-		if (cpu_rq(i)->capacity < min)
-			min = cpu_rq(i)->capacity;
-	}
-
-	max_capacity = max;
-	min_capacity = min;
-}
-
-/*
- * Return 'capacity' of a cpu in reference to "least" efficient cpu, such that
- * least efficient cpu gets capacity of 1024
- */
-unsigned long capacity_scale_cpu_efficiency(int cpu)
-{
-	return (1024 * cpu_rq(cpu)->efficiency) / min_possible_efficiency;
-}
-
-/*
- * Return 'capacity' of a cpu in reference to cpu with lowest max_freq
- * (min_max_freq), such that one with lowest max_freq gets capacity of 1024.
- */
-unsigned long capacity_scale_cpu_freq(int cpu)
-{
-	return (1024 * cpu_rq(cpu)->max_freq) / min_max_freq;
-}
-
-/*
- * Return load_scale_factor of a cpu in reference to "most" efficient cpu, so
- * that "most" efficient cpu gets a load_scale_factor of 1
- */
-static inline unsigned long load_scale_cpu_efficiency(int cpu)
-{
-	return (1024 * max_possible_efficiency) / cpu_rq(cpu)->efficiency;
-}
-
-/*
- * Return load_scale_factor of a cpu in reference to cpu with best max_freq
- * (max_possible_freq), so that one with best max_freq gets a load_scale_factor
- * of 1.
- */
-static inline unsigned long load_scale_cpu_freq(int cpu)
-{
-	return (1024 * max_possible_freq) / cpu_rq(cpu)->max_freq;
-}
-
->>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
-static int cpufreq_notifier_policy(struct notifier_block *nb,
-		unsigned long val, void *data)
-{
-	struct cpufreq_policy *policy = (struct cpufreq_policy *)data;
-	int i;
-	unsigned int min_max = min_max_freq;
-	int cpu = policy->cpu;
-	int load_scale = 1024;
-	int capacity = 1024;
-
-	if (val != CPUFREQ_NOTIFY)
-		return 0;
-
-	for_each_cpu(i, policy->related_cpus) {
-		cpumask_copy(&cpu_rq(i)->freq_domain_cpumask,
-			     policy->related_cpus);
-		cpu_rq(i)->min_freq = policy->min;
-		cpu_rq(i)->max_freq = policy->max;
-		cpu_rq(i)->max_possible_freq = policy->cpuinfo.max_freq;
-	}
-
-	max_possible_freq = max(max_possible_freq, policy->cpuinfo.max_freq);
-<<<<<<< HEAD
-=======
-	if (min_max_freq == 1)
-		min_max = UINT_MAX;
-	min_max_freq = min(min_max, policy->cpuinfo.max_freq);
-	BUG_ON(!min_max_freq);
-	BUG_ON(!policy->max);
->>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
-
-	/* Assumes all cpus in cluster has same efficiency!! */
-	capacity *= capacity_scale_cpu_efficiency(cpu);
-	capacity >>= 10;
-
-	capacity *= capacity_scale_cpu_freq(cpu);
-	capacity >>= 10;
-
-	/*
-	 * load_scale_factor accounts for the fact that task load
-	 * (p->se.avg.runnable_avg_sum_scaled) is in reference to "best"
-	 * performing cpu. Task's load will need to be scaled (up) by a factor
-	 * to determine suitability to be placed on a particular cpu.
-	 */
-	load_scale *= load_scale_cpu_efficiency(cpu);
-	load_scale >>= 10;
-
-	load_scale *= load_scale_cpu_freq(cpu);
-	load_scale >>= 10;
-
-	/*
-	 * Changed load_scale_factor can trigger reclassification of tasks as
-	 * big or small. Make this change "atomic" so that tasks are accounted
-	 * properly due to changed load_scale_factor
-	 */
-	pre_big_small_task_count_change();
-	for_each_cpu(i, policy->related_cpus) {
-		struct rq *rq = cpu_rq(i);
-
-		rq->capacity = capacity;
-		rq->load_scale_factor = load_scale;
-	}
-
-	update_min_max_capacity();
-	post_big_small_task_count_change();
-
-	return 0;
-}
-
-static int cpufreq_notifier_trans(struct notifier_block *nb,
-		unsigned long val, void *data)
-{
-	struct cpufreq_freqs *freq = (struct cpufreq_freqs *)data;
-	unsigned int cpu = freq->cpu, new_freq = freq->new;
-
-	if (val != CPUFREQ_POSTCHANGE)
-		return 0;
-
-	BUG_ON(!new_freq);
-	cpu_rq(cpu)->cur_freq = new_freq;
-
-	return 0;
-}
-
-static struct notifier_block notifier_policy_block = {
-	.notifier_call = cpufreq_notifier_policy
-};
-
-static struct notifier_block notifier_trans_block = {
-	.notifier_call = cpufreq_notifier_trans
-};
-
-static int register_sched_callback(void)
-{
-	int ret;
-
-	ret = cpufreq_register_notifier(&notifier_policy_block,
-						CPUFREQ_POLICY_NOTIFIER);
-
-	if (!ret)
-		ret = cpufreq_register_notifier(&notifier_trans_block,
-						CPUFREQ_TRANSITION_NOTIFIER);
-
-	return 0;
-}
-
-/*
- * cpufreq callbacks can be registered at core_initcall or later time.
- * Any registration done prior to that is "forgotten" by cpufreq. See
- * initialization of variable init_cpufreq_transition_notifier_list_called
- * for further information.
- */
-core_initcall(register_sched_callback);
-
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 66f5232... sched: Window-based load stat improvements
-=======
-#endif /* CONFIG_SCHED_FREQ_INPUT */
-=======
-#endif	/* CONFIG_SCHED_FREQ_INPUT || CONFIG_SCHED_HMP */
->>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
-
->>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
 const_debug unsigned int sysctl_timer_migration = 1;
 
 int in_sched_functions(unsigned long addr)
@@ -9690,15 +8398,7 @@ void __init sched_init(void)
 	init_rt_bandwidth(&def_rt_bandwidth,
 			global_rt_period(), global_rt_runtime());
 	init_dl_bandwidth(&def_dl_bandwidth,
-<<<<<<< HEAD
-<<<<<<< HEAD
 			global_rt_period(), global_rt_runtime());
-=======
-			global_dl_period(), global_dl_runtime());
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
-=======
-			global_rt_period(), global_rt_runtime());
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 
 #ifdef CONFIG_SMP
 	init_defrootdomain();
@@ -9785,61 +8485,20 @@ void __init sched_init(void)
 		rq->idle_stamp = 0;
 		rq->avg_idle = 2*sysctl_sched_migration_cost;
 		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 		rq->cstate = 0;
 		rq->wakeup_latency = 0;
 		rq->wakeup_energy = 0;
 #if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
-=======
->>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
-=======
-#ifdef CONFIG_SCHED_FREQ_INPUT
->>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
-=======
-=======
-		rq->cstate = 0;
-		rq->wakeup_latency = 0;
-		rq->wakeup_energy = 0;
->>>>>>> 94a8973... sched: Make the scheduler aware of C-state for cpus
-#if defined(CONFIG_SCHED_FREQ_INPUT) || defined(CONFIG_SCHED_HMP)
->>>>>>> ba6537b... sched: Add CONFIG_SCHED_HMP Kconfig option
 		rq->cur_freq = 1;
 		rq->max_freq = 1;
 		rq->min_freq = 1;
 		rq->max_possible_freq = 1;
-<<<<<<< HEAD
-<<<<<<< HEAD
 		rq->max_possible_capacity = 0;
-=======
->>>>>>> b4bdd7b... sched: Add min_max_freq and rq->max_possible_freq
-=======
-		rq->max_possible_capacity = 0;
->>>>>>> 921f008... sched: Add a per rq max_possible_capacity for use in power calculations
 		rq->cumulative_runnable_avg = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
 		rq->efficiency = 1024;
 		rq->capacity = 1024;
 		rq->load_scale_factor = 1024;
 		rq->window_start = 0;
-#endif
-#ifdef CONFIG_SCHED_HMP
-		rq->nr_small_tasks = rq->nr_big_tasks = 0;
-		rq->curr_runnable_sum = rq->prev_runnable_sum = 0;
-=======
->>>>>>> 1b99f4d... sched: Introduce CONFIG_SCHED_FREQ_INPUT
-=======
-		rq->efficiency = 1024;
-		rq->capacity = 1024;
-		rq->load_scale_factor = 1024;
-<<<<<<< HEAD
->>>>>>> b090ddc... sched: Introduce efficiency, load_scale_factor and capacity
-=======
-		rq->window_start = 0;
->>>>>>> 6c59f1b... sched: window-stats: synchronize windows across cpus
 #endif
 #ifdef CONFIG_SCHED_HMP
 		rq->nr_small_tasks = rq->nr_big_tasks = 0;
@@ -10350,81 +9009,12 @@ static long sched_group_rt_period(struct task_group *tg)
 	return rt_period_us;
 }
 #endif /* CONFIG_RT_GROUP_SCHED */
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
-/*
- * Coupling of -rt and -deadline bandwidth.
- *
- * Here we check if the new -rt bandwidth value is consistent
- * with the system settings for the bandwidth available
- * to -deadline tasks.
- *
- * IOW, we want to enforce that
- *
- *   rt_bandwidth + dl_bandwidth <= 100%
- *
- * is always true.
- */
-static bool __sched_rt_dl_global_constraints(u64 rt_bw)
-{
-	unsigned long flags;
-	u64 dl_bw;
-	bool ret;
-
-	raw_spin_lock_irqsave(&def_dl_bandwidth.dl_runtime_lock, flags);
-	if (global_rt_runtime() == RUNTIME_INF ||
-	    global_dl_runtime() == RUNTIME_INF) {
-		ret = true;
-		goto unlock;
-	}
-
-	dl_bw = to_ratio(def_dl_bandwidth.dl_period,
-			 def_dl_bandwidth.dl_runtime);
-
-	ret = rt_bw + dl_bw <= to_ratio(RUNTIME_INF, RUNTIME_INF);
-unlock:
-	raw_spin_unlock_irqrestore(&def_dl_bandwidth.dl_runtime_lock, flags);
-
-	return ret;
-}
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 
 #ifdef CONFIG_RT_GROUP_SCHED
 static int sched_rt_global_constraints(void)
 {
-<<<<<<< HEAD
 	int ret = 0;
 
-=======
-	u64 runtime, period, bw;
-	int ret = 0;
-
-	if (sysctl_sched_rt_period <= 0)
-		return -EINVAL;
-
-	runtime = global_rt_runtime();
-	period = global_rt_period();
-
-	/*
-	 * Sanity check on the sysctl variables.
-	 */
-	if (runtime > period && runtime != RUNTIME_INF)
-		return -EINVAL;
-
-	bw = to_ratio(period, runtime);
-	if (!__sched_rt_dl_global_constraints(bw))
-		return -EINVAL;
-
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
-=======
-#ifdef CONFIG_RT_GROUP_SCHED
-static int sched_rt_global_constraints(void)
-{
-	int ret = 0;
-
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 	mutex_lock(&rt_constraints_mutex);
 	read_lock(&tasklist_lock);
 	ret = __rt_schedulable(NULL, 0, 0);
@@ -10448,16 +9038,6 @@ static int sched_rt_global_constraints(void)
 {
 	unsigned long flags;
 	int i, ret = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	u64 bw;
-
-	if (sysctl_sched_rt_period <= 0)
-		return -EINVAL;
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
-=======
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 
 	raw_spin_lock_irqsave(&def_rt_bandwidth.rt_runtime_lock, flags);
 	for_each_possible_cpu(i) {
@@ -10473,91 +9053,7 @@ static int sched_rt_global_constraints(void)
 }
 #endif /* CONFIG_RT_GROUP_SCHED */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 static int sched_dl_global_constraints(void)
-=======
-/*
- * Coupling of -dl and -rt bandwidth.
- *
- * Here we check, while setting the system wide bandwidth available
- * for -dl tasks and groups, if the new values are consistent with
- * the system settings for the bandwidth available to -rt entities.
- *
- * IOW, we want to enforce that
- *
- *   rt_bandwidth + dl_bandwidth <= 100%
- *
- * is always true.
- */
-static bool __sched_dl_rt_global_constraints(u64 dl_bw)
-{
-	u64 rt_bw;
-	bool ret;
-
-	raw_spin_lock(&def_rt_bandwidth.rt_runtime_lock);
-	if (global_dl_runtime() == RUNTIME_INF ||
-	    global_rt_runtime() == RUNTIME_INF) {
-		ret = true;
-		goto unlock;
-	}
-
-	rt_bw = to_ratio(ktime_to_ns(def_rt_bandwidth.rt_period),
-			 def_rt_bandwidth.rt_runtime);
-
-	ret = rt_bw + dl_bw <= to_ratio(RUNTIME_INF, RUNTIME_INF);
-unlock:
-	raw_spin_unlock(&def_rt_bandwidth.rt_runtime_lock);
-
-	return ret;
-}
-
-static bool __sched_dl_global_constraints(u64 runtime, u64 period)
-{
-	if (!period || (runtime != RUNTIME_INF && runtime > period))
-		return -EINVAL;
-
-	return 0;
-}
-
-=======
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
-static int sched_dl_global_constraints(void)
-{
-	u64 runtime = global_rt_runtime();
-	u64 period = global_rt_period();
-	u64 new_bw = to_ratio(period, runtime);
-	int cpu, ret = 0;
-
-	/*
-	 * Here we want to check the bandwidth not being set to some
-	 * value smaller than the currently allocated bandwidth in
-	 * any of the root_domains.
-	 *
-	 * FIXME: Cycling on all the CPUs is overdoing, but simpler than
-	 * cycling on root_domains... Discussion on different/better
-	 * solutions is welcome!
-	 */
-	for_each_possible_cpu(cpu) {
-		struct dl_bw *dl_b = dl_bw_of(cpu);
-
-		raw_spin_lock(&dl_b->lock);
-		if (new_bw < dl_b->total_bw)
-			ret = -EBUSY;
-		raw_spin_unlock(&dl_b->lock);
-
-		if (ret)
-			break;
-	}
-
-	return ret;
-}
-
-<<<<<<< HEAD
-int sched_rr_handler(struct ctl_table *table, int write,
-		void __user *buffer, size_t *lenp,
-		loff_t *ppos)
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
 {
 	u64 runtime = global_rt_runtime();
 	u64 period = global_rt_period();
@@ -10591,46 +9087,6 @@ int sched_rr_handler(struct ctl_table *table, int write,
 	}
 
 	return ret;
-=======
-static void sched_dl_do_global(void)
-{
-	u64 new_bw = -1;
-	int cpu;
-
-	def_dl_bandwidth.dl_period = global_rt_period();
-	def_dl_bandwidth.dl_runtime = global_rt_runtime();
-
-	if (global_rt_runtime() != RUNTIME_INF)
-		new_bw = to_ratio(global_rt_period(), global_rt_runtime());
-
-	/*
-	 * FIXME: As above...
-	 */
-	for_each_possible_cpu(cpu) {
-		struct dl_bw *dl_b = dl_bw_of(cpu);
-
-		raw_spin_lock(&dl_b->lock);
-		dl_b->bw = new_bw;
-		raw_spin_unlock(&dl_b->lock);
-	}
-}
-
-static int sched_rt_global_validate(void)
-{
-	if (sysctl_sched_rt_period <= 0)
-		return -EINVAL;
-
-	if (sysctl_sched_rt_runtime > sysctl_sched_rt_period)
-		return -EINVAL;
-
-	return 0;
-}
-
-static void sched_rt_do_global(void)
-{
-	def_rt_bandwidth.rt_runtime = global_rt_runtime();
-	def_rt_bandwidth.rt_period = ns_to_ktime(global_rt_period());
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 }
 
 static void sched_dl_do_global(void)
@@ -10719,21 +9175,11 @@ undo:
 	return ret;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 int sched_rr_handler(struct ctl_table *table, int write,
-=======
-int sched_dl_handler(struct ctl_table *table, int write,
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
-=======
-int sched_rr_handler(struct ctl_table *table, int write,
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 		void __user *buffer, size_t *lenp,
 		loff_t *ppos)
 {
 	int ret;
-<<<<<<< HEAD
-<<<<<<< HEAD
 	static DEFINE_MUTEX(mutex);
 
 	mutex_lock(&mutex);
@@ -10745,26 +9191,6 @@ int sched_rr_handler(struct ctl_table *table, int write,
 			RR_TIMESLICE : msecs_to_jiffies(sched_rr_timeslice);
 	}
 	mutex_unlock(&mutex);
-=======
-	int old_period, old_runtime;
-=======
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
-	static DEFINE_MUTEX(mutex);
-
-	mutex_lock(&mutex);
-	ret = proc_dointvec(table, write, buffer, lenp, ppos);
-	/* make sure that internally we keep jiffies */
-	/* also, writing zero resets timeslice to default */
-	if (!ret && write) {
-		sched_rr_timeslice = sched_rr_timeslice <= 0 ?
-			RR_TIMESLICE : msecs_to_jiffies(sched_rr_timeslice);
-	}
-	mutex_unlock(&mutex);
-<<<<<<< HEAD
-
->>>>>>> 06ae932... sched/deadline: Add bandwidth management for SCHED_DEADLINE tasks
-=======
->>>>>>> e43bae6... sched/deadline: Remove the sysctl_sched_dl knobs
 	return ret;
 }
 
