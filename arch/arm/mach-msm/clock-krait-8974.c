@@ -671,7 +671,7 @@ if (cnt) {
 		cnt = strlen(size_cur);
 		buf += cnt + 1;
 	}
-	pr_warn("faux123: user voltage table modified!\n");
+	pr_info("krait: regulator: user voltage table modified!\n");
 
 	return ret;
 }
