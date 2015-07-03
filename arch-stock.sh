@@ -53,7 +53,7 @@ then
 echo ""
 echo "generating device tree..."
 echo ""
-./dtbTool -o /media/dgod/kernel/GABRIEL/GABRIEL_LP/arch/arm/boot/dt.img -s 2048 -p /media/dgod/kernel/GABRIEL/GABRIEL_LP/scripts/dtc/ /media/dgod/kernel/GABRIEL/GABRIEL_LP/arch/arm/boot/
+./dtbTool -o /media/dgod/kernel/GABRIEL/3.4.108-proj/GABRIEL_LP/arch/arm/boot/dt.img -s 2048 -p /media/dgod/kernel/GABRIEL/3.4.108-proj/GABRIEL_LP/scripts/dtc/ /media/dgod/kernel/GABRIEL/3.4.108-proj/GABRIEL_LP/arch/arm/boot/
 
 ### copy zImage
 echo ""
@@ -92,7 +92,7 @@ zip kernel.zip -r *
 echo ""
 echo "copy flashable zip to output>flashable"
 echo ""
-cp /media/dgod/kernel/kernel/output/package/kernel.zip /media/dgod/kernel/kernel/output/flashable/gabriel-0.7CX-stock-tc-$(date +"[%d-%m]")-D855.zip
+cp /media/dgod/kernel/kernel/output/package/kernel.zip /media/dgod/kernel/kernel/output/flashable/Gabriel-3.4.108-$(date +"[%d-%m]")-D855.zip
 
 echo "DONE"
 
