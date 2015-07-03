@@ -5,7 +5,6 @@ obj-$(CONFIG_MACH_MSM8974_G3) += 8974ac-g3/
 
 obj-$(CONFIG_MACH_LGE) += devices_lge.o
 obj-$(CONFIG_MACH_LGE) += lge_charging_scenario.o
-obj-$(CONFIG_LCD_KCAL) += lge_kcal_ctrl.o
 obj-$(CONFIG_WIFI_CONTROL_FUNC) += wifi_bcm_lge.o
 obj-$(CONFIG_LGE_HANDLE_PANIC) += lge_handle_panic.o
 obj-$(CONFIG_MACH_LGE) += lge_gpio_debug.o
