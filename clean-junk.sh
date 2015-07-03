@@ -2,6 +2,7 @@
 
 for i in `find . -type f \( -iname \*.rej \
                                 -o -iname \*.orig \
+                                -o -iname \*.rej \
                                 -o -iname \*.bkp \
                                 -o -iname \*.ko \
                                 -o -iname \*.*~ \
