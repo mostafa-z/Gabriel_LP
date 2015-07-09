@@ -1,3 +1,5 @@
+	interactive-powersave 27-ps userspace
 070715
 	ampere 220~230 idle
-		ondemand-powersave 27-ps userspace-
+090715
+	ampere 120~140 idle
