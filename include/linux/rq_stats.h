@@ -1,4 +1,4 @@
-/* Copyright (c) 2011, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2011,2013-2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -21,6 +21,7 @@ struct rq_data {
 	unsigned int def_interval;
 	unsigned int hotplug_disabled;
 	unsigned int hotplug_enabled;
+	unsigned int bricked_hotplug_enabled;
 	int64_t def_start_time;
 	struct attribute_group *attr_group;
 	struct kobject *kobj;
@@ -31,3 +32,4 @@ struct rq_data {
 extern spinlock_t rq_lock;
 extern struct rq_data rq_info;
 extern struct workqueue_struct *rq_wq;
+
