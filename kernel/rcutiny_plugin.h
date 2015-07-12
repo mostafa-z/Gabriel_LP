@@ -254,7 +254,7 @@ static void show_tiny_preempt_stats(struct seq_file *m)
 
 #ifdef CONFIG_RCU_BOOST
 
-#include "rtmutex_common.h"
+#include "locking/rtmutex_common.h"
 
 #define RCU_BOOST_PRIO CONFIG_RCU_BOOST_PRIO
 
@@ -805,8 +805,6 @@ EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
  */
 int rcu_preempt_needs_cpu(void)
 {
-	if (!rcu_preempt_running_reader())
-		rcu_preempt_cpu_qs();
 	return rcu_preempt_ctrlblk.rcb.rcucblist != NULL;
 }
 
