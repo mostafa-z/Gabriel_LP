@@ -35,8 +35,6 @@
 #include <linux/tick.h>
 #include <linux/pm_qos.h>
 
-#include <mach/cpufreq.h>
-
 #include <trace/events/power.h>
 
 /**
@@ -182,18 +180,7 @@ u64 get_cpu_idle_time(unsigned int cpu, u64 *wall, int io_busy)
 
 	return idle_time;
 }
-
-u64 get_cpu_iowait_time(unsigned int cpu, u64 *wall)
-{
-	u64 iowait_time = get_cpu_iowait_time_us(cpu, wall);
-
-	if (iowait_time == -1ULL)
-		return 0;
-
-	return iowait_time;
-}
 EXPORT_SYMBOL_GPL(get_cpu_idle_time);
-EXPORT_SYMBOL_GPL(get_cpu_iowait_time);
 
 static struct cpufreq_policy *__cpufreq_cpu_get(unsigned int cpu, int sysfs)
 {
@@ -372,7 +359,6 @@ void cpufreq_notify_utilization(struct cpufreq_policy *policy,
 {
 	if (policy)
 		policy->util = util;
-
 }
 
 /*********************************************************************
@@ -478,79 +464,6 @@ static ssize_t show_scaling_cur_freq(
 static int __cpufreq_set_policy(struct cpufreq_policy *data,
 				struct cpufreq_policy *policy);
 
-int cpufreq_update_freq(unsigned int cpu, unsigned int min, unsigned int max)
-{
-	struct cpufreq_policy new_policy;
-	struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
-	int ret;
-
-	ret = cpufreq_get_policy(&new_policy, cpu);
-	if (ret)
-		return -EINVAL;
-
-	pr_info("%s: CPU%d %u-%ukHz\n", __func__, cpu, min, max);
-
-	new_policy.min = min;
-	new_policy.max = max;
-
-	ret = __cpufreq_set_policy(policy, &new_policy);
-	policy->user_policy.min = policy->min;
-	policy->user_policy.max = policy->max;
-
-	return ret;
-}
-EXPORT_SYMBOL(cpufreq_update_freq);
-
-static u32 last_min_freq = 0;
-static u32 cpufreq_required = 0;
-
-DEFINE_MUTEX(cpufreq_qos_lock);
-
-int cpufreq_qos_requirement(unsigned int kHz)
-{
-	struct cpufreq_policy new_policy;
-	struct cpufreq_policy *policy = cpufreq_cpu_get(0);
-	int ret;
-
-	mutex_lock(&cpufreq_qos_lock);
-
-	ret = cpufreq_get_policy(&new_policy, 0);
-	if (ret)
-		goto out;
-
-	if (kHz > 0) {
-		if (kHz == INT_MAX)
-			kHz = new_policy.cpuinfo.max_freq;
-
-		if (new_policy.min > kHz)
-			goto out;
-
-		pr_info("%s: CPU0 min: %u->%u kHz\n", __func__, new_policy.min, kHz);
-
-		last_min_freq = new_policy.min;
-		new_policy.min = kHz;
-		cpufreq_required = 1;
-	} else if (last_min_freq && cpufreq_required) {
-		pr_info("%s: CPU0 min: %u->%u kHz\n", __func__, new_policy.min, last_min_freq);
-
-		new_policy.min = last_min_freq;
-		cpufreq_required = 0;
-	} else {
-		goto out;
-	}
-
-	ret = __cpufreq_set_policy(policy, &new_policy);
-	policy->user_policy.min = policy->min;
-
-	cpufreq_update_policy(0);
-
-out:
-	mutex_unlock(&cpufreq_qos_lock);
-
-	return ret;
-}
-EXPORT_SYMBOL(cpufreq_qos_requirement);
-
 /**
  * cpufreq_per_cpu_attr_write() / store_##file_name() - sysfs write access
  */
@@ -558,15 +471,12 @@ EXPORT_SYMBOL(cpufreq_qos_requirement);
 static ssize_t store_##file_name					\
 (struct cpufreq_policy *policy, const char *buf, size_t count)		\
 {									\
-	unsigned int ret, cpu, limited_cpu_freq;			\
+	unsigned int ret;						\
 	struct cpufreq_policy new_policy;				\
 									\
 	ret = cpufreq_get_policy(&new_policy, policy->cpu);		\
 	if (ret)							\
 		return -EINVAL;						\
-									\
-	cpu = policy->cpu;						\
-	limited_cpu_freq = get_max_lock(cpu);				\
 									\
 	new_policy.min = new_policy.user_policy.min;			\
 	new_policy.max = new_policy.user_policy.max;			\
@@ -579,13 +489,8 @@ static ssize_t store_##file_name					\
 	if (ret)							\
 		pr_err("cpufreq: Frequency verification failed\n");	\
 									\
-	if (limited_cpu_freq > 0) {					\
-		if (new_policy.max > limited_cpu_freq)			\
-			new_policy.max = limited_cpu_freq;		\
-	}								\
-									\
-	policy->user_policy.max = new_policy.max;			\
 	policy->user_policy.min = new_policy.min;			\
+	policy->user_policy.max = new_policy.max;			\
 									\
 	ret = __cpufreq_set_policy(policy, &new_policy);		\
 	policy->user_policy.object = new_policy.object;			\
@@ -766,8 +671,6 @@ static ssize_t store_scaling_governor(struct cpufreq_policy *policy,
 	ret = sscanf(buf, "%15s", str_governor);
 	if (ret != 1)
 		return -EINVAL;
-
-	pr_info("%s: CPU%u: %s", __func__, policy->cpu, buf);
 
 	if (cpufreq_parse_governor(str_governor, &new_policy.policy,
 						&new_policy.governor))
@@ -1507,9 +1410,6 @@ static int cpufreq_add_dev(struct device *dev, struct subsys_interface *sif)
 
 	unlock_policy_rwsem_write(cpu);
 
-	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
-			CPUFREQ_CREATE_POLICY, policy);
-
 	kobject_uevent(&policy->kobj, KOBJ_ADD);
 	module_put(cpufreq_driver->owner);
 	pr_debug("initialization complete\n");
@@ -1528,8 +1428,6 @@ err_out_unregister:
 
 err_unlock_policy:
 	unlock_policy_rwsem_write(cpu);
-	blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
-			CPUFREQ_REMOVE_POLICY, policy);
 	free_cpumask_var(policy->related_cpus);
 err_free_cpumask:
 	free_cpumask_var(policy->cpus);
@@ -1639,8 +1537,6 @@ static int __cpufreq_remove_dev(struct device *dev, struct subsys_interface *sif
 			cpu_dev = get_cpu_device(j);
 			kobj = &cpu_dev->kobj;
 			unlock_policy_rwsem_write(cpu);
-			blocking_notifier_call_chain(&cpufreq_policy_notifier_list,
-					CPUFREQ_REMOVE_POLICY, data);
 			sysfs_remove_link(kobj, "cpufreq");
 			lock_policy_rwsem_write(cpu);
 			cpufreq_cpu_put(data);
@@ -1765,7 +1661,6 @@ unsigned int cpufreq_quick_get_util(unsigned int cpu)
 }
 EXPORT_SYMBOL(cpufreq_quick_get_util);
 
-
 /**
  * cpufreq_quick_get - get the CPU frequency (in kHz) from policy->cur
  * @cpu: CPU number
@@ -1817,9 +1712,6 @@ static unsigned int __cpufreq_get(unsigned int cpu)
 		return ret_freq;
 
 	ret_freq = cpufreq_driver->get(cpu);
-
-	if (!policy)
-		return ret_freq;
 
 	if (ret_freq && policy->cur &&
 		!(cpufreq_driver->flags & CPUFREQ_CONST_LOOPS)) {
@@ -2128,7 +2020,7 @@ static void init_freq_table(void)
  *********************************************************************/
 
 #if defined(CONFIG_LGE_LOW_BATT_LIMIT)
-#if defined(CONFIG_MACH_MSM8974_G3_GLOBAL_COM)
+#if defined(CONFIG_MACH_MSM8974_G3_GLOBAL_COM) || defined(CONFIG_MACH_MSM8974_G3_TMO_US)
 static unsigned int old_max_freq = 0;
 static unsigned int restore_flag = 1;
 #endif
@@ -2155,7 +2047,7 @@ int __cpufreq_driver_target(struct cpufreq_policy *policy,
 		return 0;
 
 #if defined(CONFIG_LGE_LOW_BATT_LIMIT)
-#if defined(CONFIG_MACH_MSM8974_G3_GLOBAL_COM)
+#if defined(CONFIG_MACH_MSM8974_G3_GLOBAL_COM) || defined(CONFIG_MACH_MSM8974_G3_TMO_US)
 	if (old_max_freq == 0)
 		old_max_freq = policy->max;
 	if (!out_low_battery_limit) {
@@ -2381,7 +2273,7 @@ EXPORT_SYMBOL(cpufreq_get_policy);
 static int __cpufreq_set_policy(struct cpufreq_policy *data,
 				struct cpufreq_policy *policy)
 {
-	int ret = 0, failed = 1;
+	int ret = 0;
 #ifdef CONFIG_UNI_CPU_POLICY_LIMIT
 	struct cpufreq_policy *cpu0_policy = NULL;
 #endif
@@ -2820,3 +2712,4 @@ static int __init cpufreq_core_init(void)
 	return 0;
 }
 core_initcall(cpufreq_core_init);
+
