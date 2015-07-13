@@ -95,6 +95,7 @@ void set_cpu_min_lock(unsigned int cpu, int freq)
 	}
 }
 EXPORT_SYMBOL(set_cpu_min_lock);
+
 unsigned int get_max_lock(unsigned int cpu)
 {
 	if (cpu >= 0 && cpu < NR_CPUS)

@@ -35,6 +35,8 @@
 #include <linux/tick.h>
 #include <linux/pm_qos.h>
 
+#include <mach/cpufreq.h>
+
 #include <trace/events/power.h>
 
 /**
@@ -467,7 +469,7 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 /**
  * cpufreq_per_cpu_attr_write() / store_##file_name() - sysfs write access
  */
-#define store_one(file_name, object)			\
+#define store_one(file_name, object)					\
 static ssize_t store_##file_name					\
 (struct cpufreq_policy *policy, const char *buf, size_t count)		\
 {									\
@@ -489,8 +491,8 @@ static ssize_t store_##file_name					\
 	if (ret)							\
 		pr_err("cpufreq: Frequency verification failed\n");	\
 									\
-	policy->user_policy.min = new_policy.min;			\
 	policy->user_policy.max = new_policy.max;			\
+	policy->user_policy.min = new_policy.min;			\
 									\
 	ret = __cpufreq_set_policy(policy, &new_policy);		\
 	policy->user_policy.object = new_policy.object;			\
@@ -631,11 +633,9 @@ static ssize_t show_##file_name##num_core				\
 	put_online_cpus();						\
 	return sprintf(buf, "%u\n", freq);	\
 }
-show_pcpu_scaling_freq(scaling_min_freq_cpu, min, 0);
 show_pcpu_scaling_freq(scaling_min_freq_cpu, min, 1);
 show_pcpu_scaling_freq(scaling_min_freq_cpu, min, 2);
 show_pcpu_scaling_freq(scaling_min_freq_cpu, min, 3);
-show_pcpu_scaling_freq(scaling_max_freq_cpu, max, 0);
 show_pcpu_scaling_freq(scaling_max_freq_cpu, max, 1);
 show_pcpu_scaling_freq(scaling_max_freq_cpu, max, 2);
 show_pcpu_scaling_freq(scaling_max_freq_cpu, max, 3);
@@ -702,11 +702,9 @@ static ssize_t store_##file_name##num_core									\
 	put_online_cpus();								\
 	return count;								\
 }
-store_pcpu_scaling_freq(scaling_min_freq_cpu, scaling_min_freq, min, 0);
 store_pcpu_scaling_freq(scaling_min_freq_cpu, scaling_min_freq, min, 1);
 store_pcpu_scaling_freq(scaling_min_freq_cpu, scaling_min_freq, min, 2);
 store_pcpu_scaling_freq(scaling_min_freq_cpu, scaling_min_freq, min, 3);
-store_pcpu_scaling_freq(scaling_max_freq_cpu, scaling_max_freq, max, 0);
 store_pcpu_scaling_freq(scaling_max_freq_cpu, scaling_max_freq, max, 1);
 store_pcpu_scaling_freq(scaling_max_freq_cpu, scaling_max_freq, max, 2);
 store_pcpu_scaling_freq(scaling_max_freq_cpu, scaling_max_freq, max, 3);
@@ -841,7 +839,6 @@ static ssize_t show_scaling_governor_cpu##num_core				\
 	return scnprintf(buf, CPUFREQ_NAME_LEN, "%s\n",		\
 				str_governor);						\
 }
-show_pcpu_scaling_governor(0);
 show_pcpu_scaling_governor(1);
 show_pcpu_scaling_governor(2);
 show_pcpu_scaling_governor(3);
@@ -913,7 +910,6 @@ static ssize_t store_scaling_governor_cpu##num_core					\
 									\
 	return count;			\
 }
-store_pcpu_scaling_governor(0);
 store_pcpu_scaling_governor(1);
 store_pcpu_scaling_governor(2);
 store_pcpu_scaling_governor(3);
@@ -1049,15 +1045,12 @@ cpufreq_freq_attr_ro(policy_max_freq);
 define_one_global_rw(scaling_min_freq_all_cpus);
 define_one_global_rw(scaling_max_freq_all_cpus);
 define_one_global_rw(scaling_governor_all_cpus);
-define_one_global_rw(scaling_min_freq_cpu0);
 define_one_global_rw(scaling_min_freq_cpu1);
 define_one_global_rw(scaling_min_freq_cpu2);
 define_one_global_rw(scaling_min_freq_cpu3);
-define_one_global_rw(scaling_max_freq_cpu0);
 define_one_global_rw(scaling_max_freq_cpu1);
 define_one_global_rw(scaling_max_freq_cpu2);
 define_one_global_rw(scaling_max_freq_cpu3);
-define_one_global_rw(scaling_governor_cpu0);
 define_one_global_rw(scaling_governor_cpu1);
 define_one_global_rw(scaling_governor_cpu2);
 define_one_global_rw(scaling_governor_cpu3);
@@ -1086,15 +1079,12 @@ static struct attribute *all_cpus_attrs[] = {
 	&scaling_min_freq_all_cpus.attr,
 	&scaling_max_freq_all_cpus.attr,
 	&scaling_governor_all_cpus.attr,
-	&scaling_min_freq_cpu0.attr,
 	&scaling_min_freq_cpu1.attr,
 	&scaling_min_freq_cpu2.attr,
 	&scaling_min_freq_cpu3.attr,
-	&scaling_max_freq_cpu0.attr,
 	&scaling_max_freq_cpu1.attr,
 	&scaling_max_freq_cpu2.attr,
 	&scaling_max_freq_cpu3.attr,
-	&scaling_governor_cpu0.attr,
 	&scaling_governor_cpu1.attr,
 	&scaling_governor_cpu2.attr,
 	&scaling_governor_cpu3.attr,
@@ -2452,7 +2442,9 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 				data->governor = policy->governor;
 			}
 #endif
-
+/*			data->governor = policy->governor;
+#endif   ,, This noticed as a error while compilation,(#endif without if)
+*/
 			if (__cpufreq_governor(data, CPUFREQ_GOV_START)) {
 				/* new governor failed, so re-start old one */
 				pr_debug("starting governor %s failed\n",
