@@ -2473,8 +2473,6 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 				data->governor = policy->governor;
 			}
 #endif
-			data->governor = policy->governor;
-#endif
 
 			if (__cpufreq_governor(data, CPUFREQ_GOV_START)) {
 				/* new governor failed, so re-start old one */

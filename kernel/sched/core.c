@@ -82,12 +82,7 @@
 #endif
 
 #include "sched.h"
-<<<<<<< HEAD
-#include "../workqueue_sched.h"
-=======
 #include "../workqueue_internal.h"
-#include "../smpboot.h"
->>>>>>> e33f8b8... workqueue: rename kernel/workqueue_sched.h to kernel/workqueue_internal.h
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/sched.h>
