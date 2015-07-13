@@ -80,7 +80,7 @@ static void do_input_boost(struct work_struct *work)
 
 	if (nr_cpus <= 0)
 		nr_cpus = 1;
-	if (nr_cpus > NR_CPUS)
+	else if (nr_cpus > NR_CPUS)
 		nr_cpus = NR_CPUS;
 
 	for (i = 0; i < nr_cpus; i++) {
@@ -90,18 +90,17 @@ static void do_input_boost(struct work_struct *work)
 		dprintk("Input boost for CPU%u\n", i);
 		set_cpu_min_lock(i, input_boost_freq);
 
-		cur = cpufreq_quick_get(i);
-		if (cur > 0 && cpu_online(i)) {
-			policy.cpu = i;
-
-			if (cur < input_boost_freq)
+		if (cpu_online(i)) {
+			cur = cpufreq_quick_get(i);
+			if (cur < input_boost_freq && cur > 0) {
+				policy.cpu = i;
 				cpufreq_driver_target(&policy,
-						input_boost_freq,
-						CPUFREQ_RELATION_L);
+					input_boost_freq, CPUFREQ_RELATION_L);
+			}
 		}
 	}
 
-	mod_delayed_work_on(0, touch_boost_wq,
+	mod_delayed_work_on(BOOT_CPU, touch_boost_wq,
 			&input_boost_rem,
 			msecs_to_jiffies(input_boost_ms));
 }
@@ -139,7 +138,7 @@ static int touchboost_input_connect(struct input_handler *handler,
 
 	handle->dev = dev;
 	handle->handler = handler;
-	handle->name = "cpufreq";
+	handle->name = handler->name;
 
 	error = input_register_handle(handle);
 	if (error)
@@ -211,3 +210,4 @@ static int touch_boost_init(void)
 	return ret;
 }
 late_initcall(touch_boost_init);
+
