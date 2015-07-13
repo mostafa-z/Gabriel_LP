@@ -65,7 +65,7 @@ struct cpu_dbs_info_s {
 	struct cpufreq_policy *cur_policy;
 	struct delayed_work work;
 	unsigned int requested_freq;
-	int cpu;
+	unsigned int cpu;
 	unsigned int enable:1;
 	/*
 	 * percpu mutex that serializes governor limit change with
@@ -182,7 +182,11 @@ static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 				   const char *buf, size_t count)
 {
 	unsigned int input;
-	int ret;
+	int ret = 0;
+	int mpd = strcmp(current->comm, "mpdecision");
+
+	if (mpd == 0)
+		return ret;
 
 	ret = sscanf(buf, "%u", &input);
 	if (ret != 1)
@@ -494,9 +498,9 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				   unsigned int event)
 {
 	unsigned int cpu = policy->cpu;
-	struct cpu_dbs_info_s *this_dbs_info;
 	unsigned int j;
 	int rc;
+	struct cpu_dbs_info_s *this_dbs_info;
 
 	this_dbs_info = &per_cpu(cs_cpu_dbs_info, cpu);
 
@@ -586,15 +590,13 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		break;
 
 	case CPUFREQ_GOV_LIMITS:
+		/* If device is being removed, skip set limits */
+		if (!this_dbs_info->cur_policy
+			 || !policy->cur)
+			break;
 		mutex_lock(&this_dbs_info->timer_mutex);
-		if (policy->max < this_dbs_info->cur_policy->cur)
-			__cpufreq_driver_target(
-					this_dbs_info->cur_policy,
-					policy->max, CPUFREQ_RELATION_H);
-		else if (policy->min > this_dbs_info->cur_policy->cur)
-			__cpufreq_driver_target(
-					this_dbs_info->cur_policy,
-					policy->min, CPUFREQ_RELATION_L);
+		__cpufreq_driver_target(this_dbs_info->cur_policy,
+				policy->cur, CPUFREQ_RELATION_L);
 		dbs_check_cpu(this_dbs_info);
 		mutex_unlock(&this_dbs_info->timer_mutex);
 
@@ -669,4 +671,3 @@ fs_initcall(cpufreq_gov_dbs_init);
 module_init(cpufreq_gov_dbs_init);
 #endif
 module_exit(cpufreq_gov_dbs_exit);
-

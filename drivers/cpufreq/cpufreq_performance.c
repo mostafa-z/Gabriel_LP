@@ -65,4 +65,3 @@ MODULE_LICENSE("GPL");
 
 fs_initcall(cpufreq_gov_performance_init);
 module_exit(cpufreq_gov_performance_exit);
-
