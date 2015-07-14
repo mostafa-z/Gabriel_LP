@@ -1128,8 +1128,6 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		}
 		mutex_unlock(&dbs_mutex);
 
-		mutex_init(&this_dbs_info->timer_mutex);
-
 		if (!ondemand_powersave_bias_setspeed(
 					this_dbs_info->cur_policy,
 					NULL,
@@ -1141,7 +1139,6 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 		dbs_timer_exit(this_dbs_info);
 
 		mutex_lock(&dbs_mutex);
-		mutex_destroy(&this_dbs_info->timer_mutex);
 
 		dbs_enable--;
 
