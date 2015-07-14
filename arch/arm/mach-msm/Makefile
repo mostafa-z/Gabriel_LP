@@ -429,3 +429,4 @@ obj-$(CONFIG_ARCH_MSM8974) += lge_moca_drv.o
 
 obj-$(CONFIG_ALUCARD_HOTPLUG) += alucard_hotplug.o
 obj-$(CONFIG_MSM_CPUFREQ_LIMITER) += cpufreq_limit.o
+obj-$(CONFIG_INTELLI_HOTPLUG) += intelli_hotplug.o

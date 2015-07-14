@@ -1859,6 +1859,12 @@ config ALUCARD_HOTPLUG
 	help
 	  Generic Alucard-hotplug cpu hotplug driver for ARM SOCs
 
+config INTELLI_HOTPLUG
+	bool "Enable intelli-plug cpu hotplug driver"
+	default y
+	help
+	  Generic Intelli-plug cpu hotplug driver for ARM SOCs
+
 config MSM_CPU_FREQ_SET_MIN_MAX
 	bool "Set Min/Max CPU frequencies."
 	default n
