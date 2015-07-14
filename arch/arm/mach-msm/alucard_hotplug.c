@@ -70,7 +70,7 @@ static struct hotplug_tuners {
 #endif
 	.min_cpus_online = 1,
 	.maxcoreslimit = NR_CPUS,
-	.maxcoreslimit_sleep = 2,
+	.maxcoreslimit_sleep = 3,
 	.hp_io_is_busy = 0,
 	.hotplug_suspend = 0,
 	.suspended = false,
@@ -104,7 +104,7 @@ static void start_rq_work(void)
 		rq_data->nr_run_wq =
 			create_singlethread_workqueue("nr_run_avg");
 
-	queue_delayed_work_on(BOOT_CPU, rq_data->nr_run_wq, &rq_data->work,
+	mod_delayed_work_on(BOOT_CPU, rq_data->nr_run_wq, &rq_data->work,
 			   msecs_to_jiffies(rq_data->update_rate));
 	return;
 }
@@ -162,7 +162,7 @@ static void rq_work_fn(struct work_struct *work)
 	rq_data->last_time = cur_time;
 
 	if (rq_data->update_rate != 0)
-		queue_delayed_work_on(BOOT_CPU, rq_data->nr_run_wq, &rq_data->work,
+		mod_delayed_work_on(BOOT_CPU, rq_data->nr_run_wq, &rq_data->work,
 				   msecs_to_jiffies(rq_data->update_rate));
 
 	spin_unlock_irqrestore(&rq_data->lock, flags);
@@ -186,13 +186,15 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 	unsigned int upmaxcoreslimit = 0;
 	unsigned int min_cpus_online = hotplug_tuners_ins.min_cpus_online;
 	unsigned int cpu = 0;
-	unsigned int rq_avg;
+	unsigned int rq_avg = 0;
+	bool rq_avg_calc = true;
 	int online_cpus;
 	cpumask_var_t cpus;
 
-	if (hotplug_tuners_ins.suspended)
+	if (hotplug_tuners_ins.suspended) {
 		upmaxcoreslimit = hotplug_tuners_ins.maxcoreslimit_sleep;
-	else
+		rq_avg_calc = false;
+	} else
 		upmaxcoreslimit = hotplug_tuners_ins.maxcoreslimit;
 
 	/* get nr online cpus */
@@ -201,7 +203,8 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 	cpumask_copy(cpus, cpu_online_mask);
 
 	if (!hotplug_tuners_ins.force_cpu_up) {
-		rq_avg = get_nr_run_avg();
+		if (rq_avg_calc)
+			rq_avg = get_nr_run_avg();
 
 		for_each_cpu(cpu, cpus) {
 			struct hotplug_cpuinfo *pcpu_info =
@@ -261,7 +264,8 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 				&& online_cpus < upmaxcoreslimit
 				&& cur_load >= pcpu_info->up_load
 				&& cur_freq >= pcpu_info->up_freq
-				&& rq_avg > pcpu_info->up_rq) {
+				&& (rq_avg > pcpu_info->up_rq
+					 || rq_avg_calc == false)) {
 					if (pcpu_info->cur_up_rate %
 							pcpu_info->up_rate == 0) {
 	#if 0
@@ -287,7 +291,8 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 			} else if (cpu >= min_cpus_online && (
 					cur_load < pcpu_info->down_load
 					|| (cur_freq <= pcpu_info->down_freq
-					&& rq_avg <= pcpu_info->down_rq))) {
+					&& (rq_avg <= pcpu_info->down_rq
+						 || rq_avg_calc == false)))) {
 						if (pcpu_info->cur_down_rate %
 								pcpu_info->down_rate == 0) {
 	#if 0
@@ -325,7 +330,7 @@ static void __ref hotplug_work_fn(struct work_struct *work)
 		hotplug_tuners_ins.force_cpu_up = false;
 	}
 
-	queue_delayed_work_on(BOOT_CPU, system_wq,
+	mod_delayed_work_on(BOOT_CPU, system_wq,
 				&alucard_hotplug_work,
 				msecs_to_jiffies(
 				hotplug_tuners_ins.hotplug_sampling_rate));
@@ -342,6 +347,7 @@ static void __alucard_hotplug_suspend(void)
 				hotplug_tuners_ins.suspended == false) {
 			hotplug_tuners_ins.suspended = true;
 			pr_info("Alucard HotPlug suspended.\n");
+			stop_rq_work();
 	}
 }
 
@@ -353,6 +359,7 @@ static void __ref __alucard_hotplug_resume(void)
 {
 	if (hotplug_tuners_ins.hotplug_enable > 0
 		&& hotplug_tuners_ins.suspended == true) {
+			start_rq_work();
 			hotplug_tuners_ins.suspended = false;
 			/* wake up everyone */
 			if (hotplug_tuners_ins.hotplug_suspend == 1)
@@ -405,7 +412,7 @@ static int alucard_hotplug_callback(struct notifier_block *nb,
 	struct hotplug_cpuinfo *pcpu_info;
 	unsigned int cpu = (int)data;
 
-	switch (action & (~CPU_TASKS_FROZEN)) {
+	switch (action) {
 	case CPU_ONLINE:
 		pcpu_info = &per_cpu(od_hotplug_cpuinfo, cpu);
 		pcpu_info->prev_cpu_idle = get_cpu_idle_time(cpu,
@@ -454,7 +461,7 @@ static int hotplug_start(void)
 	start_rq_work();
 
 	INIT_DEFERRABLE_WORK(&alucard_hotplug_work, hotplug_work_fn);
-	queue_delayed_work_on(BOOT_CPU, system_wq,
+	mod_delayed_work_on(BOOT_CPU, system_wq,
 				&alucard_hotplug_work,
 				msecs_to_jiffies(
 				hotplug_tuners_ins.hotplug_sampling_rate));
@@ -932,5 +939,3 @@ MODULE_DESCRIPTION("'alucard_hotplug' - A cpu hotplug driver for "
 MODULE_LICENSE("GPL");
 
 late_initcall(alucard_hotplug_init);
-
-
