@@ -43,7 +43,6 @@ struct notifier_block freq_policy;
 struct cpu_load_data {
 	u64 prev_cpu_idle;
 	u64 prev_cpu_wall;
-	u64 prev_cpu_iowait;
 	unsigned int avg_load_maxfreq;
 	unsigned int samples;
 	unsigned int window_size;
@@ -54,8 +53,6 @@ struct cpu_load_data {
 };
 
 static DEFINE_PER_CPU(struct cpu_load_data, cpuload);
-//static inline u64 get_cpu_iowait_time(unsigned int cpu, u64 *wall)
-static bool io_is_busy;
 
 static bool io_is_busy;
 
@@ -571,5 +568,3 @@ static int __init msm_rq_stats_early_init(void)
 	return 0;
 }
 core_initcall(msm_rq_stats_early_init);
-
-
