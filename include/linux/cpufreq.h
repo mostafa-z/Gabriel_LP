@@ -21,6 +21,7 @@
 #include <linux/cpumask.h>
 #include <asm/div64.h>
 #include <linux/kernel_stat.h>
+#include <linux/sched/rt.h>
 
 #define CPUFREQ_NAME_LEN 16
 /* Print length for names. Extra 1 space for accomodating '\n' in prints */
@@ -33,12 +34,26 @@
 
 #define CPUFREQ_TRANSITION_NOTIFIER	(0)
 #define CPUFREQ_POLICY_NOTIFIER		(1)
+#define CPUFREQ_GOVINFO_NOTIFIER	(2)
 
 #ifdef CONFIG_CPU_FREQ
 int cpufreq_register_notifier(struct notifier_block *nb, unsigned int list);
 int cpufreq_unregister_notifier(struct notifier_block *nb, unsigned int list);
 extern void disable_cpufreq(void);
-extern u64 get_cpu_idle_time(unsigned int cpu, u64 *wall, int io_busy);
+u64 get_cpu_idle_time(unsigned int cpu, u64 *wall, int io_busy);
+extern unsigned int cpufreq_quick_get_util(unsigned int cpu);
+
+/*
+ * Governor specific info that can be passed to modules that subscribe
+ * to CPUFREQ_GOVINFO_NOTIFIER
+ */
+struct cpufreq_govinfo {
+	unsigned int cpu;
+	unsigned int load;
+	unsigned int sampling_rate_us;
+};
+extern struct atomic_notifier_head cpufreq_govinfo_notifier_list;
+
 #else		/* CONFIG_CPU_FREQ */
 static inline int cpufreq_register_notifier(struct notifier_block *nb,
 						unsigned int list)
@@ -126,6 +141,9 @@ struct cpufreq_policy {
 #define CPUFREQ_CREATE_POLICY	(5)
 #define CPUFREQ_REMOVE_POLICY	(6)
 
+/* Govinfo Notifiers */
+#define CPUFREQ_LOAD_CHANGE	(0)
+
 #define CPUFREQ_SHARED_TYPE_NONE (0) /* None */
 #define CPUFREQ_SHARED_TYPE_HW	 (1) /* HW does needed coordination */
 #define CPUFREQ_SHARED_TYPE_ALL	 (2) /* All dependent CPUs should set freq */
@@ -204,7 +222,6 @@ extern int cpufreq_driver_target(struct cpufreq_policy *policy,
 extern int __cpufreq_driver_target(struct cpufreq_policy *policy,
 				   unsigned int target_freq,
 				   unsigned int relation);
-
 
 extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy,
 				   unsigned int cpu);
@@ -332,11 +349,8 @@ __ATTR(_name, 0644, show_##_name, store_##_name)
 /*********************************************************************
  *                        CPUFREQ 2.6. INTERFACE                     *
  *********************************************************************/
-cputime64_t get_cpu_idle_time(unsigned int cpu, cputime64_t *wall, int io_busy);
 int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu);
 int cpufreq_update_policy(unsigned int cpu);
-int cpufreq_update_freq(unsigned int cpu, unsigned int min, unsigned int max);
-int cpufreq_qos_requirement(unsigned int kHz);
 bool have_governor_per_policy(void);
 int cpufreq_set_gov(char *target_gov, unsigned int cpu);
 
@@ -368,6 +382,8 @@ static inline unsigned int cpufreq_quick_get_max(unsigned int cpu)
 enum {
 	BOOT_CPU = 0,
 };
+
+#define MAX_FREQ_LIMIT 2265600
 
 /*********************************************************************
  *                       CPUFREQ DEFAULT GOVERNOR                    *
