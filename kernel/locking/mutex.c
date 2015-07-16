@@ -203,10 +203,10 @@ int mutex_spin_on_owner(struct mutex *lock, struct task_struct *owner)
 int mutex_can_spin_on_owner(struct mutex *lock)
 {
 	int retval = 1;
-
-	if (!sched_feat(OWNER_SPIN))
+//doesn't available in sync source, ... 
+/*	if (!sched_feat(OWNER_SPIN))
 		return 0;
-
+*/
 	rcu_read_lock();
 	if (lock->owner)
 		retval = lock->owner->on_cpu;
