@@ -1007,7 +1007,8 @@ struct task_struct *pick_next_task_dl(struct rq *rq)
 	p->se.exec_start = rq_clock_task(rq);
 
 	/* Running task will never be pushed. */
-       dequeue_pushable_dl_task(rq, p);
+	if (p)
+		dequeue_pushable_dl_task(rq, p);
 
 #ifdef CONFIG_SCHED_HRTICK
 	if (hrtick_enabled(rq))
