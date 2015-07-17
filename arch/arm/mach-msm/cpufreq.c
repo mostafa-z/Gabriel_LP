@@ -602,9 +602,6 @@ bool is_used_by_scaling(unsigned int freq)
 {
 	unsigned int i, cpu_freq;
 
-	if (!dts_freq_table)
-		return -EINVAL;
-
 	for (i = 0; dts_freq_table[i].frequency != CPUFREQ_TABLE_END; i++) {
 		cpu_freq = dts_freq_table[i].frequency;
 		if (cpu_freq == CPUFREQ_ENTRY_INVALID)
