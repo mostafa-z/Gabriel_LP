@@ -11,6 +11,7 @@ obj-$(CONFIG_CPU_FREQ_GOV_ONDEMAND)		+= cpufreq_ondemand.o
 obj-$(CONFIG_CPU_FREQ_GOV_STOCKDEMAND)	+= cpufreq_stockdemand.o
 obj-$(CONFIG_CPU_FREQ_GOV_ONDEMANDPLUS) += cpufreq_ondemandplus.o
 obj-$(CONFIG_CPU_FREQ_GOV_CONSERVATIVE)	+= cpufreq_conservative.o
+obj-$(CONFIG_CPU_FREQ_GOV_ZZMOOVE)      += cpufreq_zzmoove.o
 obj-$(CONFIG_CPU_FREQ_GOV_INTERACTIVE)	+= cpufreq_interactive.o
 #ifdef CONFIG_SCHED_FREQ_INPUT
 #obj-$(CONFIG_CPU_FREQ_GOV_INTERACTIVE)	+= cpufreq_interactive_pro.o
