@@ -12,7 +12,7 @@ today=`date '+%Y_%m_%d__%H_%M_%S'`;
 KD=$(readlink -f .);
 TCA493=(/media/dgod/kernel/kernel/architoolchain-4.9/bin/arm-architoolchain-linux-gnueabi-);
 TCA510=(/media/dgod/kernel/kernel/architoolchain-5.1/bin/arm-architoolchain-linux-gnueabihf-);
-TCUB511=(/media/dgod/kernel/kernel/android-UBERTC-5.1/bin/arm-eabi-);
+TCUB511=(/media/dgod/kernel/kernel/UBERTC-5.1/bin/arm-eabi-);
 TCLN494=(/media/dgod/kernel/kernel/linaro-4.9.4-dorimanx/bin/arm-LG-linux-gnueabi-);
 TS=(TOOLSET);
 WD=(WORKING_DIR);
@@ -166,19 +166,19 @@ select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANU
 	case "$CHOICE" in
 		"ARCHI-4.9.3")
 			TC=$TCA493;
-			touch $WD/package/TC-architoolchain-4.9.3
+			touch $WD/package/TC-architoolchain-4.9.3;
 			break;;
 		"ARCHI-5.1.0")
 			TC=$TCA510;
-			touch $WD/package/TC-architoolchain-5.1.0
+			touch $WD/package/TC-architoolchain-5.1.0;
 			break;;
 		"UBER-5.1.1")
 			TC=$TCUB511;
-			touch $WD/package/TC-ubertc-5.1.1
+			touch $WD/package/TC-ubertc-5.1.1;
 			break;;
 		"LINARO-4.9.4")
 			TC=$TCLN494;
-			touch $WD/package/TC-linaro-4.9.4
+			touch $WD/package/TC-linaro-4.9.4;
 			break;;
 		"LAST_ONE")
 			TC=$TC;
