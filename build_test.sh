@@ -21,7 +21,8 @@ DESK=(/home/dgod/Desktop/KERNEL_TEST);
 BOOT=(arch/arm/boot);
 DTC=(scripts/dtc);
 DCONF=(arch/arm/configs);
-D855=(gabriel_d855_defconfig);
+STOCK_DEF=(g3-global_com-perf_defconfig);
+CUSTOM_DEF=(gabriel_d855_defconfig);
 NAME=(Gabriel-3.4.108);
 MODEL=(D855);
 FILENAME=($NAME-$(date +"[%d-%m]")-$MODEL);
@@ -80,9 +81,7 @@ sleep 3
 
 	CLEANUP;
 
-#cp $KD/$DCONF/$D855 $KD/.config
-
-time make ARCH=arm CROSS_COMPILE=$TC g3-global_com-perf_defconfig
+time make ARCH=arm CROSS_COMPILE=$TC $DEFCONF
 time make ARCH=arm CROSS_COMPILE=$TC nconfig
 start=$(date +%s.%N)
 time make ARCH=arm CROSS_COMPILE=$TC zImage-dtb  -j ${NR_CPUS}
@@ -114,6 +113,12 @@ find . -name '*ko' -exec \cp '{}' $WD/package/system/lib/modules/ \;
 
 echo "generating device tree..."
 ./dtbTool -o $BOOT/dt.img -s 2048 -p $DTC/ $BOOT/
+
+	if [ -f $BOOT/dt.img ]; then
+		echo -e "\e[42mdt.img PASSED\e[m"
+	else
+		echo -e "\e[41mdt.img FAILED\e[m"
+	fi;
 
 echo "copy zImage-dtb and dt.img"
 \cp $BOOT/zImage-dtb $WD/ramdisk/
@@ -185,6 +190,18 @@ select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANU
 			break;;
 		"CLEANUP")
 			CLEANUP;
+			break;;
+	esac;
+done;
+echo ""
+echo "which defconfig ?!";
+select CHOICE in STOCK_DEFCONFIG CUSTOM_DEFCONFIG; do
+	case "$CHOICE" in
+		"STOCK_DEFCONFIG")
+			DEFCONF=$STOCK_DEF;
+			break;;
+		"CUSTOM_DEFCONFIG")
+			DEFCONF=$CUSTOM_DEF;
 			break;;
 	esac;
 done;
