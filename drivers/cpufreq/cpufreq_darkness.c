@@ -259,6 +259,7 @@ static void do_darkness_timer(struct work_struct *work)
 	struct cpufreq_darkness_cpuinfo *this_darkness_cpuinfo = 
 		container_of(work, struct cpufreq_darkness_cpuinfo, work.work);
 	int delay;
+	unsigned int cpu = this_darkness_cpuinfo->cpu;
 
 	mutex_lock(&this_darkness_cpuinfo->timer_mutex);
 
@@ -272,8 +273,8 @@ static void do_darkness_timer(struct work_struct *work)
 		delay = max(delay - (jiffies % delay), usecs_to_jiffies(darkness_tuners_ins.sampling_rate / 2));
 	}
 
-	mod_delayed_work_on(this_darkness_cpuinfo->cpu,
-		system_wq, &this_darkness_cpuinfo->work, delay);
+	mod_delayed_work_on(cpu, system_wq,
+			&this_darkness_cpuinfo->work, delay);
 	mutex_unlock(&this_darkness_cpuinfo->timer_mutex);
 }
 
@@ -285,11 +286,12 @@ static int cpufreq_governor_darkness(struct cpufreq_policy *policy,
 	int io_busy = darkness_tuners_ins.io_is_busy;
 	int rc, delay;
 
-	this_darkness_cpuinfo = &per_cpu(od_darkness_cpuinfo, policy->cpu);
+	this_darkness_cpuinfo = &per_cpu(od_darkness_cpuinfo, cpu);
+	this_darkness_cpuinfo->cpu = cpu;
 
 	switch (event) {
 	case CPUFREQ_GOV_START:
-		if (!policy->cur)
+		if ((!cpu_online(cpu)) || (!policy->cur))
 			return -EINVAL;
 
 		mutex_lock(&darkness_mutex);
@@ -299,7 +301,6 @@ static int cpufreq_governor_darkness(struct cpufreq_policy *policy,
 			return -EINVAL;
 		}
 
-		this_darkness_cpuinfo->cpu = cpu;
 		this_darkness_cpuinfo->cur_policy = policy;
 
 		this_darkness_cpuinfo->prev_cpu_idle = get_cpu_idle_time(cpu,
@@ -354,13 +355,12 @@ static int cpufreq_governor_darkness(struct cpufreq_policy *policy,
 
 		break;
 	case CPUFREQ_GOV_LIMITS:
-		mutex_lock(&this_darkness_cpuinfo->timer_mutex);
 		if (!this_darkness_cpuinfo->cur_policy->cur
 			 || !policy->cur) {
 			pr_debug("Unable to limit cpu freq due to cur_policy == NULL\n");
-			mutex_unlock(&this_darkness_cpuinfo->timer_mutex);
 			return -EPERM;
 		}
+		mutex_lock(&this_darkness_cpuinfo->timer_mutex);
 		__cpufreq_driver_target(this_darkness_cpuinfo->cur_policy,
 				policy->cur, CPUFREQ_RELATION_L);
 		mutex_unlock(&this_darkness_cpuinfo->timer_mutex);
