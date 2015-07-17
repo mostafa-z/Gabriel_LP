@@ -63,9 +63,6 @@ sleep 3
 	for i in $(find "$KD"/ -name "kernel_config_view_only"); do
 		rm -fv "$i";
 	done;
-	for i in $(find "$KD"/ -name "TC-*"); do
-		rm -fv "$i";
-	done;
 
 	# Idea by savoca
 	NR_CPUS=$(grep -c ^processor /proc/cpuinfo)
@@ -171,19 +168,23 @@ select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANU
 	case "$CHOICE" in
 		"ARCHI-4.9.3")
 			TC=$TCA493;
-			touch $WD/package/TC-architoolchain-4.9.3;
+			touch $WD/package/TOOLCHAIN_USED;
+			echo archi-toolchain-4.9.3 > $WD/package/TOOLCHAIN_USED;
 			break;;
 		"ARCHI-5.1.0")
 			TC=$TCA510;
-			touch $WD/package/TC-architoolchain-5.1.0;
+			touch $WD/package/TOOLCHAIN_USED;
+			echo archi-toolchain-5.1.0 > $WD/package/TOOLCHAIN_USED;
 			break;;
 		"UBER-5.1.1")
 			TC=$TCUB511;
-			touch $WD/package/TC-ubertc-5.1.1;
+			touch $WD/package/TOOLCHAIN_USED;
+			echo ubertc-toolchain-5.1.1 > $WD/package/TOOLCHAIN_USED;
 			break;;
 		"LINARO-4.9.4")
 			TC=$TCLN494;
-			touch $WD/package/TC-linaro-4.9.4;
+			touch $WD/package/TOOLCHAIN_USED;
+			echo linaro-toolchain-4.9.4 > $WD/package/TOOLCHAIN_USED;
 			break;;
 		"LAST_ONE")
 			TC=$TC;
