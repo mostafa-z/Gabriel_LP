@@ -164,7 +164,7 @@ CLEANUP()
 }
 
 echo "Select Toolchain ... ";
-select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANUP; do
+select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANUP CONTINUE_BUILD; do
 	case "$CHOICE" in
 		"ARCHI-4.9.3")
 			TC=$TCA493;
@@ -188,6 +188,9 @@ select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANU
 			break;;
 		"LAST_ONE")
 			TC=$TC;
+			break;;
+		"CONTINUE_BUILD")
+			CONTINUE_BUILD;
 			break;;
 		"CLEANUP")
 			CLEANUP;
