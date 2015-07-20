@@ -12,10 +12,10 @@
  */
 
 /*
-	Based on cpuboost and created by Alucard24@XDA / @Alucard_24
+	Based on cpuboost and created by Alucard24@XDA.
 */
 
-#define pr_fmt(fmt) "alu_t_boost: " fmt
+#define pr_fmt(fmt) "alu-t-boost: " fmt
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -188,9 +188,10 @@ static struct input_handler touchboost_input_handler = {
 	.event          = touchboost_input_event,
 	.connect        = touchboost_input_connect,
 	.disconnect     = touchboost_input_disconnect,
-	.name           = "alu_t_boost",
+	.name           = "alu-t-boost",
 	.id_table       = touchboost_ids,
 };
+
 
 static int touch_boost_init(void)
 {
