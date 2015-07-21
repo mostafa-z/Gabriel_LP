@@ -38,7 +38,7 @@ static struct workqueue_struct *limiter_wq;
 
 #define DEFAULT_SUSPEND_DEFER_TIME	10
 #define DEFAULT_SUSPEND_FREQUENCY	0
-#define DEFAULT_RESUME_FREQUENCY	2265600
+#define DEFAULT_RESUME_FREQUENCY	2457600
 
 static unsigned int debug = 1;
 module_param_named(debug_mask, debug, uint, 0644);
