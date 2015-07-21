@@ -71,10 +71,8 @@ module_param(load_based_syncs, bool, 0644);
 static bool hotplug_boost = 1;
 module_param(hotplug_boost, bool, 0644);
 
-#ifdef CONFIG_LCD_NOTIFY
 bool wakeup_boost;
 module_param(wakeup_boost, bool, 0644);
-#endif
 
 static struct delayed_work input_boost_rem;
 static u64 last_input_time;
@@ -243,7 +241,7 @@ static void run_boost_migration(unsigned int cpu)
 	struct cpufreq_policy dest_policy;
 	struct cpufreq_policy src_policy;
 	unsigned long flags;
-	unsigned int req_freq;
+//	unsigned int req_freq;
 
 	spin_lock_irqsave(&s->lock, flags);
 	s->pending = false;
