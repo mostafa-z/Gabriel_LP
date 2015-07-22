@@ -51,10 +51,6 @@
 #include <mach/msm_bus.h>
 #include <mach/rpm-regulator.h>
 
-#ifdef CONFIG_FORCE_FAST_CHARGE
-#include <linux/fastchg.h>
-#endif
-
 #define MSM_USB_BASE	(motg->regs)
 #define DRIVER_NAME	"msm_otg"
 
@@ -1421,11 +1417,6 @@ static void msm_otg_notify_charger(struct msm_otg *motg, unsigned mA)
 	 */
 	if (motg->online && motg->cur_power == 0  && mA == 0)
 		msm_otg_set_online_status(motg);
-
-#ifdef CONFIG_FORCE_FAST_CHARGE
-       if (force_fast_charge > 0)
-               mA = IDEV_ACA_CHG_MAX;
-#endif
 
 	if (motg->cur_power == mA)
 		return;
