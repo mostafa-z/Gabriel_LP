@@ -226,6 +226,7 @@ void tune_lmk_param(int *other_free, int *other_file, struct shrink_control *sc,
 	enum zone_type high_zoneidx, classzone_idx;
 	unsigned long balance_gap;
 	struct zone_avail *za;
+	int use_cma_pages;
 
 	gfp_mask = sc->gfp_mask;
 	zonelist = node_zonelist(0, gfp_mask);
