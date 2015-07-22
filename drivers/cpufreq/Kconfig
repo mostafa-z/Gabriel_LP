@@ -533,6 +533,9 @@ config CPU_FREQ_GOV_OPTIMAX
 	tristate "'optimax' cpufreq policy governor"
 	select CPU_FREQ_TABLE
 
+config CPU_FREQ_GOV_WREXY
+	tristate "'wrexy' cpufreq policy governor"
+
 menu "x86 CPU frequency scaling drivers"
 depends on X86
 source "drivers/cpufreq/Kconfig.x86"

@@ -456,6 +456,9 @@ extern struct cpufreq_governor cpufreq_gov_raccoon_city;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_OPTIMAX)
 extern struct cpufreq_governor cpufreq_gov_optimax;
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_optimax)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_WREXY)
+extern struct cpufreq_governor cpufreq_gov_wrexy;
+#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_wrexy)
 #endif
 
 
