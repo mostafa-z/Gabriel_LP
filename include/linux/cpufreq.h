@@ -340,7 +340,9 @@ int cpufreq_update_freq(unsigned int cpu, unsigned int min, unsigned int max);
 int cpufreq_qos_requirement(unsigned int kHz);
 bool have_governor_per_policy(void);
 int cpufreq_set_gov(char *target_gov, unsigned int cpu);
+#ifdef CONFIG_CPU_FREQ_GOV_UMBRELLA_CORE
 struct kobject *get_governor_parent_kobj(struct cpufreq_policy *policy);
+#endif
 
 #ifdef CONFIG_CPU_FREQ
 /* query the current CPU frequency (in kHz). If zero, cpufreq couldn't detect it */
