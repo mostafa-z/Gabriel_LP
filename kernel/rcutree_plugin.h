@@ -1706,8 +1706,10 @@ static void rcu_prepare_for_idle(int cpu)
 		return;
 
 	/* If this is a no-CBs CPU, no callbacks, just return. */
+#ifdef CONFIG_RCU_NOCB_CPU
 	if (rcu_is_nocb_cpu(cpu))
 		return;
+#endif
 
 	/*
 	 * If a non-lazy callback arrived at a CPU having only lazy
@@ -1748,8 +1750,10 @@ static void rcu_cleanup_after_idle(int cpu)
 	struct rcu_data *rdp;
 	struct rcu_state *rsp;
 
+#ifdef CONFIG_RCU_NOCB_CPU
 	if (rcu_is_nocb_cpu(cpu))
 		return;
+#endif
 	rcu_try_advance_all_cbs();
 	for_each_rcu_flavor(rsp) {
 		rdp = per_cpu_ptr(rsp->rda, cpu);
@@ -2053,7 +2057,7 @@ static void rcu_init_one_nocb(struct rcu_node *rnp)
 }
 
 /* Is the specified CPU a no-CPUs CPU? */
-static bool is_nocb_cpu(int cpu)
+static bool rcu_is_nocb_cpu(int cpu)
 {
 	if (have_rcu_nocb_mask)
 		return cpumask_test_cpu(cpu, rcu_nocb_mask);
