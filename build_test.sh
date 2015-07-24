@@ -21,10 +21,10 @@ DESK=(/home/dgod/Desktop/KERNEL_TEST);
 BOOT=(arch/arm/boot);
 DTC=(scripts/dtc);
 DCONF=(arch/arm/configs);
-STOCK_DEF=(g3-lgu-perf_defconfig);
+STOCK_DEF=(g3-cmcc_cn-perf_defconfig);
 CUSTOM_DEF=(gabriel_d855_defconfig);
 NAME=(Gabriel-3.4.108);
-MODEL=(F400);
+MODEL=(D858HK);
 FILENAME=($NAME-$(date +"[%d-%m]")-$MODEL);
 
 ZIPFILE=$FILENAME
@@ -118,11 +118,11 @@ echo "generating device tree..."
 	fi;
 
 echo "copy zImage-dtb and dt.img"
-\cp $BOOT/zImage-dtb $WD/f400s/
-\cp $BOOT/dt.img $WD/f400s/
+\cp $BOOT/zImage-dtb $WD/858hk/
+\cp $BOOT/dt.img $WD/858hk/
 
 echo "creating boot.img"
-./mkboot $WD/f400s $WD/boot.img
+./mkboot $WD/858hk $WD/boot.img
 
 echo "bumping"
 python open_bump.py $WD/boot.img
