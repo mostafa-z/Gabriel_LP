@@ -1123,7 +1123,7 @@ static int bq24296_enable_charging(struct bq24296_chip *chip, bool enable)
 
 	val = (u8)(!!enable << CHG_ENABLE_SHIFT);
 
-	pr_pr_info("enable=%d\n", enabl("enable=%d\n", enable);
+	pr_debug("enable=%d\n", enable);
 
 	if (chip->chg_timeout) {
 		pr_err("charging timeout state, never enabel charging\n");
