@@ -4,6 +4,8 @@
 
 # Each configuration option enables a list of files.
 
+EXTRA_CFLAGS += -Wno-bool-compare
+
 ifdef CONFIG_MACH_MSM8974_G3_KDDI_EVB
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_DSX_RMI4_I2C) +=synaptics/
 obj-$(CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4) += lge_touch_core_kddi_evb.o
