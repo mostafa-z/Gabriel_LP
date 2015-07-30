@@ -13,6 +13,7 @@ KD=$(readlink -f .);
 TCA493=(/media/dgod/kernel/kernel/architoolchain-4.9/bin/arm-architoolchain-linux-gnueabi-);
 TCA510=(/media/dgod/kernel/kernel/architoolchain-5.1/bin/arm-architoolchain-linux-gnueabihf-);
 TCUB511=(/media/dgod/kernel/kernel/UBERTC-5.1/bin/arm-eabi-);
+TCUB600=(/media/dgod/kernel/kernel/UBERTC-6.0/bin/arm-eabi-);
 TCLN494=(/media/dgod/kernel/kernel/linaro-4.9.4-dorimanx/bin/arm-LG-linux-gnueabi-);
 TS=(TOOLSET);
 WD=(WORKING_DIR);
@@ -164,7 +165,7 @@ CLEANUP()
 }
 
 echo "Select Toolchain ... ";
-select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANUP CONTINUE_BUILD; do
+select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 UBER-6.0.0 LINARO-4.9.4 LAST_ONE CLEANUP CONTINUE_BUILD; do
 	case "$CHOICE" in
 		"ARCHI-4.9.3")
 			TC=$TCA493;
@@ -179,7 +180,12 @@ select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 UBER-5.1.1 LINARO-4.9.4 LAST_ONE CLEANU
 		"UBER-5.1.1")
 			TC=$TCUB511;
 			touch $WD/package/TOOLCHAIN_USED;
-			echo ubertc-toolchain-5.1.1 > $WD/package/TOOLCHAIN_USED;
+			echo uber-toolchain-5.1.1 > $WD/package/TOOLCHAIN_USED;
+			break;;
+		"UBER-6.0.0")
+			TC=$TCUB600;
+			touch $WD/package/TOOLCHAIN_USED;
+			echo uber-toolchain-6.0.0 > $WD/package/TOOLCHAIN_USED;
 			break;;
 		"LINARO-4.9.4")
 			TC=$TCLN494;
