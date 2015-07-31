@@ -374,7 +374,9 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
-		   -fgraphite -floop-parallelize-all -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
+    	   -funswitch-loops -fpredictive-commoning -fgcse-after-reload \
+		   -mfpu=neon-vfpv4 -mtune=cortex-a15  -mcpu=cortex-a15 -fgraphite -floop-parallelize-all \
+		   -ftree-loop-linear -floop-interchange -floop-strip-mine -floop-block
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
