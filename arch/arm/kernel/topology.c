@@ -25,6 +25,25 @@
 #include <asm/cputype.h>
 #include <asm/topology.h>
 
+#define MPIDR_SMP_BITMASK (0x3 << 30)
+#define MPIDR_SMP_VALUE (0x2 << 30)
+ 
+#define MPIDR_MT_BITMASK (0x1 << 24)
+ 
+/*
+* These masks reflect the current use of the affinity levels.
+* The affinity level can be up to 16 bits according to ARM ARM
+*/
+ 
+#define MPIDR_LEVEL0_MASK 0x3
+#define MPIDR_LEVEL0_SHIFT 0
+
+#define MPIDR_LEVEL1_MASK 0xF
+#define MPIDR_LEVEL1_SHIFT 8
+
+#define MPIDR_LEVEL2_MASK 0xFF
+#define MPIDR_LEVEL2_SHIFT 16
+
 /*
  * cpu power scale management
  */
