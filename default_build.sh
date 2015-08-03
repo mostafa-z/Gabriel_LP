@@ -2,6 +2,7 @@
 
 clear
 # build machine V 1.1
+# build machine V 1.2 -> focused on auto build
 # this one only for test build, Gabriel_Kernel_D855
 # TNX Dorimanx
 # TNX Androplus
@@ -76,6 +77,8 @@ sleep 3
 		echo ""
 	fi;
 
+	echo "Start Build for" $MODEL > $WD/package/build_log;
+
 	CLEANUP;
 	time make ARCH=arm CROSS_COMPILE=$TC $CUSTOM_DEF
 #	time make ARCH=arm CROSS_COMPILE=$TC nconfig
@@ -107,13 +110,17 @@ then
 echo "copy modules"
 find . -name '*ko' -exec \cp '{}' $WD/package/system/lib/modules/ \;
 
+	echo "Modules Copied" >> $WD/package/build_log;
+
 echo "generating device tree..."
 ./dtbTool -o $BOOT/dt.img -s 2048 -p $DTC/ $BOOT/
 
 	if [ -f $BOOT/dt.img ]; then
 		echo -e "\e[42mdt.img PASSED\e[m"
+		echo "Device Tree Builded" >> $WD/package/build_log;
 	else
 		echo -e "\e[41mdt.img FAILED\e[m"
+		echo "Device Tree Failed" >> $WD/package/build_log;
 	fi;
 
 echo "copy zImage-dtb and dt.img"
@@ -125,6 +132,8 @@ echo "creating boot.img"
 
 echo "bumping"
 python open_bump.py $WD/boot.img
+
+		echo "Bumped and Ready" >> $WD/package/build_log;
 
 echo "copy bumped image"
 \cp $WD/boot_bumped.img $WD/package/boot.img
@@ -140,6 +149,9 @@ echo "copy flashable zip to output > flashable"
 cd ..
 cd ..
 cp $WD/package/kernel.zip $RK/$FILENAME.zip
+		
+		#This part is for me on Workin Dir
+		echo "Flashable ZIP is Ready" >> $WD/package/build_log;
 
 clear
 echo ""
@@ -149,8 +161,10 @@ echo ""
 end=$(date +%s.%N)    
 runtime=$(python -c "print(${end} - ${start})")
 echo -e "\e[1;44mRuntime was $runtime\e[m"
-echo ""
-echo ""
+
+		#This part is for me on Workin Dir
+		echo $runtime >> $WD/package/build_log;
+
 ### THANKS GOD
 
 fi
@@ -230,7 +244,7 @@ select CHOICE in D850 D851 D852 D855 VS985 CONTINUE_BUILD ALL; do
 			CLEANUP;
 			CUSTOM_DEF=gabriel_d855_defconfig
 			MODEL=D855
-			RAMDISK=D8505
+			RAMDISK=D855
 			REBUILD;
 			break;;
 		"VS985")
