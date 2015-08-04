@@ -249,7 +249,7 @@ select CHOICE in D850 D851 D852 D855 VS985 CONTINUE_BUILD ALL; do
 			break;;
 		"VS985")
 			CLEANUP;
-			CUSTOM_DEF=gabriel_VS985_defconfig
+			CUSTOM_DEF=gabriel_vs985_defconfig
 			MODEL=VS985
 			RAMDISK=VS985
 			REBUILD;
@@ -310,7 +310,7 @@ select CHOICE in D850 D851 D852 D855 VS985 CONTINUE_BUILD ALL; do
 			echo "starting build of VS985 in 1"
 			sleep 1;
 			CLEANUP;
-			CUSTOM_DEF=gabriel_VS985_defconfig
+			CUSTOM_DEF=gabriel_vs985_defconfig
 			MODEL=VS985
 			RAMDISK=VS985
 			REBUILD;
