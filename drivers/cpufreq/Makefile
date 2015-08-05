@@ -1,3 +1,5 @@
+#fix for -o2
+EXTRA_CFLAGS += -Wno-maybe-uninitialized
 # CPUfreq core
 obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o cpu-boost.o
 # CPUfreq stats
