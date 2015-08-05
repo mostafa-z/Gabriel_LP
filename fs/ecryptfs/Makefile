@@ -1,3 +1,5 @@
+#fix for -o2
+EXTRA_CFLAGS += -Wno-maybe-uninitialized
 #
 # Makefile for the Linux 2.6 eCryptfs
 #
