@@ -36,7 +36,7 @@
 static unsigned int sleep_state = 0;
 module_param_named(sleep_state, sleep_state, uint, 0644);
 
-//#define POWER_SUSPEND_DEBUG // Add debugging prints in dmesg
+#define POWER_SUSPEND_DEBUG // Add debugging prints in dmesg
 
 struct workqueue_struct *suspend_work_queue;
 
