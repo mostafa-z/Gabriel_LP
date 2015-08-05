@@ -1,3 +1,5 @@
+#fix for -o2
+EXTRA_CFLAGS += -Wno-maybe-uninitialized
 ccflags-$(CONFIG_USB_DWC3_DEBUG)	:= -DDEBUG
 ccflags-$(CONFIG_USB_DWC3_VERBOSE)	+= -DVERBOSE_DEBUG
 ccflags-y += -Idrivers/usb/host
