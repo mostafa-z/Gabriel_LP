@@ -112,6 +112,12 @@ find . -name '*ko' -exec \cp '{}' $WD/package/system/lib/modules/ \;
 
 	echo "Modules Copied" >> $WD/package/build_log;
 
+# strip not needed debugs from modules.
+"$TC"strip --strip-unneeded $WD/package/system/lib/modules/* 2>/dev/null
+"$TC"strip --strip-debug $WD/package/system/lib/modules/* 2>/dev/null
+
+	echo "Modules Striped" >> $WD/package/build_log;
+
 echo "generating device tree..."
 ./dtbTool -o $BOOT/dt.img -s 2048 -p $DTC/ $BOOT/
 
