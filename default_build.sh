@@ -217,7 +217,7 @@ select CHOICE in ARCHI-4.9.3 ARCHI-5.1.0 ARCHI-5.2.0 UBER-5.1.1 UBER-6.0.0 LINAR
 	esac;
 done;
 echo "What to do What not to do ?!";
-select CHOICE in D850 D851 D852 D855 VS985 CONTINUE_BUILD ALL; do
+select CHOICE in D850 D851 D852 D855 VS985 LS990 CONTINUE_BUILD ALL; do
 	case "$CHOICE" in
 		"D850")
 			CLEANUP;
@@ -252,6 +252,13 @@ select CHOICE in D850 D851 D852 D855 VS985 CONTINUE_BUILD ALL; do
 			CUSTOM_DEF=gabriel_vs985_defconfig
 			MODEL=VS985
 			RAMDISK=VS985
+			REBUILD;
+			break;;
+		"LS990")
+			CLEANUP;
+			CUSTOM_DEF=gabriel_ls990_defconfig
+			MODEL=LS990
+			RAMDISK=LS990
 			REBUILD;
 			break;;
 		"ALL")
@@ -315,6 +322,18 @@ select CHOICE in D850 D851 D852 D855 VS985 CONTINUE_BUILD ALL; do
 			RAMDISK=VS985
 			REBUILD;
 			echo "VS985 is ready!"
+			echo "starting build of LS990 in 3"
+			sleep 1;
+			echo "starting build of LS990 in 2"
+			sleep 1;
+			echo "starting build of LS990 in 1"
+			sleep 1;
+			CLEANUP;
+			CUSTOM_DEF=gabriel_ls990_defconfig
+			MODEL=LS990
+			RAMDISK=LS990
+			REBUILD;
+			echo "LS990 is ready!"
 			break;;
 		"CONTINUE_BUILD")
 			CONTINUE_BUILD;
