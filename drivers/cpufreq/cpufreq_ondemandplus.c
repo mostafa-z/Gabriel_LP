@@ -945,3 +945,4 @@ MODULE_AUTHOR("Mike Chan <mike@android.com>");
 MODULE_DESCRIPTION("'cpufreq_ondemandplus' - A cpufreq governor for "
         "semi-aggressive scaling");
 MODULE_LICENSE("GPL");
+
