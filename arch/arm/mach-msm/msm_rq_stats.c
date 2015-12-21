@@ -43,7 +43,6 @@ struct notifier_block freq_policy;
 struct cpu_load_data {
 	u64 prev_cpu_idle;
 	u64 prev_cpu_wall;
-	u64 prev_cpu_iowait;
 	unsigned int avg_load_maxfreq;
 	unsigned int samples;
 	unsigned int window_size;
@@ -54,8 +53,6 @@ struct cpu_load_data {
 };
 
 static DEFINE_PER_CPU(struct cpu_load_data, cpuload);
-//static inline u64 get_cpu_iowait_time(unsigned int cpu, u64 *wall)
-static bool io_is_busy;
 
 static int update_average_load(unsigned int freq, unsigned int cpu)
 {
@@ -70,7 +67,7 @@ static int update_average_load(unsigned int freq, unsigned int cpu)
 	if (ret)
 		return -EINVAL;
 
-	cur_idle_time = get_cpu_idle_time(cpu, &cur_wall_time, io_is_busy);
+	cur_idle_time = get_cpu_idle_time(cpu, &cur_wall_time, 0);
 
 	wall_time = (unsigned int) (cur_wall_time - pcpu->prev_cpu_wall);
 	pcpu->prev_cpu_wall = cur_wall_time;
@@ -541,7 +538,7 @@ static int __init msm_rq_stats_init(void)
 		if (cpu_online(i))
 			pcpu->cur_freq = cpu_policy.cur;
 		pcpu->prev_cpu_idle = get_cpu_idle_time(i,
-				&pcpu->prev_cpu_wall, io_is_busy);
+				&pcpu->prev_cpu_wall, 0);
 		cpumask_copy(pcpu->related_cpus, cpu_policy.cpus);
 	}
 	freq_transition.notifier_call = cpufreq_transition_handler;
@@ -569,5 +566,4 @@ static int __init msm_rq_stats_early_init(void)
 	return 0;
 }
 core_initcall(msm_rq_stats_early_init);
-
 
